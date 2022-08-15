@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">BulletinBoard</string>
+    <!-- Menu Drawer Strings -->
+    <string name="ads_cat1">Объявления</string>
+    <string name="ads_my_ads">Мои объявления</string>
+    <string name="ads_car">Машины</string>
+    <string name="ads_pc">Компьютеры</string>
+    <string name="ads_smartphone">Смартфоны</string>
+    <string name="ads_appliances">Бытовая техника</string>
+    <string name="ads_cat2">Аккаунт</string>
+    <string name="ac_sign_up">Регистрация</string>
+    <string name="ac_sign_in">Вход</string>
+    <string name="ac_sign_out">Выход</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+
+
+</resources>
