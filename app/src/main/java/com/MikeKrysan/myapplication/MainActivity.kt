@@ -7,7 +7,11 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import com.MikeKrysan.myapplication.databinding.ActivityMainBinding
+import com.MikeKrysan.myapplication.dialogHelper.DialogConst
+import com.MikeKrysan.myapplication.dialogHelper.DialogHelper
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
+
 //import kotlinx.android.synthetic.main.activity_main.*
 //import kotlinx.android.synthetic.main.main_content.*
 
@@ -22,7 +26,7 @@ import com.google.android.material.navigation.NavigationView
  * 2.1 Меняем ConstraintLayout на DrawerLayout в activity_main.xml
  * 2.1.1 Добавляем тег android:fitsSystemWindows="true"
  * 2.1.2 Присваиваем идентификатор для drawerlayout: android:id="@+id/drawerLayout"
- ** 2.2 Добавляем NavigationView в разметку activity_main.xml
+ * 2.2 Добавляем NavigationView в разметку activity_main.xml
  * 2.2.1 добавляем идентификатор: navView
  * 2.2.2 app:menu="@menu/drawer_main_menu" - Указываем, какое меню мы хотим, чтобы указывалось внутри нашего контейнера NavigationView
  * 2.2.3 android:layout_gravity="start" - чтобы меню не растягивалось на весь экран (контейнер NavigationView) и выдвигалось слева направо
@@ -58,7 +62,7 @@ import com.google.android.material.navigation.NavigationView
  *
  * Урок 3 - подключение проекта из AS в проект, созданный на FireBase
  * 3. Tools -> FireBase -> Authentication -> Email and password authentication -> Connect to FireBase -> выбираю нужный проект, далее и проект подключен
- * 3.1 Нужно добавить библиотеки к каждой функции, которую я хочу использовать. FireBase -> Add Firebase Authentication to your app -> Accept changes. Либо же вручную добавить в buidl.gradle(Module) -> dependendies -> implimentation (implementation 'com.google.firebase:firebase-auth:19.2.0')
+ * 3.1 Нужно добавить библиотеки к каждой функции, которую я хочу использовать. FireBase -> Add Firebase Authentication to your app -> Accept changes. Либо же вручную добавить в buidl.gradle(Module) -> dependendcies -> implimentation (implementation 'com.google.firebase:firebase-auth:19.2.0')
  * 3.2 Мы уже подключены к базе данных, теперь добавляем библиотеку Realtime Database -> Add the Realtime Database to your app -> Accept changes
  * 3.3 Добавляем библиотеку Storage
  * 3.4 Если мы перенесли проект из AS на другой пк. То проект может выдать ошибки, для их избежания необходимо: зайти в вид проекта Project -> app -> google-services.json - этот файл является скачанным с проекта Firebase
@@ -77,12 +81,37 @@ import com.google.android.material.navigation.NavigationView
  *  Теперь каждый экран, который мы создаем, мы можем превратить в класс, который будет содержать все элементы экрана
  *  4.4 Чтобы получить доступ к toolbar, нужно обратится к экрану main_content.xml и этот экран мы вживляем в activity_main через include и чтобы получить доступ к нему, нужно создать идентификатор
  *  android:id="@+id/mainContent" в activity_main.xml , а include несет в себе main_content, так, в реальности мы получаем доступ к main_content.xml, а там у нас и находится toolbar
+ *
+ *  Урок 5. Создаем AlertDialog для регистрации и начинаем работать с Authentication. В данном уроке вход пока по Email
+ *  5.1 Cоздаем экран разметки для диалога при регистрации и при входе: sign_dialog.xml
+ *  5.2 Создаем класс для регистрации/входа, предварительно поместив его в пакет dialogHelper ->...
+ *  5.3 Инициализируем DialogHelper в MainActivity
+ *  5.4 Воспользуемся объектом dialogHelper при нажатии кнопки "Зарегистрироваться" и "Войти"
+ *  5.5 будем изменять textView Регистрация и кнопка "Зарегистрироватся" в зависимости от того, мы входим, или регистрируемся в окне. Мы можем передать в функцию createSignDialog класса DialogHelper индекс
+ *  5.6 Создаем контсанты в пакете dialogHelper для индекса функции createSignDialog(index:Int)
+ *  5.7 -> DialogHelper..
+ *  5.8 -> DialogHelper..
+ *  5.9 -> MainActivity -> onNavigationItemSelected() ->..
+ *  5.10 -> MainActivity -> onNavigationItemSelected() ->..
+ *  5.11 Создаем функции, которые помогут нам регистрироваться. Firebase->Authentication->и там включаем регистрацию по имейлу и паролю->save
+ *  5.12 Создаем класс AccauntHelper - он будет позволять нам регистрироваться, входить, выходить по нашему акаунту. Поместим его в пакет accaunthelper. ->..
+ *  5.13 Инициализируем объект myAuth через FirebaseAuht
+ *  5.14 Создаем функцию для отправки подтверждающего письма в AccauntHelper sendEmailVerification()
+ *  5.15 AccauntHelper ->..
+ *  5.16 AccauntHelper ->..
+ *  5.17 Инициализируем AccauntHelper в DialogHelper
+ *  5.18 Добавим прослушивателей нажатия на кнопки в DialogHelper
+ *
+ *  Урок 6. Продолжаем работать с Authentication(часть 2)
+ *
  */
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
 //    private var rootElement:ActivityMainBinding? = null //4.3.1переменная создана на уровне класса, чтобы к ней можно было добратся из любого места внутри класса
     private lateinit var rootElement:ActivityMainBinding
+    private val dialogHelper = DialogHelper(this)   //5.3 Инициализируем DialogHelper. Передаем в конструкторе этот класс - MainActivity
+    val myAuth = FirebaseAuth.getInstance() //5.13 Инициализируем объект myAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -133,12 +162,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.id_sign_up -> {
 
-                Toast.makeText(this, "Pressed id_sign_up", Toast.LENGTH_LONG).show()
+//                Toast.makeText(this, "Pressed id_sign_up", Toast.LENGTH_LONG).show()
+                dialogHelper.createSignDialog(DialogConst.SIGN_UP_STATE)    //5.4 //5.9 Для регистрации передаем константу регистрации
 
             }
             R.id.id_sign_in -> {
 
-                Toast.makeText(this, "Pressed id_sign_in", Toast.LENGTH_LONG).show()
+//                Toast.makeText(this, "Pressed id_sign_in", Toast.LENGTH_LONG).show()
+                dialogHelper.createSignDialog(DialogConst.SIGN_IN_STATE)   //5.4  //5.10 Вход и константа берется для входа
 
             }
             R.id.id_sign_out -> {

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "513608213086",
+    "project_id": "bulletinboardkotlin-11bb9",
+    "storage_bucket": "bulletinboardkotlin-11bb9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:513608213086:android:523e4b9c830a13e4560acf",
+        "android_client_info": {
+          "package_name": "com.MikeKrysan.myapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "513608213086-03t1cdq37j7ivdk13d3r827kfio24p48.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5RaQAw4PwCklO12_gqO-tDie3bYr8tVg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "513608213086-03t1cdq37j7ivdk13d3r827kfio24p48.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
