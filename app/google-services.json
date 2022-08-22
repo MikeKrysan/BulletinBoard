@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "513608213086-770e135gopt8pdmb5dkt9kolpd06jmpk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.MikeKrysan.myapplication",
+            "certificate_hash": "1a2ab9da93b6e4f70026599826f332f139b8ec60"
+          }
+        },
+        {
           "client_id": "513608213086-03t1cdq37j7ivdk13d3r827kfio24p48.apps.googleusercontent.com",
           "client_type": 3
         }

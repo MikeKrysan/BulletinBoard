@@ -1,16 +1,23 @@
 package com.MikeKrysan.myapplication
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import com.MikeKrysan.myapplication.databinding.ActivityMainBinding
 import com.MikeKrysan.myapplication.dialogHelper.DialogConst
 import com.MikeKrysan.myapplication.dialogHelper.DialogHelper
+import com.MikeKrysan.myapplication.dialogHelper.GoogleAccConst
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.common.api.ApiException
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 
 //import kotlinx.android.synthetic.main.activity_main.*
 //import kotlinx.android.synthetic.main.main_content.*
@@ -102,13 +109,49 @@ import com.google.firebase.auth.FirebaseAuth
  *  5.17 Инициализируем AccauntHelper в DialogHelper
  *  5.18 Добавим прослушивателей нажатия на кнопки в DialogHelper
  *
- *  Урок 6. Продолжаем работать с Authentication(часть 2)
+ *  Урок 6. Продолжаем работать с Authentication(часть 2). Необходимо сделать функцию для входа и выхода, и чтобы это состояние отображалалось на панели nav_header_main
+ *  6.1 Создадим текстовый ресурс в strings, который будет показывать, войдите либо зарегистрируйтесь. Эта надпись будет появлятся, когда мы не вошли в аккаунт, либо мы нажали выйти из аккаунта
+ *  6.2 Чтобы добавить доступ к тексту "Войдите или зарегистрируйтесь" в MainActivity создаем переменную tvAccaunt, которой присвоили значение в функции init()
+ *  6.3 Создадим публичную функцию uiUpdate()
+ *  6.4 При нажатии кнопки "Выйти" мы запускаем функцию uiUpdate(null) и сюда передаем null
+ *  6.5 Добавляем функцию onStart в MainActivity чтобы до регистрации в окне header была надписи, а не пустое место
+ *  6.6 Сделаем, чтобы диалог после нажатия кнопки "Регистрация" убегал. DialogHepler->..
+ *  6.7 Функция для входа AccauntHelper->.. Функцию signUInWithEmail() запускаем из DialogHelper
  *
+ *  Урок 7. Восстановление пароля
+ *  7.1 в классе DialogHelper в проверке на Sign_in или Sign_up показываем скрытую кнопку "Забыли пароль?"
+ *  7.2 Переносим условия проверки в отдельную функцию setDialogState в классе DialogHelper
+ *  7.2.1 Вызываем функцию setDialogState
+ *  7.3 Переносим условия нажатия на кнопку SignUpIn в отдельную функцию  setOnClickSignUpIn класса DialogHelper
+ *  7.3.1 Вызываем функцию SignUpIn
+ *  7.4 Вызываем обработчки кнопки "забыли пароль?"
+ *  7.6 В sign_dialog.xml вводим textView для сообщению пользователю текта ввести почту при восстановлении пароля
+ *
+ *  Урок 8. Авторизация по Google аккаунту.Часть 1
+ *  8.1 Включаем в Firebase опцию "регистрация через гугл-аккаунт" и там запросит нас асоциировать с этим какую-то почту(по-умолчанию та, что есть уже на аккаунте)
+ *  8.2 в AccauntHelper создаем функции для регистрации по гугл-аккаунту getSignInClient()
+ *  8.3 в gradle->dependencies: implementation 'com.google.android.gms:play-services-auth:20.2.0' - добавили библиотеку. Нам нужно получить гугл-аккаунт из нашего смартфона.
+ *  С приложения нужно получить доступ к гугл-аккаунту. Но он хорошо защищен.
+ *  8.4 Создали опции gso
+ *  8.5 Возвращаем опции GoogleSignInClient
+ *  8.6 Присвоим возвращенного клиента переменной
+ *  8.7 Создаем функцию signInWithGoogle() в классе AccauntHelper для запуска с кнопки "войти под гугл-аккаунтом". Cоздали разметку в sign_dialog.xml
+ *  8.8 Создали класс GoogleAccConst в который положили константу GOOGLE_SIGN_IN_REQUEST_CODE = 132
+ *  8.9 -> AccauntHelper
+ *  Мы получили в приложение гугл-аккаунт пользователя. Теперь по этому аккаунту нужно отправлять запрос на Firebase
+ *  8.10 получаем из Firebase гугл-аккаунт пользователя
+ *  8.11 В DialogHelper обрабатываем нажатие на кнопку "Зарегистироваться с помощью гугл"
+ *  8.12 Создаем функцию signInFirebaseWithGoogle  в AccauntHelper, которая будет брать из intent, который мы получили из функции onActivityResult(). Берем аккаунт, у него токен, и с помощью этого токена регистрироваться на Firebase
+ *  Пока что только мы запускали выбор аккаунта и его получение (до этого пункта)
+ *  8.13 Приложение не запустится, так как Firebase требуется отпечаток электронный SHA-1 для debug версии Асtive Build Variant. Чтобы его достать, нужно в Gradle в правом верхнем углу экрана AS->выбрать иконку слона->Run Anything->
+ *  выбрать или набрать "gradle app:signingReport" и скопировать SHA-1 отпечаток в Firebase->save с дальнейшей заменой google-services.json файла. и далее чтобы запускать приложение, нужно выбрать в Edit configuration-> app
+ *  Для того, чтобы корректно работала регистрация через гугл-аккаунт на виртуальном устройстве, неообходимо скачать и запускать приложение на эмуляторе, подключенном к playmarket и сервисам гугл
  */
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
 //    private var rootElement:ActivityMainBinding? = null //4.3.1переменная создана на уровне класса, чтобы к ней можно было добратся из любого места внутри класса
+    private lateinit var tvAccaunt: TextView   //6.2
     private lateinit var rootElement:ActivityMainBinding
     private val dialogHelper = DialogHelper(this)   //5.3 Инициализируем DialogHelper. Передаем в конструкторе этот класс - MainActivity
     val myAuth = FirebaseAuth.getInstance() //5.13 Инициализируем объект myAuth
@@ -123,6 +166,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         init()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {   //8.10
+        if(requestCode == GoogleAccConst.GOOGLE_SIGN_IN_REQUEST_CODE){
+//            Log.d("MyLog", "Sign in result")
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)  //Как только мы выбрали один из аккаунтов, то запускается функция onActivityResult() и нам передает intent - это сообщение к системе. Т.о. наше activity приложения обменивается данными с системой андроид
+            try {   //мы не просто берем аккаунт, а пытаемся его взять, поскольку может быть множество ошибок
+
+                val account = task.getResult(ApiException::class.java)  //Я слежу за ошибками, которые могут произойти во время регистрации либо входа
+                //У нас уже есть аккаунт, но прежде чем достать токен, нужно проверить что наш аккаунт не равен null:
+                if(account != null) {
+                    Log.d("MyLog", "Api 0")
+                    dialogHelper.accHelper.signInFirebaseWithGoogle(account.idToken!!)
+                }
+
+            } catch (e:ApiException) {
+                Log.d("MyLog", "Api error: ${e.message}")
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
     private fun init(){
 //        val toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close)  //2.6.3  Создали кнопку toggle
         val toggle = ActionBarDrawerToggle(this, rootElement.drawerLayout, rootElement.mainContent.toolbar, R.string.open, R.string.close)  //4.4
@@ -131,6 +194,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 //        navView.setNavigationItemSelectedListener(this) //2.7.1
         rootElement.navView.setNavigationItemSelectedListener(this)
+        tvAccaunt = rootElement.navView.getHeaderView(0).findViewById(R.id.tvAccountEmail)  //6.2.1
+    }
+
+    override fun onStart() {    //6.5
+        super.onStart()
+        uiUpdate(myAuth.currentUser)    //Если мы не зарегистрировались, currentUser будет null ("Войдите или зарегистрируйтесь"), если не null - текущий адресс email
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {    //2.7.2 Когда мы нажали на элемент из главного меню, мы можем проверить id этого элемента
@@ -174,13 +243,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.id_sign_out -> {
 
-                Toast.makeText(this, "Pressed id_sign_out", Toast.LENGTH_LONG).show()
+//                Toast.makeText(this, "Pressed id_sign_out", Toast.LENGTH_LONG).show()
+                uiUpdate(null)  //6.4
+                myAuth.signOut()    //для выхода своей функции писать не нужно, мы воспользуемся функцией класса Auth
 
             }
         }
 //        drawerLayout.closeDrawer(GravityCompat.START)   //При нажатии на одну из кнопок выполнится одно из условий и после этого запустится closeDrawer, и меню закроется
         rootElement.drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    fun uiUpdate(user: FirebaseUser?) {  //6.3 в user содержится информация, под каким email мы зарегистрировались и оттуда мы и будем доставать email. Будем доставать email под которым зарегистировались, и передавть user-a
+        tvAccaunt.text = if(user == null){
+            resources.getString(R.string.not_reg)
+        }   else {
+            user.email
+        }
     }
 
 }

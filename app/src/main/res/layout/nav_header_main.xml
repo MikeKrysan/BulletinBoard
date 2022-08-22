@@ -23,11 +23,9 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:background="@color/color_blue"
-        android:text="TextView"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/imAccountImage"
-        app:layout_constraintTop_toBottomOf="@+id/imAccountImage"
-        tools:text="krysanmihasan@gmail.com" />
+        app:layout_constraintTop_toBottomOf="@+id/imAccountImage" />
 </androidx.constraintlayout.widget.ConstraintLayout>
