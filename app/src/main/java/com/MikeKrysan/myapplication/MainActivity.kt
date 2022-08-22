@@ -154,6 +154,10 @@ import com.google.firebase.auth.FirebaseUser
  *  9.2 Создаем пакет constants и в нем класс Object FirebaseAuthConstants
  *  9.3 Если сперва зарегистрироваться через почту, а далее войти через гугл аккаунт, то в Firebase данные перезапишутся, и позже я не смогу войти через email
  *  9.4 Ошибка ввода короткого пароля
+ *
+ *  Урок10. Соединение двух аккаунтов (Google Account & Password)
+ *  10.1 Создадим функцию  linkEmailWithGoogle() в классе AccauntHelper
+ *  10.2 Запускаем функцию linkEmailWithGoogle() в том месте, где была обнаружена ошибка
  */
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {

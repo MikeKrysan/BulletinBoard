@@ -33,8 +33,9 @@ class AccauntHelper(act:MainActivity) {     //5.12.2 Cоздаем констр�
                         val exception = task.exception as FirebaseAuthUserCollisionException    //делаем даунакаст. Мы теперь точно знаем, что это ошибка этого класса. Теперь мы можем делать следущее:
 //                        Log.d("MyLog", "Exception: ${exception.errorCode}")      //9.1.1 Проверяем по константе. Фильтруем ошибку в классе -  Exception: ERROR_EMAIL_ALREADY_IN_USE
                         if(exception.errorCode == FirebaseAuthConstants.ERROR_EMAIL_ALREADY_IN_USE) {
-                            Toast.makeText(actAcH, FirebaseAuthConstants.ERROR_EMAIL_ALREADY_IN_USE, Toast.LENGTH_LONG).show()
-                            //Здесь соединяем логику регистрации гугл-аккаунта с регистрацией по почте
+//                            Toast.makeText(actAcH, FirebaseAuthConstants.ERROR_EMAIL_ALREADY_IN_USE, Toast.LENGTH_LONG).show()
+                            //Здесь соединяем логику регистрации гугл-аккаунта с регистрацией по почте:
+                            linkEmailWithGoogle(email, password)    //10.2
                         }
                     } else if(task.exception is FirebaseAuthInvalidCredentialsException) {      //9.1.2 обрабатываем ошибку на неправельно введенный емайл
                         val exception = task.exception as FirebaseAuthInvalidCredentialsException
@@ -50,9 +51,9 @@ class AccauntHelper(act:MainActivity) {     //5.12.2 Cоздаем констр�
                             Toast.makeText(actAcH, actAcH.resources.getString(R.string.error_weak_password), Toast.LENGTH_LONG).show()
                         }
                     }
-                    else {
-                        Toast.makeText(actAcH, actAcH.resources.getString(R.string.sign_in_error), Toast.LENGTH_LONG).show()
-                    }
+//                    else {
+//                        Toast.makeText(actAcH, actAcH.resources.getString(R.string.sign_in_error), Toast.LENGTH_LONG).show()
+//                    }
                 }
             }
         }
@@ -83,6 +84,18 @@ class AccauntHelper(act:MainActivity) {     //5.12.2 Cоздаем констр�
         }
     }
 
+    private fun linkEmailWithGoogle(email:String, password:String) {    //10.1
+        val credential = EmailAuthProvider.getCredential(email, password)
+            if(actAcH.myAuth.currentUser != null) {
+                 actAcH.myAuth.currentUser?.linkWithCredential(credential)?.addOnCompleteListener {   task ->
+                    if(task.isSuccessful) {
+                        Toast.makeText(actAcH, actAcH.resources.getString(R.string.link_done), Toast.LENGTH_LONG).show()
+                    }
+                }
+            } else {
+                Toast.makeText(actAcH, actAcH.resources.getString(R.string.enter_to_Google), Toast.LENGTH_LONG).show()
+            }
+    }
 
     private fun getSignInClient():GoogleSignInClient{  //8.2 функция должна вернуть googleSignInClient. Но мы не можем получить все необходимые классы из библиотеки, потому как у нас нет этой библиотеки. Нужно ее добавить
         //GoogleSignInClient - данный класс позволяет отправить специальный intent(сообщение) к системе, что наш акканут находится не внутри нашего приложения, а находится на смартфоне. Из нашего приложения нужно отравить запрос в систему и ждать результата, когда система ответит
