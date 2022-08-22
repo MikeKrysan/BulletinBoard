@@ -26,4 +26,5 @@
     <string name="sign_in_error">Не удалось войти</string>
     <string name="send_verification_error">Не удалось отправить email для подтверждения</string>
     <string name="send_verification_done">На вашу почту была отправлена ссылка для подтверждения вашего аккаунта! Пожалуйста, подтвердите ваш аккаунт</string>
+    <string name="error_weak_password">Your password is too short! Password length must be at least 6 characters</string>
 </resources>

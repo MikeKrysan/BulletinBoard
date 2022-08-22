@@ -146,6 +146,14 @@ import com.google.firebase.auth.FirebaseUser
  *  8.13 Приложение не запустится, так как Firebase требуется отпечаток электронный SHA-1 для debug версии Асtive Build Variant. Чтобы его достать, нужно в Gradle в правом верхнем углу экрана AS->выбрать иконку слона->Run Anything->
  *  выбрать или набрать "gradle app:signingReport" и скопировать SHA-1 отпечаток в Firebase->save с дальнейшей заменой google-services.json файла. и далее чтобы запускать приложение, нужно выбрать в Edit configuration-> app
  *  Для того, чтобы корректно работала регистрация через гугл-аккаунт на виртуальном устройстве, неообходимо скачать и запускать приложение на эмуляторе, подключенном к playmarket и сервисам гугл
+ *  8.14 добавим информацию, чтобы при регистрации с помощью гугл-аккаунта на хедере в боковом меню отображалась почта аккаунта
+ *
+ *  Урок9. Авторизация по Google аккаунту, часть 2 (проверка на неверыный email; неверный пароль; вход по гугл-аккаунту, когда у пользователя уже есть email адресс; неверный формат email-адресатиь)
+ *  Ошибки с email и гугл-аккаунтом можно ловить в трех метстах в AccauntHelper: вход в аккаунт по почте, регистрация по почте и вход по гугл-аккаунту
+ *  9.1 Отлавливаем ошибки при регистрации при помощи емейла signUpWithEmail() AccauntHelper класс. (9.1.1-9.1.5)
+ *  9.2 Создаем пакет constants и в нем класс Object FirebaseAuthConstants
+ *  9.3 Если сперва зарегистрироваться через почту, а далее войти через гугл аккаунт, то в Firebase данные перезапишутся, и позже я не смогу войти через email
+ *  9.4 Ошибка ввода короткого пароля
  */
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -255,6 +263,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun uiUpdate(user: FirebaseUser?) {  //6.3 в user содержится информация, под каким email мы зарегистрировались и оттуда мы и будем доставать email. Будем доставать email под которым зарегистировались, и передавть user-a
+
         tvAccaunt.text = if(user == null){
             resources.getString(R.string.not_reg)
         }   else {
