@@ -11,6 +11,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.*
 
+//В этом классе мы отслеживаем ошибки
+
 class AccauntHelper(act:MainActivity) {     //5.12.2 Cоздаем конструктор, чтобы мы могли взять Firebase authentication из MainActivity, чтобы регистрироваться
     private val actAcH = act    //делаем доступным объект из конструктора для всего класса
     private lateinit var googleSignInClient:GoogleSignInClient  //8.6 Присвоим возвращенного клиента переменной
@@ -68,6 +70,7 @@ class AccauntHelper(act:MainActivity) {     //5.12.2 Cоздаем констр�
                         actAcH.uiUpdate(task.result?.user)
                     } else {                                                                //9.1.3 Обработка неправильно введенного емейла при входе
 //                        Log.d("MyLog", "Exception: " + task.exception)  //9.3 Действуем так же само: сразу находим общую обибку (класс ошибок)
+
                         if (task.exception is FirebaseAuthInvalidCredentialsException) {
                             Log.d("MyLog", "Exception: ${task.exception}")  //9.3.2 Отслеживаем далее на общие ошибки
                             val exception = task.exception as FirebaseAuthInvalidCredentialsException
@@ -78,6 +81,12 @@ class AccauntHelper(act:MainActivity) {     //5.12.2 Cоздаем констр�
                                 Toast.makeText(actAcH, FirebaseAuthConstants.ERROR_WRONG_PASSWORD, Toast.LENGTH_LONG).show()
                             }
 
+                        } else if( task.exception is FirebaseAuthInvalidUserException) {    //11.14
+                            val exception = task.exception as FirebaseAuthInvalidUserException
+                            Log.d("MyLog", "Exception2: ${exception.errorCode}")
+                            if(exception.errorCode == FirebaseAuthConstants.ERROR_USER_NOT_FOUND) {
+                                Toast.makeText(actAcH, actAcH.resources.getString(R.string.error_user_not_found), Toast.LENGTH_LONG).show()
+                            }
                         }
                     }
                 }
@@ -108,6 +117,10 @@ class AccauntHelper(act:MainActivity) {     //5.12.2 Cоздаем констр�
         googleSignInClient = getSignInClient()
         val intent = googleSignInClient.signInIntent   //8.7.1 Создаем intent
         actAcH.startActivityForResult(intent, GoogleAccConst.GOOGLE_SIGN_IN_REQUEST_CODE )   //8.9
+    }
+
+    fun signOutGoogle(){     //11.1
+        getSignInClient().signOut()
     }
 
     fun signInFirebaseWithGoogle(token:String){ //8.12

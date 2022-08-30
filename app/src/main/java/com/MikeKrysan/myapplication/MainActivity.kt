@@ -4,11 +4,13 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
+import com.MikeKrysan.myapplication.act.EditAddsAct
 import com.MikeKrysan.myapplication.databinding.ActivityMainBinding
 import com.MikeKrysan.myapplication.dialogHelper.DialogConst
 import com.MikeKrysan.myapplication.dialogHelper.DialogHelper
@@ -158,6 +160,23 @@ import com.google.firebase.auth.FirebaseUser
  *  Урок10. Соединение двух аккаунтов (Google Account & Password)
  *  10.1 Создадим функцию  linkEmailWithGoogle() в классе AccauntHelper
  *  10.2 Запускаем функцию linkEmailWithGoogle() в том месте, где была обнаружена ошибка
+ *
+ *  Урок11. Добавляем кнопку для создания нового объявления, добавляем выход из Google аккаунта, и начинаем создавать EditActivity
+ *  А также создаем возможность для пользователя выйти из своего гугл-аккаунта, потом войти в приложение из другого своего гугл-аккаунта (даем возможность пользователю выбирать из какого гугл-аккаунта ему зайти)
+ *  11.1 Через AccauntHelper делаем так, чтобы всегда при входе через гугл-аккаунт приложение запрашивало выбрать из какого из имеющихся совершить вход
+ *  11.2 Запускаем signOutGoogle() на слушателе при нажатии на кнопке из меню "id_sign_out" (выход)
+ *  11.3 При нажатии и при входе через гугл-аккаунт не закрывается диалоговое окно. Для того, чтобы оно закрывалось, нужго вызвать dismiss() в DialogHelper->
+ *  11.4 Добавим активити для редактирования нашего объявления. Открывать его будем через кнопку в правом верхнем углу тулбара. Menu-> New -> Menu Resource File -> main_menu-> ok (создали main_menu в папке menu)
+ *  11.5 Drawable->New->Vector asset->создали кнопку и назвали ее new_adds
+ *  11.6 Добавили кнопку "New" в тег item mein_menu.xml
+ *  11.7 Добавляем библиотеку xmlns:app="http://schemas.android.com/apk/res-auto" в тег menu main_menu.xml, чтобы можно было воспользоваться тегом showAsAction
+ *  11.8 Когда мы исплользуем toolbar по-умолчанию(встроенный), в таком случае кнопку "New" на этот тулбар добавляем следующим образом: но в нашем случае когда создан свой тулбар, этого не достаточно, нужно еще выполнить п.11.9
+ *  11.9 Но поскольку наш тулбар мы создали сами, нам нужно сказать, что встроенный action_bar в activity это будет мой toolbar. MainActivity->init()
+ *  11.10 В com.MikeKrysan.myapplication->New->Package->act->enter
+ *  11.11 В act->New->Activity->EmptyActivity->переименовываем на EditAddsAct->Finish
+ *  11.12.Чтобы получить доступ к элементам экрана, необходимо создать root-элемент в EditAddsAct
+ *  11.13 В MainActivity нам нужно прослушать нажатие на элемент из меню (кнопка "New"), для этого нам нужно добавить onOptionsItemSelected()
+ *  11.14 Обработаем еще одну ошибку: когда пользователь не зарегистрирован по email, но пытается войти, зарегистрировавшись при этом по гугл-аккаунту или нет. AccauntHelper->signInWithEmail()
  */
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -176,6 +195,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val view = rootElement.root //4.3.3 Передаем переменную на экран. Root элемент - это элемент, который содержит в себе все view
         setContentView(view)    //4.3.4 Рисуем экран
         init()
+    }
+
+    //11.13:
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.id_new_adds) {   //Здесь нам приходит item на который нажали, и проверяем его идентификатор. Если у нас есть совпадение, значит я нажал на эту кнопку "New" и запустится новое активити
+            val i = Intent(this, EditAddsAct::class.java)  //запускаем Активити. Передаем контекст, на котором находимся, и передаем активити, на которым мы хотим перейти
+            startActivity(i)    //теперь запускаем intent(намерение) и нужное активити
+        }
+            return super.onOptionsItemSelected(item)
+    }
+
+    //11.8:
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {   //8.10
@@ -199,6 +233,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun init(){
+         setSupportActionBar(rootElement.mainContent.toolbar)   //11.9  Сначала указываем, какой тулбар используется в активити, а после уже запускаем нажатие на кнопку меню
+        // в левом верхнем углу. Если эту строку поставить внизу, то мы сперва добавим нажатие на кнопку, но мы еще не будем знать, какой тулбар используется и тогда
+        // считываться не будет нажатие на кнопку
 //        val toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close)  //2.6.3  Создали кнопку toggle
         val toggle = ActionBarDrawerToggle(this, rootElement.drawerLayout, rootElement.mainContent.toolbar, R.string.open, R.string.close)  //4.4
 //        drawerLayout.addDrawerListener(toggle)  //2.6.4
@@ -258,6 +295,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //                Toast.makeText(this, "Pressed id_sign_out", Toast.LENGTH_LONG).show()
                 uiUpdate(null)  //6.4
                 myAuth.signOut()    //для выхода своей функции писать не нужно, мы воспользуемся функцией класса Auth
+                dialogHelper.accHelper.signOutGoogle()  //11.2
 
             }
         }

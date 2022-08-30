@@ -38,6 +38,7 @@ class DialogHelper(act: MainActivity) {
 
         rootDialogElement.btGoogleSignIn.setOnClickListener {   //8.11
             accHelper.signInWithGoogle()
+            dialog.dismiss()    //11.3
         }
 
 //        builder.show()//5.2.8 Чтобы диалог отрисовался на экране, вызываем функцию
