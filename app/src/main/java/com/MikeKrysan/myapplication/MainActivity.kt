@@ -177,6 +177,16 @@ import com.google.firebase.auth.FirebaseUser
  *  11.12.Чтобы получить доступ к элементам экрана, необходимо создать root-элемент в EditAddsAct
  *  11.13 В MainActivity нам нужно прослушать нажатие на элемент из меню (кнопка "New"), для этого нам нужно добавить onOptionsItemSelected()
  *  11.14 Обработаем еще одну ошибку: когда пользователь не зарегистрирован по email, но пытается войти, зарегистрировавшись при этом по гугл-аккаунту или нет. AccauntHelper->signInWithEmail()
+ *
+ *  Урок12. Начинаем создавать EditActivity для редактирования объявления. Добавляем список стран
+ *  12.1 Cоздаем разметку в  activity_edit_ads.xml
+ *  12.2 Для выбора из списка стран воспользуемся спиннером. Для того, чтобы он заработал, необходим файл со списком стран. Создадим папку assets и поместим в нее файл со списком стран: app->New->Folder->Assets folder->finish
+ *  Cоздалась папка assets (ресурсы)
+ *  12.3 Создадим в сom.MikeKrysan.myapplication папку utils, в которой будем создавать классы помощники. В данном случае нам нужно создать класс, который будет получать список сначала стран, потом
+ *  городов из файла countriesToCities.json и выводить его в спиннере в activity_edit_adds.xml
+ *  utils->New->Kotlin class file->Object->CityHelper(назвали)
+ *  12.4 В EditAddsAct создаем адаптер и подключаем к нашему спиннеру
+ *  12.5 Прикрепляем адаптер к спиннеру
  */
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {

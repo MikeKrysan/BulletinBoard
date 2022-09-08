@@ -61,6 +61,7 @@ class AccauntHelper(act:MainActivity) {     //5.12.2 Cоздаем констр�
         }
     }
 
+
     fun signInWithEmail(email:String, password:String) {   //6.7
         if (email.isNotEmpty() && password.isNotEmpty()) {
             actAcH.myAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
