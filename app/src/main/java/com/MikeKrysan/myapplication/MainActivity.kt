@@ -187,6 +187,23 @@ import com.google.firebase.auth.FirebaseUser
  *  utils->New->Kotlin class file->Object->CityHelper(назвали)
  *  12.4 В EditAddsAct создаем адаптер и подключаем к нашему спиннеру
  *  12.5 Прикрепляем адаптер к спиннеру
+ *
+ *  Урок13. Создание диалога с SearchView для выбора и поиска страны. в activity_edit_ads.xml  сделаем вместо поиска страны и спиннера кнопку с поиском и выпадающим спиннером. Поиск будет универсальным. Не только для поиска стран
+ *  и городов, но и для любого списка, который мы передадим
+ *  13.1 В EditAddsAct убираем спинер, адаптер  - в новой концепции поиска нам это будет не нужно. Берем данные как заполняем города и присваиваем их переменной listCountry
+ *  13.2 Создаем новый пакет dialogs, в нем класс  DialogSpinnerHelper
+ *  13.3 Создаем spinner_layout.xml с rootElement->LinearLayout
+ *  13.4 Создаем объект класса DialogSpinnerHelper в классе EditAddsAct
+ *  13.5 Покажем весь список с помощью RecyclerView, для этого создадим еще один класс в пакете dialogs->RcViewDialogSpinner
+ *  13.6 Создаем textView для отображения страны или города: layout Recource File->sp_list_item
+ *  13.7 Передаем textView с id tvSpItem из файла sp_list_item.xml в функцию onCreateViewHolder класса RcViewDialogSpinner как отдельный item в нашем списке
+ *  13.8 В DialogSpinnerHelper прежде чем нарисовать rootView, нужно найти все его элементы: SearchView и RecyclerView
+ *  13.9 Создаем фильтр по которому мы будем фильтровать страны или города. В CityHelper
+ *  13.10 В DialogSpinnerHelper создадим фунцию setSearchViewListener(), чтобы не захламлять класс. В функции onQueryTextChange() при создании временного массива не может принимать null,
+ *  поэтому делаем проверку на null в CityHelper:
+ *  13.11
+ *
+ *  13.5 В объекте CityHelper создаем еще одну функцию, которая будет фильтровать список (когда мы пишем что-то в searchView, то список фильтруется)
  */
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {

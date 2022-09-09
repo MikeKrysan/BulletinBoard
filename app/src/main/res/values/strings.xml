@@ -31,4 +31,5 @@
     <!--  -->
     <string name="link_done">Email успешно подключен к Google аккаунту</string>
     <string name="enter_to_Google">У вас уже есть аккаунт с этим Email адресом. Если вы хотите дополнительно зарегистрировать почту, войдите сперва в google-аккаунт, для успешной регистрации</string>
+    <string name="No_result">Нет результата</string>
 </resources>
