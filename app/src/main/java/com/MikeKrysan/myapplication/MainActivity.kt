@@ -199,11 +199,43 @@ import com.google.firebase.auth.FirebaseUser
  *  13.7 Передаем textView с id tvSpItem из файла sp_list_item.xml в функцию onCreateViewHolder класса RcViewDialogSpinner как отдельный item в нашем списке
  *  13.8 В DialogSpinnerHelper прежде чем нарисовать rootView, нужно найти все его элементы: SearchView и RecyclerView
  *  13.9 Создаем фильтр по которому мы будем фильтровать страны или города. В CityHelper
- *  13.10 В DialogSpinnerHelper создадим фунцию setSearchViewListener(), чтобы не захламлять класс. В функции onQueryTextChange() при создании временного массива не может принимать null,
- *  поэтому делаем проверку на null в CityHelper:
- *  13.11
+ *  13.10 В DialogSpinnerHelper создадим фунцию setSearchView(), чтобы не захламлять класс. В методе onQueryTextChange() при создании временного массива не может принимать null,
+ *   поэтому делаем проверку на null в CityHelper:
+ *  13.11 Проверка SearchText на null функции filterListData класса CityHelper
  *
- *  13.5 В объекте CityHelper создаем еще одну функцию, которая будет фильтровать список (когда мы пишем что-то в searchView, то список фильтруется)
+ *  Урок14. Делаем возможность выбора страны из списка и отображение данного выбора в TextView
+ *  14.1 Создаем функцию init() в EditAdsAct -  для инициализации и чтобы очистить код. Из функции onCreate переносим данные. Запускаем эту функцию в onCreate()
+ *  14.2 Создаем диалог на уровне класса в EditAdsAct
+ *  14.3 В activity_edit_ads.xml создаем нужную разметку, удалили два элемента, добавили textView
+ *  14.4 В файле string добавили строку "Выберите город"
+ *  14.5 При нажатии на textView "Выберите страну" нужно чтобы появился диалог выбора стран и когда в диалоге что-то выбрали, показать его в textView. Для этого нам нужно создать слушателя нажатий
+ *  Идем в EditAddsAct и создаем функцию onClickSelectCountry. В activity_edit_adds.xml прикрепляем слушателя кнопки. Далее запускаем диалог. Проверяем. В диалоге будет записано "выберите страну" и
+ *  список стран
+ *  14.6 Для того, чтобы выбранная страна появилась в textView нам нужно добавить слушателя нажатий для RcViewSpinner и в этом слушателе нажатий брать тот элемент на который нажали и передавать в textView из
+ *  activity_edit_adds.xml . Поэтому нужен доступ к textView в recyclerView класса RcViewDialogSpinner. Можно сделать интерфейс и при нажатии на кнопку, интерфейс запускается в EditAddsAct и там уже
+ *  что-то делаем с textView, либо передать в onCreateViewHolder класса RcViewDialogSpinner наш editActivity и через editActivity получить доступ к textView чтобы его менять
+ *  14.7 Нужно передать на RcViewDialogSpinner наш context, а именно наш активити - EditAddsAct. Context у нас есть не в конструкторе, а в функции showSpinnerDialog() класса
+ *  DialogSpinnerHelper. Поэтому когда мы запускаем showSpinnerDialog мы запускаем context, а это и есть наше EditAddsAct
+ *  и поэтому отсюда мы можем получить доступ к textView из activity_edit_adds.xml. Этот textView мы можем передать в
+ *  RcViewDialogSpinnerAdapter(). Т.о. сontext в RcViewDialogSpinnerAdapter теперь и есть EditAddsAct
+ *  14.8 Добавляем интерфейс OnClickListener во внутренний класс SpViewHolder класса RcViewDialogSpinnerAdapter. Чтобы context стал доступен в функциях класса RcViewDialogSpinnerAdapter можно двумя способами:
+ *  а) создать переменную в которую передать context и обращаться к этой переменной,
+ *  б) в конструкторе класса RcViewDialogSpinnerAdapter указать переменную RcViewDialogSpinnerAdapter(var context: Context)
+ *  14.9 У нас все еще нет доступа к textView в RcViewDialogSpinnerAdapter, так как rootElement класса EditAddsAct, через который я могу получить доступ к textView и к любому другому элементу на экране- он private
+ *      Можно его сделать public, и тогда будет доступ к rootElement у RcViewDialogSpinner
+ *  14.10 в функции onClick вложенного класса SpViewHolder класса RcViewDialogSpinnerAdapter делаем даункаст: в классе context мы перевели из класса EditAddsAct в Context, так как нам это было нужно использовать, но в данной функции нужно взять EditAddsAct, чтобы использовать rootElement.
+ *      Если не сделать даункаст, то через context не получится обратится к rootElement класса EditAddsAct
+ *  14.11 в activity_edit_adds.xml textView меняем id с textView на tvCountry и обращаемся к нему в функции onClick()
+ *  14.12 Берем текст из itemView функции setData класса SpViewHolder для того, чтобы присвоить его (context as EditAddsAct).rootElementForEditAddsAct.tvCountry.text = .
+ *  Но мы его не сможем взять напрямую, так как itemView лежит в функции; для того, чтобы можно было к нему обратится, есть множество вариантов, создадим переменную которая принадлежит классу SpViewHolder private var itemText = ""
+ *  14.13 в itemText (String) когда запускается setData(), мы записываем text: itemText= text, который будет теперь доступен во всем классе SpViewHolder
+ *  14.14 У каждого viewHolder (ячейка со страной) будет свой текст, записанный в переменную itemText. Поэтому, когда я жму на кнопку (у каждого viewHolder своя кнопка) я его беру и передаю в наш tvCountry.
+ *  14.15 Выбрали слушателя нажатий для элемента itemView (setData()->SpViewHolder->RcViewDialogSpinner) : itemView.setOnClickListener(this). Если этого не указать, не будет работать, так как слушатель нажатий принадлежит всему классу SpViewHolder, но при нажатии на какой элемент он будет запускатся - не укзали
+ *  А теперь указали - item элемент, это один из элемнтов выпадающего спиннера, т.е любая страна из списка
+ *  Запускаем приложение и смотрим что получилось
+ *  14.16 Чтобы закрывался диалог при нажатии на кнопку и выборе страны необходимо: в DialogSpinnerHelper помимо context из RcViewDialogSpinnerAdapter передать и диалог.
+ *  Создадим диалог в DialogSpinnerHelper: val dialog = builder.create(). Так как у builder нет функции dismiss() чтобы закрыть диалог, то мы сразу с помощью builder создаем диалог и уже в этот диалог и передаем setView(rootView)
+ *  14.17 Передаем dialog в recyclerView(RcViewDialogSpinnerHelper), предварительно приняв его в классе RcViewDialogSpinnerHelper : var dialog:AlertDialog (class RcViewDialogSpinnerAdapter(var context: Context, var dialog:AlertDialog) )
  */
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {

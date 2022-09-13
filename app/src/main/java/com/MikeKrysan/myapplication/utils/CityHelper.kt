@@ -19,7 +19,7 @@ object CityHelper {
             val bytesArray = ByteArray(size)    //указываем размер создаваемого массива
             inputStream.read(bytesArray)    //указываем массив, куда считываем strings. inputStream считает информацию из "countriesToCities.json" в байтах, и передаст в массив bytesArray
             val jsonFile = String(bytesArray)    //И теперь нам нужно данные превратить в Strings
-            val jsonObject = JSONObject(jsonFile)//Указываем, какой файл мы хотим превратить в JSONObject .Получаем данные в формате json, чтобы не пришлось парсить в виде strin.
+            val jsonObject = JSONObject(jsonFile)//Указываем, какой файл мы хотим превратить в JSONObject .Получаем данные в формате json, чтобы не пришлось парсить в виде string.
             val countriesNames = jsonObject.names()    //Чтобы получить доступ к названиям стран, нам нужно получить доступ к объектам в json-файле
 
              if(countriesNames != null) {    //Создаем проверку, в случае, если наш cityNames.length будет null
@@ -36,7 +36,7 @@ object CityHelper {
     }
 
 
-    fun filterListData(list: ArrayList<String>, searchText: String?): ArrayList<String> {   //13.9 передаем список, который мы хотим отфильтровать. Функция будет возвращать ArrayList<String> уже новый, отфильтрованный
+    fun filterListData(list: ArrayList<String>, searchText: String?): ArrayList<String> {   //13.9 передаем список, который мы хотим отфильтровать. Функция будет возвращать ArrayList<String> уже новый, отфильтрованный(когда вводишь первые буквы и показывает совпадение стран с такими первыми буквами)
         val tempList = ArrayList<String>()      //13.9.1 Передаем список со всеми странами или городами. По буквам начинает фильтровать. Если есть совпадение в списке list, то добавляет его в наш новый временный массив и возвращает массив уже не со всеми странами, а отфильтрованный
         tempList.clear()
         //Фильтруем с помощью цикла:
@@ -45,7 +45,7 @@ object CityHelper {
             return tempList //возвращаем значение "Нет результатов"
         }
         for(selection: String in list) {
-            if(selection.toLowerCase(Locale.ROOT).startsWith(searchText.toLowerCase(Locale.ROOT))) {
+            if(selection.lowercase(Locale.ROOT).startsWith(searchText.lowercase(Locale.ROOT))) {
                 tempList.add(selection)
             }
         }

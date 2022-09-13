@@ -28,8 +28,12 @@
     <string name="send_verification_done">На вашу почту была отправлена ссылка для подтверждения вашего аккаунта! Пожалуйста, подтвердите ваш аккаунт</string>
     <string name="error_weak_password">Your password is too short! Password length must be at least 6 characters</string>
     <string name="error_user_not_found">Пожалуйста, зарегистрируйтесь с помощью гугл-аккаунта или при помощи e-mail</string>
-    <!--  -->
+    <!-- Sign Dialog -->
     <string name="link_done">Email успешно подключен к Google аккаунту</string>
     <string name="enter_to_Google">У вас уже есть аккаунт с этим Email адресом. Если вы хотите дополнительно зарегистрировать почту, войдите сперва в google-аккаунт, для успешной регистрации</string>
     <string name="No_result">Нет результата</string>
+    <!-- EditActivity -->
+    <string name="select_country">*Выберите страну</string>
+    <string name="select_city">*Выберите город</string>
+
 </resources>
