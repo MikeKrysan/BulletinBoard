@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.widget.SearchView
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.MikeKrysan.myapplication.R
@@ -11,12 +12,13 @@ import com.MikeKrysan.myapplication.utils.CityHelper
 
 class DialogSpinnerHelper {
 
-    fun showSpinnerDialog(context: Context, list:ArrayList<String>) {
+    fun showSpinnerDialog(context: Context, list:ArrayList<String>, tvSelection: TextView) {   //15.5.3
         val builder = AlertDialog.Builder(context)  //Создаем билдер для создания диалога
         val dialog = builder.create()   //14.16
         val rootView = LayoutInflater.from(context).inflate(R.layout.spinner_layout, null)      //Берем разметку из spinner_layout.xml и надуваем ее. Мы находимся не непосредственно на
                                                                                                     // активити, а в диалоге, где нет layoutInflater. Поэтому нам нужно его откуда-то взять: LayoutInflater.from(context)
-        val adapter = RcViewDialogSpinnerAdapter(context, dialog)     //13.8   //14.7
+//        val adapter = RcViewDialogSpinnerAdapter(context, dialog, tvSelection)     //13.8   //14.7   //15.5
+        val adapter = RcViewDialogSpinnerAdapter(tvSelection, dialog)      //15.5.4   //15.5.6
         val rcView = rootView.findViewById<RecyclerView>(R.id.rcSpView)     //13.8.1 ищем RecyclerView элемент в spinnerlayout.xml
         val sv = rootView.findViewById<SearchView>(R.id.svSpinner)     //13.10.1
         rcView.layoutManager = LinearLayoutManager(context)     //13.8.2 Нужно указать layoutManager, то-есть,как он будет выглядеть. Указываем, чтобы ишел как простой список по-вертикали

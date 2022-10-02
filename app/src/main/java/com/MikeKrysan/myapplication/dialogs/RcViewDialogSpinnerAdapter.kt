@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.MikeKrysan.myapplication.R
 import com.MikeKrysan.myapplication.act.EditAddsAct
 
-class RcViewDialogSpinnerAdapter(var context: Context, var dialog:AlertDialog) : RecyclerView.Adapter<RcViewDialogSpinnerAdapter.SpViewHolder>() {    //Адаптер принимает ViewHolder, который мы сейчас создадим. Адаптер ждет ViewHolder, а мы передаем просто класс SpViewHolder,   //14.7class RcViewDialogSpinnerAdapter(context: Context)  //14.8.2 -б)    //14.17
+class RcViewDialogSpinnerAdapter(var tvSelection: TextView, var dialog:AlertDialog) : RecyclerView.Adapter<RcViewDialogSpinnerAdapter.SpViewHolder>() {    //Адаптер принимает ViewHolder, который мы сейчас создадим. Адаптер ждет ViewHolder, а мы передаем просто класс SpViewHolder,   //14.7class RcViewDialogSpinnerAdapter(context: Context)  //14.8.2 -б)    //14.17    //15.5.5
     //поэтому классу SpViewHolder нужно унаследоваться от RecyclerView.ViewHolder. Все равно будет ругатся, пишет что это другой класс, а я пишу класс SpViewHolder напрямую, поэтому указываем
     //что класс SpViewHolder находится внутри класса RcViewDialogSpinner
 
@@ -21,7 +21,7 @@ class RcViewDialogSpinnerAdapter(var context: Context, var dialog:AlertDialog) :
     //Рисуем элемент и создается ViewHolder:
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SpViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.sp_list_item, parent, false)   //13.7 надуваем наш textView, предварительно создав его
-        return SpViewHolder(view, context, dialog)   //Создается новый viewHolder и туда передаем view  //14.8.3 ViewHolder пока что ждет только view, а мы передали уже и context, следует добавить параметр Context в класс SpViewHolder  //14.17.1 передаем dialog во viewHolder
+        return SpViewHolder(view, tvSelection, dialog)   //Создается новый viewHolder и туда передаем view  //14.8.3 ViewHolder пока что ждет только view, а мы передали уже и context, следует добавить параметр Context в класс SpViewHolder  //14.17.1 передаем dialog во viewHolder     //15.5.5
     }
 
     //После к этому элементу подключаем текст и т.д.
@@ -35,7 +35,7 @@ class RcViewDialogSpinnerAdapter(var context: Context, var dialog:AlertDialog) :
     }
 
     //13.5.1
-    class SpViewHolder(itemView: View, var context: Context, var dialog: AlertDialog) : RecyclerView.ViewHolder(itemView), View.OnClickListener {    //добавляем параметр itemView в конструктор. В наш ViewHolder нужно будет передавать view, который мы рисуем       //14.8 Добавляем интерфейс OnClickListener и добавляем его метод //14.8.4 Добавляем параметр Context в конструктор класса    //14.8.5***    //14.17.2 добавляем dialog  //****
+    class SpViewHolder(itemView: View, var tvSelection: TextView, var dialog: AlertDialog) : RecyclerView.ViewHolder(itemView), View.OnClickListener {    //добавляем параметр itemView в конструктор. В наш ViewHolder нужно будет передавать view, который мы рисуем       //14.8 Добавляем интерфейс OnClickListener и добавляем его метод //14.8.4 Добавляем параметр Context в конструктор класса    //14.8.5***    //14.17.2 добавляем dialog  //****     //15.5.5
         private var itemText = ""   //14.12
         fun setData(text:String) {  //Список будет состоять из одного textView, который показывает название страны либо города
             val tvSpItem = itemView.findViewById<TextView>(R.id.tvSpItem) //13.5.6 Находим наш textView, когда создается наш viewHolder
@@ -46,7 +46,9 @@ class RcViewDialogSpinnerAdapter(var context: Context, var dialog:AlertDialog) :
 
         override fun onClick(p0: View?) {       //14.8.1 Добавляем метод интрефейса
            //context //14.8.2 в этой функции мне и нужно взять текст из tvSpItem.text = text (см. выше) - из элемента на который нажал и показать его в textView activity_edit_adds.xml. И это можно сделать только через context**
-            (context as EditAddsAct).rootElementForEditAddsAct.tvCountry.text =  itemText    //14.10 Я смело пишу так, потому что точно знаю, что context это и есть EditAddsAct. Если бы context был бы из другого активити, то в этом месте вышла бы ошибка   //14.11 //14.12 //14.14
+//            (context as EditAddsAct).rootElementForEditAddsAct.tvCountry.text =  itemText    //14.10 Я смело пишу так, потому что точно знаю, что context это и есть EditAddsAct. Если бы context был бы из другого активити, то в этом месте вышла бы ошибка   //14.11 //14.12 //14.14
+//            (context as EditAddsAct).rootElementForEditAddsAct.tvCountry.setText(itemText)   //15.5
+            tvSelection.text = itemText     //15.5.5
             dialog.dismiss()    //14.17.3 теперь dialog доступен здесь, и при нажатии на кнопку страны, мы не только берем название(текст) страны, но и закрываем диалог
 
         }

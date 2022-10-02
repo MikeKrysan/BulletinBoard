@@ -23,15 +23,33 @@ object CityHelper {
             val countriesNames = jsonObject.names()    //Чтобы получить доступ к названиям стран, нам нужно получить доступ к объектам в json-файле
 
              if(countriesNames != null) {    //Создаем проверку, в случае, если наш cityNames.length будет null
-
                  for (n in 0 until countriesNames.length()) { //Прогоняем цикл, чтобы можно было выбирать города в стране
                     tempArray.add(countriesNames.getString(n))
                  }
              }
-
             } catch (e:IOException) {
-
             }
+        return tempArray
+    }
+
+    fun getAllCities(country:String, context: Context):ArrayList<String> {  //15.1
+        var tempArray = ArrayList<String>()
+        try{
+            val inputStream : InputStream = context.assets.open("countriesToCities.json")
+            val size:Int = inputStream.available()
+            val bytesArray = ByteArray(size)
+            inputStream.read(bytesArray)
+            val jsonFile = String(bytesArray)
+            val jsonObject = JSONObject(jsonFile)
+            val cityNames = jsonObject.getJSONArray(country)  //15.2
+
+                for (n in 0 until cityNames.length()) {
+                    tempArray.add(cityNames.getString(n))
+                }
+
+        } catch (e:IOException) {
+
+        }
         return tempArray
     }
 
