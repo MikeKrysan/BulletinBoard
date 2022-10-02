@@ -1,5 +1,6 @@
 package com.MikeKrysan.myapplication.act
 
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -8,10 +9,13 @@ import com.MikeKrysan.myapplication.R
 import com.MikeKrysan.myapplication.databinding.ActivityEditAddsBinding
 import com.MikeKrysan.myapplication.dialogs.DialogSpinnerHelper
 import com.MikeKrysan.myapplication.utils.CityHelper
+import com.MikeKrysan.myapplication.utils.ImagePicker
+import com.fxn.utility.PermUtil
 
 class EditAddsAct : AppCompatActivity() {
     lateinit var rootElementForEditAddsAct:ActivityEditAddsBinding  //14.9 делаем rootElement public
     private val dialog = DialogSpinnerHelper() //14.2 Создаем диалог на уровне класса
+    private var isImagesPermissionGranted = false   //16.3.1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +39,22 @@ class EditAddsAct : AppCompatActivity() {
 
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)     //16.3
+        when (requestCode) {
+            PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS -> {
+                //If request is cancelled, the result arrays are empty.
+                if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    ImagePicker.getImages(this)
+                } else {
+                    isImagesPermissionGranted = false
+                    Toast.makeText(this, "Approve permissions to open Pix ImagePicker", Toast.LENGTH_LONG).show()
+                }
+                return
+            }
+        }
+    }
+
     //OnClicks
     fun onClickSelectCountry(view: View) {  //14.5 Есть слушатель нажатий, но он пока ни к чему не подключен. Чтобы его подключить, в активити на textView находим onClick и назначаем ему только что созданый onClickSelectCountry
         val listCountry = CityHelper.getAllCountries(this)  //13.1
@@ -56,5 +76,12 @@ class EditAddsAct : AppCompatActivity() {
                 Toast.makeText(this, "No country selected", Toast.LENGTH_LONG).show()
             }
     }
+
+    fun onClickGetImages(view: View) {  //16.5
+        ImagePicker.getImages(this, )   //16.6
+    }
+
+
+
 
 }

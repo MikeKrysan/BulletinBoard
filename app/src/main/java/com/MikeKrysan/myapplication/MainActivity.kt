@@ -257,7 +257,20 @@ import com.google.firebase.auth.FirebaseUser
  *  15.5.5 Теперь идем в RcViewDialogSpinnerAdapter и контекст  заменяем на tvSelection
  *  15.5.6 В DialogSpinnerHelper-> showSpinnerDialog() убираем  context и подставляем в нужном порядке входящие значения
  *  15.6 Когда выбрали город, а потом поменяли страну, то прошлый город из другой страны остался. Такого нельзя допускать. Если заново выбрать страну, нужно сделать,чтобы поле с городами очищалось и возвращалось значение по-умолчанию
- *  Делаем проверку: если у нас значение по-умолчанию (город не выбран), то страну выбираем любую и все, ничего не делаем. Если уже выбран какой-нибудь город, и снова выбираем страну, то нужно все очистить в строке городов и вернуть значение по-умолчанию
+ *  Делаем проверку: если у нас значение по-умолчанию (город не выбран), то страну выбираем любую и все, ничего не делаем. Если уже выбран какой-нибудь город, и6снова выбираем страну, то нужно все очистить в строке городов и вернуть значение по-умолчанию
+ *
+ * Урок16.`  Добавляем библиотеку Pix для выбора фото для наших объявлений из памяти
+ * Есть два способа добавления старой библиотеки Pix
+ * 1) implementation("com.fxn769:pix:1.5.6") и добавить jcenter() в Gradle Scripts->settings.gradle-> в dependencyResolutionManagement { } (для новых версий)
+ * 2) файл для скачивания https://www.youtube.com/redirect?event=video_description&redir_token=QUFFLUhqbjBFVG9SUGhUM3AzMjVjdjFhTFFFd2RPOVVIUXxBQ3Jtc0tuemtFeE1qc2I5RXo1bDdBUGQwV1hRbUxjUFNxdkdEYW51LU5QaU03RXNrZDJoZFNUQi12R3RGS1ZsT1N6YWpXZlhYQnlSLURtX0JTNWc4LS1XV1hlS1ZSZE9BdVNZMFFCSnNna0JtbFI0YnpVZ1JTaw&q=https%3A%2F%2Fneco-desarrollo.es%2Fwp-content%2Fuploads%2F2022%2F02%2Fpix-1.5.6.rar&v=EyUxVGUwO3E
+ * Показ картинок во viewPager можно сделать с помощью отдельного активити или с помощью фрагмента и во фрагменте показывать список, гдя появятся выбранные картинки
+ * 16.1 Cоздадим класс-объект ImagePicker. В этот класс мы будем получать картинки, чтобы далее их показать в списке и произвоидить над ними манипуляции. Также этот класс для разгрузки EditAddsAct
+ * 16.2 Создали функцию getImages() в ImagePicker
+ * 16.3 Чтобы функция getImages() могла работать, сначала нужно запросить доступ к камере и к памяти смартфона. Для этого в EditAddsAct добавляем функцию onRequestPermissionResult()
+ * 16.3.1 Создали переменную булеан isImagesPermissionGranted, по-умолчанию false
+ * 16.4 В activity_edit_adds.xml добавим временную кнопку imageButton для добавления картинок во viewPager. Кнопка должна быть впереди viewPager, но по-умолчанию она сзади и не видна. Чтоба кнопка была впереди, ее нужно вынести наверх в структуре дерева компонентов (Component Tree)
+ * 16.5 Создаем функцию слушателя нажатия кнопки onClickGetImages в EditAddsAct
+ * 16.6 Присвоим кнопке слушателя onClick->onClickGetImages в activity_edit_adds.xml
  */
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -276,6 +289,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val view = rootElement.root //4.3.3 Передаем переменную на экран. Root элемент - это элемент, который содержит в себе все view
         setContentView(view)    //4.3.4 Рисуем экран
         init()
+
     }
 
     //11.13:
