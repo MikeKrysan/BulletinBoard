@@ -1,8 +1,10 @@
 package com.MikeKrysan.myapplication.act
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.MikeKrysan.myapplication.R
@@ -10,6 +12,7 @@ import com.MikeKrysan.myapplication.databinding.ActivityEditAddsBinding
 import com.MikeKrysan.myapplication.dialogs.DialogSpinnerHelper
 import com.MikeKrysan.myapplication.utils.CityHelper
 import com.MikeKrysan.myapplication.utils.ImagePicker
+import com.fxn.pix.Pix
 import com.fxn.utility.PermUtil
 
 class EditAddsAct : AppCompatActivity() {
@@ -37,6 +40,19 @@ class EditAddsAct : AppCompatActivity() {
 
     private fun init() {    //14.1
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {   //16.8
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_IMAGES) {
+            if(data != null) {
+//                val returnValue: ArrayList<String> = data.getStringArrayListExtra(Pix.IMAGE_RESULTS) as ArrayList<String>   //1-й вариант. Автоматически переделанный студией код из java в kotlin
+                val returnValue = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)   //2-й вариант. Здесь котлин сам определяет что за тип данных мы получаем
+                    Log.d("MyLog", "Image: ${returnValue?.get(0)  }")      //16.9
+                    Log.d("MyLog", "Image: ${returnValue?.get(1)  }")
+                    Log.d("MyLog", "Image: ${returnValue?.get(2)  }")
+            }
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

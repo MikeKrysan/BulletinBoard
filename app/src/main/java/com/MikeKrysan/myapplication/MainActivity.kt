@@ -271,6 +271,10 @@ import com.google.firebase.auth.FirebaseUser
  * 16.4 В activity_edit_adds.xml добавим временную кнопку imageButton для добавления картинок во viewPager. Кнопка должна быть впереди viewPager, но по-умолчанию она сзади и не видна. Чтоба кнопка была впереди, ее нужно вынести наверх в структуре дерева компонентов (Component Tree)
  * 16.5 Создаем функцию слушателя нажатия кнопки onClickGetImages в EditAddsAct
  * 16.6 Присвоим кнопке слушателя onClick->onClickGetImages в activity_edit_adds.xml
+ * 16.7 Производим проверку. Студия не запускает приложение, проблемы с доступом к камере.
+ * 16.8 Теперь мы можем получить результат. Пока что получим его в EditAddsAct. Далее сделаем отдельное активити для выбора картинок, или фрагмент. Для того, чтобы получать результат, используем
+ * onActivityResult
+ * 16.9 Проверяем, что за ссылки (результат) мы получаем
  */
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
