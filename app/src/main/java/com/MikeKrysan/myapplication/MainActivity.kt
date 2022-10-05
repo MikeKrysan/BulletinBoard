@@ -410,6 +410,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }   else {
             user.email
         }
+        //
     }
 
 }
