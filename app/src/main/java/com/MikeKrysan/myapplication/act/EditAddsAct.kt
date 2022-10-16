@@ -48,9 +48,9 @@ class EditAddsAct : AppCompatActivity() {
             if(data != null) {
 //                val returnValue: ArrayList<String> = data.getStringArrayListExtra(Pix.IMAGE_RESULTS) as ArrayList<String>   //1-й вариант. Автоматически переделанный студией код из java в kotlin
                 val returnValue = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)   //2-й вариант. Здесь котлин сам определяет что за тип данных мы получаем
-                    Log.d("MyLog", "Image: ${returnValue?.get(0)  }")      //16.9
-                    Log.d("MyLog", "Image: ${returnValue?.get(1)  }")
-                    Log.d("MyLog", "Image: ${returnValue?.get(2)  }")
+                    Log.d("MyLog", "Image: ${returnValue?.get(0)}")      //16.9
+                    Log.d("MyLog", "Image: ${returnValue?.get(1)}")
+                    Log.d("MyLog", "Image: ${returnValue?.get(2)}")
             }
         }
     }
@@ -62,8 +62,9 @@ class EditAddsAct : AppCompatActivity() {
                 //If request is cancelled, the result arrays are empty.
                 if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     ImagePicker.getImages(this)
+//                      isImagesPermissionGranted = true
                 } else {
-                    isImagesPermissionGranted = false
+//                    isImagesPermissionGranted = false
                     Toast.makeText(this, "Approve permissions to open Pix ImagePicker", Toast.LENGTH_LONG).show()
                 }
                 return
@@ -94,7 +95,7 @@ class EditAddsAct : AppCompatActivity() {
     }
 
     fun onClickGetImages(view: View) {  //16.5
-        ImagePicker.getImages(this, )   //16.6
+        ImagePicker.getImages(this )   //16.6
     }
 
 

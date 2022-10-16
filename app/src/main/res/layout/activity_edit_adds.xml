@@ -49,7 +49,8 @@
                     android:onClick="onClickGetImages"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/vpImages"
-                    app:srcCompat="@android:drawable/ic_menu_edit" />
+                    app:srcCompat="@android:drawable/ic_menu_edit"
+                    tools:ignore="SpeakableTextPresentCheck" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
