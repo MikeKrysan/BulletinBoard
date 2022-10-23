@@ -46,11 +46,11 @@ class EditAddsAct : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_IMAGES) {
             if(data != null) {
-//                val returnValue: ArrayList<String> = data.getStringArrayListExtra(Pix.IMAGE_RESULTS) as ArrayList<String>   //1-й вариант. Автоматически переделанный студией код из java в kotlin
-                val returnValue = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)   //2-й вариант. Здесь котлин сам определяет что за тип данных мы получаем
-                    Log.d("MyLog", "Image: ${returnValue?.get(0)}")      //16.9
-                    Log.d("MyLog", "Image: ${returnValue?.get(1)}")
-                    Log.d("MyLog", "Image: ${returnValue?.get(2)}")
+                val returnValue: ArrayList<String> = data.getStringArrayListExtra(Pix.IMAGE_RESULTS) as ArrayList<String>   //1-й вариант. Автоматически переделанный студией код из java в kotlin
+//                val returnValue = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)   //2-й вариант. Здесь котлин сам определяет что за тип данных мы получаем
+//                    Log.d("MyLog", "Image: ${returnValue?.get(0)}")      //16.9
+//                    Log.d("MyLog", "Image: ${returnValue?.get(1)}")
+//                    Log.d("MyLog", "Image: ${returnValue?.get(2)}")
             }
         }
     }
