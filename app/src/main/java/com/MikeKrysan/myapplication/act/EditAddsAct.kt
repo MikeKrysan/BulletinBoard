@@ -1,5 +1,6 @@
 package com.MikeKrysan.myapplication.act
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
@@ -10,12 +11,14 @@ import android.widget.Toast
 import com.MikeKrysan.myapplication.R
 import com.MikeKrysan.myapplication.databinding.ActivityEditAddsBinding
 import com.MikeKrysan.myapplication.dialogs.DialogSpinnerHelper
+import com.MikeKrysan.myapplication.frag.FragmentCloseInterface
+import com.MikeKrysan.myapplication.frag.ImageListFrag
 import com.MikeKrysan.myapplication.utils.CityHelper
 import com.MikeKrysan.myapplication.utils.ImagePicker
 import com.fxn.pix.Pix
 import com.fxn.utility.PermUtil
 
-class EditAddsAct : AppCompatActivity() {
+class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
     lateinit var rootElementForEditAddsAct:ActivityEditAddsBinding  //14.9 делаем rootElement public
     private val dialog = DialogSpinnerHelper() //14.2 Создаем диалог на уровне класса
     private var isImagesPermissionGranted = false   //16.3.1
@@ -42,15 +45,16 @@ class EditAddsAct : AppCompatActivity() {
 
     }
 
+    @SuppressLint("SuspiciousIndentation")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {   //16.8
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_IMAGES) {
             if(data != null) {
-                val returnValue: ArrayList<String> = data.getStringArrayListExtra(Pix.IMAGE_RESULTS) as ArrayList<String>   //1-й вариант. Автоматически переделанный студией код из java в kotlin
-//                val returnValue = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)   //2-й вариант. Здесь котлин сам определяет что за тип данных мы получаем
-//                    Log.d("MyLog", "Image: ${returnValue?.get(0)}")      //16.9
-//                    Log.d("MyLog", "Image: ${returnValue?.get(1)}")
-//                    Log.d("MyLog", "Image: ${returnValue?.get(2)}")
+//                val returnValue: ArrayList<String> = data.getStringArrayListExtra(Pix.IMAGE_RESULTS) as ArrayList<String>   //1-й вариант. Автоматически переделанный студией код из java в kotlin
+                val returnValue = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)   //2-й вариант. Здесь котлин сам определяет что за тип данных мы получаем
+                    Log.d("MyLog", "Image: ${returnValue?.get(0)}")      //16.9
+                    Log.d("MyLog", "Image: ${returnValue?.get(1)}")
+                    Log.d("MyLog", "Image: ${returnValue?.get(2)}")
             }
         }
     }
@@ -61,7 +65,7 @@ class EditAddsAct : AppCompatActivity() {
             PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS -> {
                 //If request is cancelled, the result arrays are empty.
                 if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    ImagePicker.getImages(this)
+                    ImagePicker.getImages(this, 3)  //17.9.2 * imageCounter
 //                      isImagesPermissionGranted = true
                 } else {
 //                    isImagesPermissionGranted = false
@@ -95,10 +99,16 @@ class EditAddsAct : AppCompatActivity() {
     }
 
     fun onClickGetImages(view: View) {  //16.5
-        ImagePicker.getImages(this )   //16.6
+//        ImagePicker.getImages(this )   //16.6
+        rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE //17.4
+        val fm = supportFragmentManager.beginTransaction()  //17.4 Пока что мы не будем проверять выбор картинок, а проверим наш фрагмент
+        fm.replace(R.id.place_holder, ImageListFrag(this))//заменяем контейнер, который мы создали (id=placeholder) на фрагмент //17.7.2 (this) - пока что фрагмент не ждет интерфейса, потому что конструктор к нашему элементу мы не добавили
+        fm.commit()     //чтобы все изменения применились, запускаем commit
     }
 
-
+    override fun onFragClose() {
+        rootElementForEditAddsAct.scrollViewMain.visibility = View.VISIBLE  //17.7.1Интерфейс нужно передать через фрагмент в контсруктор. Когда создаестя фрагмент, внутрь его передадим этот интерфейс, поэтому если там мы запускаем наш интерфейс, то он и здесь запуститься
+    }
 
 
 }
