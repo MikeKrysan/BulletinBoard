@@ -51,10 +51,16 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
         if(resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_IMAGES) {
             if(data != null) {
 //                val returnValue: ArrayList<String> = data.getStringArrayListExtra(Pix.IMAGE_RESULTS) as ArrayList<String>   //1-й вариант. Автоматически переделанный студией код из java в kotlin
-                val returnValue = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)   //2-й вариант. Здесь котлин сам определяет что за тип данных мы получаем
-                    Log.d("MyLog", "Image: ${returnValue?.get(0)}")      //16.9
-                    Log.d("MyLog", "Image: ${returnValue?.get(1)}")
-                    Log.d("MyLog", "Image: ${returnValue?.get(2)}")
+                val returnValues = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)   //2-й вариант. Здесь котлин сам определяет что за тип данных мы получаем
+//                    Log.d("MyLog", "Image: ${returnValues?.get(0)}")      //16.9
+//                    Log.d("MyLog", "Image: ${returnValues?.get(1)}")
+//                    Log.d("MyLog", "Image: ${returnValues?.get(2)}")
+                    if(returnValues?.size!! > 1) {                                                      //18.10 Start
+                        rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE
+                        val fm = supportFragmentManager.beginTransaction()
+                        fm.replace(R.id.place_holder, ImageListFrag(this, returnValues))
+                        fm.commit()                                                                     //18.10 End
+                    }
             }
         }
     }
@@ -100,10 +106,11 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
 
     fun onClickGetImages(view: View) {  //16.5
 //        ImagePicker.getImages(this )   //16.6
-        rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE //17.4
-        val fm = supportFragmentManager.beginTransaction()  //17.4 Пока что мы не будем проверять выбор картинок, а проверим наш фрагмент
-        fm.replace(R.id.place_holder, ImageListFrag(this))//заменяем контейнер, который мы создали (id=placeholder) на фрагмент //17.7.2 (this) - пока что фрагмент не ждет интерфейса, потому что конструктор к нашему элементу мы не добавили
-        fm.commit()     //чтобы все изменения применились, запускаем commit
+//        rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE //17.4
+//        val fm = supportFragmentManager.beginTransaction()  //17.4 Пока что мы не будем проверять выбор картинок, а проверим наш фрагмент
+//        fm.replace(R.id.place_holder, ImageListFrag(this))//заменяем контейнер, который мы создали (id=placeholder) на фрагмент //17.7.2 (this) - пока что фрагмент не ждет интерфейса, потому что конструктор к нашему элементу мы не добавили
+//        fm.commit()     //чтобы все изменения применились, запускаем commit
+        ImagePicker.getImages(this, 3)  //18.11 Чтобы запустилась проверка, поставим код временно из функции onRequestPermissionsResult()
     }
 
     override fun onFragClose() {

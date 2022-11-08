@@ -6,9 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.MikeKrysan.myapplication.R
 
-class ImageListFrag(val fragCloseInterface: FragmentCloseInterface): Fragment() { //17.2    //17.7.3 Добавляем конструктор нашему классу, который выводит фрагмент. Чтобы то, что мы будем передавть в этот конструктор было доступно на уровне всего класса нашего фрагмента, нужно указать val либо var
+class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, private val newList:ArrayList<String>): Fragment() { //17.2    //17.7.3 Добавляем конструктор нашему классу, который выводит фрагмент. Чтобы то, что мы будем передавть в этот конструктор было доступно на уровне всего класса нашего фрагмента, нужно указать val либо var //18.8 - newList:ArrayList
+
+    val adapter = SelectImageRvAdapter() //18.9.1
 
     //17.2.1 Создаем основые и обязательные функции для фрагмента:
     override fun onCreateView(  //В этой функции начинается отрисовка нашего фрагмента
@@ -23,6 +27,17 @@ class ImageListFrag(val fragCloseInterface: FragmentCloseInterface): Fragment() 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {   //В этой функции получаем все элементы, которые нарисовались
         super.onViewCreated(view, savedInstanceState)
         val bBack = view.findViewById<Button>(R.id.bBack)   //17.6
+        val rcView = view.findViewById<RecyclerView>(R.id.rcViewSelectImage)     //18.9
+        rcView.layoutManager = LinearLayoutManager(activity) //18.9.2 Передаем контекст - activity. Во фрагменте присутствует активити, получить его можно таким способом. Т.о мы получаем EditAddsAct, там где запустился этот фрагмент
+        rcView.adapter = adapter //18.9.3
+        val updateList = ArrayList<SelectImageItem>()    //Создаем массив с типом данных, который нам будет нужен для заполнения массива
+        for(n in 0 until newList.size) {    //18.9.4
+//            updateList.add(SelectImageItem(n.toString(), newList[n]))   //1 вариант
+//            val selectImageItem = SelectImageItem("0", "0")    //2 вариант перезаписи данных в дата-классе
+//            selectImageItem.copy(title="890")
+            updateList.add(SelectImageItem(n.toString(), newList[n]))   //заполняем updateList, когда он заканчивается, мы передаем в адаптер уже заполненный список
+        }
+        adapter.updateAdapter(updateList)     //18.9.5
         bBack.setOnClickListener{
             activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()    //17.6.1
         }
