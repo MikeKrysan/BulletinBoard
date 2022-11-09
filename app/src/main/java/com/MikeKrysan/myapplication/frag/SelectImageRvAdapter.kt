@@ -8,10 +8,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.MikeKrysan.myapplication.R
+import com.MikeKrysan.myapplication.utils.ItemTouchMoveCallback
 
-class SelectImageRvAdapter: RecyclerView.Adapter<SelectImageRvAdapter.ImageHolder>() {  //18.1
+class SelectImageRvAdapter: RecyclerView.Adapter<SelectImageRvAdapter.ImageHolder>(), ItemTouchMoveCallback.ItemTouchAdapter {  //18.1  //19.5
 
-    private val mainArray = ArrayList<SelectImageItem>()      //18.6.1 Создали массив. Пока что он пустой, его нужно будет передать в getItemCount(), потому что отсюда и будет браться размер, который нужно будет адаптеру заполнить в recyclerView   //<SelectImageItem> - массив будет хранить item - SelectImageItem, который содержит два элемента
+    val mainArray = ArrayList<SelectImageItem>()      //18.6.1 Создали массив. Пока что он пустой, его нужно будет передать в getItemCount(), потому что отсюда и будет браться размер, который нужно будет адаптеру заполнить в recyclerView   //<SelectImageItem> - массив будет хранить item - SelectImageItem, который содержит два элемента    //19.9.1 Даем доступ к адаптеру, убрав private
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.select_image_frag_item, parent, false)
@@ -26,6 +27,14 @@ class SelectImageRvAdapter: RecyclerView.Adapter<SelectImageRvAdapter.ImageHolde
     override fun getItemCount(): Int {
         return mainArray.size //18.6.2
     }
+
+    override fun onMove(startPos: Int, targetPos: Int) {    //19.5
+        val targetItem = mainArray[targetPos]   //Записываем элемент, над которым находится перетаскиваемый нами элемент
+        mainArray[targetPos] = mainArray[startPos]  //Элементы которые мы перетаскиваем в адаптере, в массиве не перетаскиваются, поэтому мы делаем замену в массиве, чтобы замена в адаптере соответствовала записи в массиве
+        mainArray[startPos] = targetItem    //поменяли местами наши элементы
+        notifyItemMoved(startPos, targetPos)    //указываем откуда куда нужно перетащить элементы, чтобы перестроился адаптер
+    }
+
 
     class ImageHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         lateinit var tvTitle : TextView
@@ -43,5 +52,7 @@ class SelectImageRvAdapter: RecyclerView.Adapter<SelectImageRvAdapter.ImageHolde
         mainArray.addAll(newList)   //18.7.2 После мы его заполняем всеми данными
         notifyDataSetChanged()  //18.7.3 Сообщаем адаптеру о том, что данные внутри изменились, чтобы он снова перезапустился
     }
+
+
 
 }
