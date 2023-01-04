@@ -31,8 +31,16 @@ class SelectImageRvAdapter: RecyclerView.Adapter<SelectImageRvAdapter.ImageHolde
     override fun onMove(startPos: Int, targetPos: Int) {    //19.5
         val targetItem = mainArray[targetPos]   //Записываем элемент, над которым находится перетаскиваемый нами элемент
         mainArray[targetPos] = mainArray[startPos]  //Элементы которые мы перетаскиваем в адаптере, в массиве не перетаскиваются, поэтому мы делаем замену в массиве, чтобы замена в адаптере соответствовала записи в массиве
-        mainArray[startPos] = targetItem    //поменяли местами наши элементы
+        val titleStart = mainArray[targetPos].title //20.12.1 Чтобы сохранить титл перед тем как он будет перезаписан, для новой картинки, которая станет заглавной
+        mainArray[targetPos].title = targetItem.title   //20.12 На этой позиции перезаписал титл на старый титл
+        mainArray[startPos] = targetItem    //поменяли местами наши элементы    //Титл который сохранил, возвращаю на свое место
+        mainArray[startPos].title = titleStart  //20.12.2 Картинки поменялись, названия фото остались теми же
         notifyItemMoved(startPos, targetPos)    //указываем откуда куда нужно перетащить элементы, чтобы перестроился адаптер
+//        notifyDataSetChanged()    //20.13.1
+    }
+
+    override fun onClear() {            //20.13.2
+        notifyDataSetChanged()
     }
 
 

@@ -51,7 +51,7 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 
     override fun onDetach() {   //17.8
         super.onDetach()
-        fragCloseInterface.onFragClose()       //17.8.1 Так как мы передали интерфейс с EditAddsAct, то он и запустится также в функции onFragClose() класса EditAddsAct и тогда view станет видимым
+        fragCloseInterface.onFragClose(adapter.mainArray)       //17.8.1 Так как мы передали интерфейс с EditAddsAct, то он и запустится также в функции onFragClose() класса EditAddsAct и тогда view станет видимым
         Log.d("MyLog", "Title 0 : ${adapter.mainArray[0].title}")    //18.9 Временная проверка
         Log.d("MyLog", "Title 1 : ${adapter.mainArray[1].title}")
         Log.d("MyLog", "Title 2 : ${adapter.mainArray[2].title}")

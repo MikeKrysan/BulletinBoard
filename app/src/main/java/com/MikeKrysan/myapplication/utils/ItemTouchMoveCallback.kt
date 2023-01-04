@@ -25,10 +25,12 @@ class ItemTouchMoveCallback(val adapter:ItemTouchAdapter) : ItemTouchHelper.Call
 
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {   //19.8. Безопасный запуск функции. Ноль не прийдет
         viewHolder.itemView.alpha = 1.0f    //Раз ноль не прийдет, значит можно убрать вопросительные знаки
+        adapter.onClear()   //20.13.3
         super.clearView(recyclerView, viewHolder)
     }
 
     interface ItemTouchAdapter {    //19.4
         fun onMove(startPos:Int, targetPos:Int)
+        fun onClear()   //20.13 Передавать в функцию ничего не будем, мы просто хотим, чтобы у нас обновлялся адаптер
     }
 }

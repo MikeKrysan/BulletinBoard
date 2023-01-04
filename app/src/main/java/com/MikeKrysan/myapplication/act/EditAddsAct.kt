@@ -9,10 +9,12 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.MikeKrysan.myapplication.R
+import com.MikeKrysan.myapplication.adapters.ImageAdapter
 import com.MikeKrysan.myapplication.databinding.ActivityEditAddsBinding
 import com.MikeKrysan.myapplication.dialogs.DialogSpinnerHelper
 import com.MikeKrysan.myapplication.frag.FragmentCloseInterface
 import com.MikeKrysan.myapplication.frag.ImageListFrag
+import com.MikeKrysan.myapplication.frag.SelectImageItem
 import com.MikeKrysan.myapplication.utils.CityHelper
 import com.MikeKrysan.myapplication.utils.ImagePicker
 import com.fxn.pix.Pix
@@ -22,6 +24,7 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
     lateinit var rootElementForEditAddsAct:ActivityEditAddsBinding  //14.9 делаем rootElement public
     private val dialog = DialogSpinnerHelper() //14.2 Создаем диалог на уровне класса
     private var isImagesPermissionGranted = false   //16.3.1
+    private lateinit var imageAdapter : ImageAdapter    //20.6 Создали переменную на уровне класса для того чтобы она была доступна для любой функции. Адаптер мы будем обновлять, поэтому доступ к адаптеру нам нужен любой функции
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +45,8 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
     }
 
     private fun init() {    //14.1
-
+        imageAdapter = ImageAdapter()   //20.7.1 Инициализируем imageAdapter
+        rootElementForEditAddsAct.vpImages.adapter = imageAdapter   //20.7
     }
 
     @SuppressLint("SuspiciousIndentation")
@@ -113,8 +117,9 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
         ImagePicker.getImages(this, 3)  //18.11 Чтобы запустилась проверка, поставим код временно из функции onRequestPermissionsResult()
     }
 
-    override fun onFragClose() {
+    override fun onFragClose(list : ArrayList<SelectImageItem>) {    //20.10.4
         rootElementForEditAddsAct.scrollViewMain.visibility = View.VISIBLE  //17.7.1Интерфейс нужно передать через фрагмент в контсруктор. Когда создаестя фрагмент, внутрь его передадим этот интерфейс, поэтому если там мы запускаем наш интерфейс, то он и здесь запуститься
+        imageAdapter.update(list)   //20.11
     }
 
 
