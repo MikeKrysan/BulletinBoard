@@ -3,11 +3,10 @@ package com.MikeKrysan.myapplication.act
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.MikeKrysan.myapplication.R
 import com.MikeKrysan.myapplication.adapters.ImageAdapter
 import com.MikeKrysan.myapplication.databinding.ActivityEditAddsBinding
@@ -21,6 +20,7 @@ import com.fxn.pix.Pix
 import com.fxn.utility.PermUtil
 
 class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
+    private var chooseImageFrag : ImageListFrag? = null     //21.8 *
     lateinit var rootElementForEditAddsAct:ActivityEditAddsBinding  //14.9 делаем rootElement public
     private val dialog = DialogSpinnerHelper() //14.2 Создаем диалог на уровне класса
     private var isImagesPermissionGranted = false   //16.3.1
@@ -52,19 +52,41 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
     @SuppressLint("SuspiciousIndentation")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {   //16.8
         super.onActivityResult(requestCode, resultCode, data)
-        if(resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_IMAGES) {
-            if(data != null) {
+
+        if (resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_IMAGES) {
+
+            if (data != null) {
 //                val returnValue: ArrayList<String> = data.getStringArrayListExtra(Pix.IMAGE_RESULTS) as ArrayList<String>   //1-й вариант. Автоматически переделанный студией код из java в kotlin
-                val returnValues = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)   //2-й вариант. Здесь котлин сам определяет что за тип данных мы получаем
+
+                val returnValues =
+                    data.getStringArrayListExtra(Pix.IMAGE_RESULTS)   //2-й вариант. Здесь котлин сам определяет что за тип данных мы получаем
 //                    Log.d("MyLog", "Image: ${returnValues?.get(0)}")      //16.9
 //                    Log.d("MyLog", "Image: ${returnValues?.get(1)}")
 //                    Log.d("MyLog", "Image: ${returnValues?.get(2)}")
-                    if(returnValues?.size!! > 1) {                                                      //18.10 Start
-                        rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE
-                        val fm = supportFragmentManager.beginTransaction()
-                        fm.replace(R.id.place_holder, ImageListFrag(this, returnValues))
-                        fm.commit()                                                                     //18.10 End
-                    }
+//                    if(returnValues?.size!! > 1) {                                                      //18.10 Start
+//                        rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE
+//                        val fm = supportFragmentManager.beginTransaction()
+//                        fm.replace(R.id.place_holder, ImageListFrag(this, returnValues))
+//                        fm.commit()                                                                     //18.10 End
+//                    }
+                if (returnValues?.size!! > 1 && chooseImageFrag == null) {                                  //21.8.1
+
+                    chooseImageFrag = ImageListFrag(
+                        this,
+                        returnValues
+                    ) //21.8.2 Создаем наш фрагмент, записываем ссылку в chooseImageFrag
+                    rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE
+                    val fm = supportFragmentManager.beginTransaction()
+                    fm.replace(
+                        R.id.place_holder,
+                        chooseImageFrag!!
+                    )   //21.8.2 Теперь передаем ссылку фрагмента взяв ответственность на себя, что там не null
+                    fm.commit()
+
+                } else if (chooseImageFrag != null) { //21.8.1 Если аноноимный класс не равен null, то мы выбираем картинки из фрагмента, логично нам не нужно его еще раз создавать, нужно взять и обновить адаптер.
+
+                    chooseImageFrag?.updateAdapter(returnValues)//21.10
+                }
             }
         }
     }
@@ -120,7 +142,12 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
     override fun onFragClose(list : ArrayList<SelectImageItem>) {    //20.10.4
         rootElementForEditAddsAct.scrollViewMain.visibility = View.VISIBLE  //17.7.1Интерфейс нужно передать через фрагмент в контсруктор. Когда создаестя фрагмент, внутрь его передадим этот интерфейс, поэтому если там мы запускаем наш интерфейс, то он и здесь запуститься
         imageAdapter.update(list)   //20.11
+        chooseImageFrag = null  //21.11
     }
 
 
 }
+
+//* Делаем возможным быть анонимному классу null. Если он null, мы еще не создали фрагмент, и тогда можно смело запускать условие if(returnValues?.size!! > 1)
+// функции onActivityResult и создавать новый фрагмент. Но если он не null, значит он уже был создан. Это значит, что если функция onActivityResult запустилась,
+// тобишь мы ее запустили из этого фрагмента

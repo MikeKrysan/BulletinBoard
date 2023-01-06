@@ -9,6 +9,7 @@ import com.fxn.pix.Options
 import com.fxn.pix.Pix
 
 object ImagePicker {    //16.1
+    const val MAX_IMAGE_COUNT = 3   //21.7.1
     const val REQUEST_CODE_GET_IMAGES = 999 //если константу использовать в других классах, то студия не будет подчеркивать переменную, чтобы сделать ее приватной
     fun getImages(context: AppCompatActivity, ImageCounter:Int){  //EditAddsAct наследуется от AppCompatActivity, это все равно чтобы мы передавали AppCompatActivity     //16.2    //17.9
         val options = Options.init()

@@ -55,12 +55,12 @@ class SelectImageRvAdapter: RecyclerView.Adapter<SelectImageRvAdapter.ImageHolde
         }
     }
 
-    fun updateAdapter(newList : List<SelectImageItem>) {    //18.7
-        mainArray.clear()   //18.7.1 Сперва очищаем
+//    fun updateAdapter(newList : List<SelectImageItem>) {    //18.7
+    fun updateAdapter(newList : List<SelectImageItem>, needClear : Boolean) {    //21.8.2
+    //    mainArray.clear()   //18.7.1 Сперва очищаем
+        if(needClear) mainArray.clear()
         mainArray.addAll(newList)   //18.7.2 После мы его заполняем всеми данными
         notifyDataSetChanged()  //18.7.3 Сообщаем адаптеру о том, что данные внутри изменились, чтобы он снова перезапустился
     }
-
-
 
 }
