@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.MikeKrysan.myapplication.R
-import com.MikeKrysan.myapplication.frag.SelectImageItem
 
 class ImageAdapter :  RecyclerView.Adapter<ImageAdapter.ImageHolder>(){     //20.2
 
-    val  mainArray = ArrayList<SelectImageItem>()   //20.3   //20.10
+//    val  mainArray = ArrayList<SelectImageItem>()   //20.3   //20.10
+    val  mainArray = ArrayList<String>()   //22.2
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.image_adapter_item, parent, false)
@@ -19,7 +19,8 @@ class ImageAdapter :  RecyclerView.Adapter<ImageAdapter.ImageHolder>(){     //20
     }
 
     override fun onBindViewHolder(holder: ImageHolder, position: Int) { //В данной функции мы достаем элементы из массива и заполняем viewHolder
-        holder.setData(mainArray[position].imageUri)     //20.10.1
+//        holder.setData(mainArray[position].imageUri)     //20.10.1
+        holder.setData(mainArray[position])     //22.2
     }
 
     override fun getItemCount(): Int {
@@ -35,7 +36,8 @@ class ImageAdapter :  RecyclerView.Adapter<ImageAdapter.ImageHolder>(){     //20
         }
     }
 
-    fun update(newList : ArrayList<SelectImageItem>){    //20.4 //20.10.3
+//    fun update(newList : ArrayList<SelectImageItem>){    //20.4 //20.10.3
+    fun update(newList : ArrayList<String>){   //22.2
         mainArray.clear()
         mainArray.addAll(newList)
         notifyDataSetChanged()  //20.5

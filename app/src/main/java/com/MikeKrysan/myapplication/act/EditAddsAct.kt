@@ -13,7 +13,6 @@ import com.MikeKrysan.myapplication.databinding.ActivityEditAddsBinding
 import com.MikeKrysan.myapplication.dialogs.DialogSpinnerHelper
 import com.MikeKrysan.myapplication.frag.FragmentCloseInterface
 import com.MikeKrysan.myapplication.frag.ImageListFrag
-import com.MikeKrysan.myapplication.frag.SelectImageItem
 import com.MikeKrysan.myapplication.utils.CityHelper
 import com.MikeKrysan.myapplication.utils.ImagePicker
 import com.fxn.pix.Pix
@@ -71,17 +70,19 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
 //                    }
                 if (returnValues?.size!! > 1 && chooseImageFrag == null) {                                  //21.8.1
 
-                    chooseImageFrag = ImageListFrag(
-                        this,
-                        returnValues
-                    ) //21.8.2 Создаем наш фрагмент, записываем ссылку в chooseImageFrag
-                    rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE
-                    val fm = supportFragmentManager.beginTransaction()
-                    fm.replace(
-                        R.id.place_holder,
-                        chooseImageFrag!!
-                    )   //21.8.2 Теперь передаем ссылку фрагмента взяв ответственность на себя, что там не null
-                    fm.commit()
+//                    chooseImageFrag = ImageListFrag(                                                  //22.3.1start закоментили. Код вынесли в отдельную функцию
+//                        this,
+//                        returnValues
+//                    ) //21.8.2 Создаем наш фрагмент, записываем ссылку в chooseImageFrag
+//                    rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE
+//                    val fm = supportFragmentManager.beginTransaction()
+//                    fm.replace(
+//                        R.id.place_holder,
+//                        chooseImageFrag!!
+//                    )   //21.8.2 Теперь передаем ссылку фрагмента взяв ответственность на себя, что там не null
+//                    fm.commit()                                                                           //22.3.1 end закоментили
+
+                    openChooseImageFrag(returnValues)
 
                 } else if (chooseImageFrag != null) { //21.8.1 Если аноноимный класс не равен null, то мы выбираем картинки из фрагмента, логично нам не нужно его еще раз создавать, нужно взять и обновить адаптер.
 
@@ -136,15 +137,30 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
 //        val fm = supportFragmentManager.beginTransaction()  //17.4 Пока что мы не будем проверять выбор картинок, а проверим наш фрагмент
 //        fm.replace(R.id.place_holder, ImageListFrag(this))//заменяем контейнер, который мы создали (id=placeholder) на фрагмент //17.7.2 (this) - пока что фрагмент не ждет интерфейса, потому что конструктор к нашему элементу мы не добавили
 //        fm.commit()     //чтобы все изменения применились, запускаем commit
-        ImagePicker.getImages(this, 3)  //18.11 Чтобы запустилась проверка, поставим код временно из функции onRequestPermissionsResult()
+
+        if(imageAdapter.mainArray.size == 0) {    //22.3.2   imageAdapter.mainArray - это и есть массив с выбранными картинками из окна выбора фото. Если нет фото-выбираем, а если есть-открываем фрагмент с выбранными картинками
+            ImagePicker.getImages(this, 3)
+        } else {
+            openChooseImageFrag(imageAdapter.mainArray)
+        }
+//        ImagePicker.getImages(this, 3)  //18.11 Чтобы запустилась проверка, поставим код временно из функции onRequestPermissionsResult()
     }
 
-    override fun onFragClose(list : ArrayList<SelectImageItem>) {    //20.10.4
+//    override fun onFragClose(list : ArrayList<SelectImageItem>) {    //20.10.4
+    override fun onFragClose(list : ArrayList<String>) {   //22.2
         rootElementForEditAddsAct.scrollViewMain.visibility = View.VISIBLE  //17.7.1Интерфейс нужно передать через фрагмент в контсруктор. Когда создаестя фрагмент, внутрь его передадим этот интерфейс, поэтому если там мы запускаем наш интерфейс, то он и здесь запуститься
         imageAdapter.update(list)   //20.11
         chooseImageFrag = null  //21.11
     }
 
+
+    private fun openChooseImageFrag(newList : ArrayList<String> ) { //22.3.1 Передавать в функцию я буду  список с картинками, который будет в моем фрагменте
+        chooseImageFrag = ImageListFrag(this, newList)  //
+        rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE
+        val fm = supportFragmentManager.beginTransaction()
+        fm.replace(R.id.place_holder, chooseImageFrag!!)
+        fm.commit()
+    }
 
 }
 

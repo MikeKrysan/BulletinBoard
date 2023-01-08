@@ -48,14 +48,14 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //        rcView.adapter = adapter //18.9.3
         rootElement.rcViewSelectImage.layoutManager = LinearLayoutManager(activity)    //21.2.4
         rootElement.rcViewSelectImage.adapter = adapter //21.2.4
-        val updateList = ArrayList<SelectImageItem>()    //Создаем массив с типом данных, который нам будет нужен для заполнения массива
-        for(n in 0 until newList.size) {    //18.9.4
+//        val updateList = ArrayList<SelectImageItem>()    //Создаем массив с типом данных, который нам будет нужен для заполнения массива    //22.1.1 Оптимазация кода
+       // for(n in 0 until newList.size) {    //18.9.4    //22.1.1
 //            updateList.add(SelectImageItem(n.toString(), newList[n]))   //1 вариант
 //            val selectImageItem = SelectImageItem("0", "0")    //2 вариант перезаписи данных в дата-классе
 //            selectImageItem.copy(title="890")
-            updateList.add(SelectImageItem(n.toString(), newList[n]))   //заполняем updateList, когда он заканчивается, мы передаем в адаптер уже заполненный список
-        }
-        adapter.updateAdapter(updateList, true)     //18.9.5    //21.8.3
+//            updateList.add(SelectImageItem(n.toString(), newList[n]))   //заполняем updateList, когда он заканчивается, мы передаем в адаптер уже заполненный список
+//        }
+        adapter.updateAdapter(newList, true)     //18.9.5    //21.8.3  //22.1.2
 //        bBack.setOnClickListener{
 //            activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()    //17.6.1
 //        }
@@ -96,11 +96,12 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
     }
 
     fun updateAdapter(newList:ArrayList<String>) {  //21.8.2
-        val updateList = ArrayList<SelectImageItem>()
-//        for(n in adapter.mainArray.size until newList.size ) {    //Если во фрагменте мы выбрали уже к примеру 2 картинки(adapter.mainArray.size = 2) и хотим добавить еще одну картинку (newList.size) - цикл не запустится так как не будут выполнены условия 2<=1, поэтому меняем условия работы цикла:
-        for(n in adapter.mainArray.size until newList.size + adapter.mainArray.size) {    //21.9 у нас может быть не нулявая позиция. Нам нужно начинать с позиции нашего массива.
-            updateList.add(SelectImageItem(n.toString(), newList[n - adapter.mainArray.size]))
-        }
-        adapter.updateAdapter(updateList, false)    //Указываем false. Список не очистится, просто добавятся к тем картинкам что уже есть новые
-    }
+//        val updateList = ArrayList<SelectImageItem>()     //22.1.1
+////        for(n in adapter.mainArray.size until newList.size ) {    //Если во фрагменте мы выбрали уже к примеру 2 картинки(adapter.mainArray.size = 2) и хотим добавить еще одну картинку (newList.size) - цикл не запустится так как не будут выполнены условия 2<=1, поэтому меняем условия работы цикла:
+//        for(n in adapter.mainArray.size until newList.size + adapter.mainArray.size) {    //21.9 у нас может быть не нулявая позиция. Нам нужно начинать с позиции нашего массива.    //22.1.1
+//            updateList.add(SelectImageItem(n.toString(), newList[n - adapter.mainArray.size]))    //22.1.1
+//        }
+//        adapter.updateAdapter(updateList, false)    //Указываем false. Список не очистится, просто добавятся к тем картинкам что уже есть новые
+        adapter.updateAdapter(newList, false)   //22.1.1
+     }
 }
