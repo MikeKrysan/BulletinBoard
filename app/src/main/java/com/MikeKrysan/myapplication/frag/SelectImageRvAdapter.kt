@@ -5,10 +5,13 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.MikeKrysan.myapplication.R
+import com.MikeKrysan.myapplication.act.EditAddsAct
+import com.MikeKrysan.myapplication.utils.ImagePicker
 import com.MikeKrysan.myapplication.utils.ItemTouchMoveCallback
 
 class SelectImageRvAdapter: RecyclerView.Adapter<SelectImageRvAdapter.ImageHolder>(), ItemTouchMoveCallback.ItemTouchAdapter {  //18.1  //19.5
@@ -50,11 +53,18 @@ class SelectImageRvAdapter: RecyclerView.Adapter<SelectImageRvAdapter.ImageHolde
     class ImageHolder(itemView: View, val context : Context) : RecyclerView.ViewHolder(itemView) { //22.2
         lateinit var tvTitle : TextView
         lateinit var image : ImageView
+        lateinit var imEditImage : ImageButton  //23.3 Находим созданную кнопуку в select_image_frag_item.xml
 //        fun setData(item: SelectImageItem) {    //18.3
 
         fun setData(item: String) {    //22.1.2
             tvTitle = itemView.findViewById(R.id.tvTitle)   //18.5 Инициализируем переменные
             image = itemView.findViewById(R.id.imageContent)
+            imEditImage = itemView.findViewById(R.id.imEditImage)   //23.3
+            //23.3 Добавляем слушателя нажатий:
+            imEditImage.setOnClickListener {
+                 ImagePicker.getImages(context as EditAddsAct, 1, ImagePicker.REQUEST_CODE_GET_SINGLEIMAGE)   //23.5.1 Передаем контекст, который у нас есть. Как будто я передал мое активити
+                context.editImagePos = adapterPosition  //23.5.2 Я нажал на кнопку, и контекст получит номер позиции, на который я нажал. И теперь будет перезаписываться запись в переменной editImagePos EditAddsAct
+            }
 //            tvTitle.text = item.title   //18.5.1 вот так работает Data класс
             tvTitle.text = context.resources.getStringArray(R.array.title_array) [adapterPosition]  //22.1.2 закоментировал
             image.setImageURI(Uri.parse(item))

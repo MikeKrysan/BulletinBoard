@@ -24,6 +24,7 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
     private val dialog = DialogSpinnerHelper() //14.2 Создаем диалог на уровне класса
     private var isImagesPermissionGranted = false   //16.3.1
     private lateinit var imageAdapter : ImageAdapter    //20.6 Создали переменную на уровне класса для того чтобы она была доступна для любой функции. Адаптер мы будем обновлять, поэтому доступ к адаптеру нам нужен любой функции
+    var editImagePos = 0  //23.4
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,8 +58,7 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
             if (data != null) {
 //                val returnValue: ArrayList<String> = data.getStringArrayListExtra(Pix.IMAGE_RESULTS) as ArrayList<String>   //1-й вариант. Автоматически переделанный студией код из java в kotlin
 
-                val returnValues =
-                    data.getStringArrayListExtra(Pix.IMAGE_RESULTS)   //2-й вариант. Здесь котлин сам определяет что за тип данных мы получаем
+                val returnValues = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)   //2-й вариант. Здесь котлин сам определяет что за тип данных мы получаем
 //                    Log.d("MyLog", "Image: ${returnValues?.get(0)}")      //16.9
 //                    Log.d("MyLog", "Image: ${returnValues?.get(1)}")
 //                    Log.d("MyLog", "Image: ${returnValues?.get(2)}")
@@ -89,6 +89,11 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
                     chooseImageFrag?.updateAdapter(returnValues)//21.10
                 }
             }
+        } else if(resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_SINGLEIMAGE) {   //23.6
+            if(data != null) {
+                val uris = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)
+                chooseImageFrag?.setSingleImage(uris?.get(0)!!,editImagePos)    //Обновляем позицию из нашего адаптера. Говорю котлин, что там точно не null
+            }
         }
     }
 
@@ -98,7 +103,7 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
             PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS -> {
                 //If request is cancelled, the result arrays are empty.
                 if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    ImagePicker.getImages(this, 3)  //17.9.2 * imageCounter
+                    ImagePicker.getImages(this, 3, ImagePicker.REQUEST_CODE_GET_IMAGES)  //17.9.2 * imageCounter    //23.2.2
 //                      isImagesPermissionGranted = true
                 } else {
 //                    isImagesPermissionGranted = false
@@ -139,7 +144,7 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
 //        fm.commit()     //чтобы все изменения применились, запускаем commit
 
         if(imageAdapter.mainArray.size == 0) {    //22.3.2   imageAdapter.mainArray - это и есть массив с выбранными картинками из окна выбора фото. Если нет фото-выбираем, а если есть-открываем фрагмент с выбранными картинками
-            ImagePicker.getImages(this, 3)
+            ImagePicker.getImages(this, 3, ImagePicker.REQUEST_CODE_GET_IMAGES)     //23.2.2
         } else {
             openChooseImageFrag(imageAdapter.mainArray)
         }

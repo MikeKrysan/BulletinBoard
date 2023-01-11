@@ -89,7 +89,7 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
         //22.4.1:
         addImageItem.setOnMenuItemClickListener {
             val imageCount = ImagePicker.MAX_IMAGE_COUNT - adapter.mainArray.size   //21.7.2
-            ImagePicker.getImages(activity as AppCompatActivity, imageCount)  //21.7 Ожидает AppCompatActivity а приходит FragmentActivity, делаем даункаст
+            ImagePicker.getImages(activity as AppCompatActivity, imageCount, ImagePicker.REQUEST_CODE_GET_IMAGES)  //21.7 Ожидает AppCompatActivity а приходит FragmentActivity, делаем даункаст    //23.2.2
 //            Log.d("MyLog", "Add item")
             true
         }
@@ -104,4 +104,9 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //        adapter.updateAdapter(updateList, false)    //Указываем false. Список не очистится, просто добавятся к тем картинкам что уже есть новые
         adapter.updateAdapter(newList, false)   //22.1.1
      }
+
+    fun setSingleImage(uri : String, pos : Int) {   //23.7.1
+        adapter.mainArray[pos] = uri    //На ту позицию, где я нажал, вставляю ссылку. Адаптер мне выдал позицию, на которую я нажал. Я получил картинку и перезаписал ее на этом месте
+        adapter.notifyDataSetChanged()  //Говорим адаптеру, что данные обновились
+    }
 }
