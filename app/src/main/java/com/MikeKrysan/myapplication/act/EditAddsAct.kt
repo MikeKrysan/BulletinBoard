@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +15,7 @@ import com.MikeKrysan.myapplication.dialogs.DialogSpinnerHelper
 import com.MikeKrysan.myapplication.frag.FragmentCloseInterface
 import com.MikeKrysan.myapplication.frag.ImageListFrag
 import com.MikeKrysan.myapplication.utils.CityHelper
+import com.MikeKrysan.myapplication.utils.ImageManager
 import com.MikeKrysan.myapplication.utils.ImagePicker
 import com.fxn.pix.Pix
 import com.fxn.utility.PermUtil
@@ -86,7 +88,10 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
 
                 } else if (returnValues.size == 1 && chooseImageFrag == null) { //24.4
 
-                    imageAdapter.update(returnValues)
+                    imageAdapter.update(returnValues) //25.3
+                    val tempList = ImageManager.getImageSize(returnValues[0])
+//                    Log.d("MyLog", "Image width : ${tempList[0]}")
+//                    Log.d("MyLog", "Image height : ${tempList[1]}")
 
                 } else if (chooseImageFrag != null) { //21.8.1 Если аноноимный класс не равен null, то мы выбираем картинки из фрагмента, логично нам не нужно его еще раз создавать, нужно взять и обновить адаптер.
 

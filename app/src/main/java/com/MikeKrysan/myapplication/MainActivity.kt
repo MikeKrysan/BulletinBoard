@@ -508,8 +508,14 @@ import com.google.firebase.auth.FirebaseUser
  *          добавить картинки, удалить все, удалить эту либо изменить эту
  *     24.5 Чиним проблему неизмененных надписей картинок при удалении других. SelectImageRvAdapter->ImageHolder->setData(). Чтобы сохранить анимацию при удалении фото,
  *
+ *   Урок25. Создаем ImageManager
+ *     25.1 Создаем класс(Object - все методы без инициализации) для проверки размеров картинок. utils->ImageManager
+ *     25.2 Создаем функцию getImageSize , которая будет выдавать размер
+ *     25.3 Заблокируем проверку выбора одной картинки в onActivityResult() класса EditAddsAct чтобы когда передаем картинку большего размера, нам AS не выдало ошибку
+ *     25.4 Создадим функцию для замера высоты и ширины картинки в зависимости от ориентации смартфона в object ImageManager
+ *     25.5 Прежде чем в функции getImageSize() делать проверку фото на ширину и высоту, делаем проверку ориентации, вызвав функцию imageRotation()
  *
-*/
+ */
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
