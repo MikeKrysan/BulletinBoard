@@ -89,7 +89,7 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
                 } else if (returnValues.size == 1 && chooseImageFrag == null) { //24.4
 
                     imageAdapter.update(returnValues) //25.3
-                    val tempList = ImageManager.getImageSize(returnValues[0])
+//                    val tempList = ImageManager.getImageSize(returnValues[0])
 //                    Log.d("MyLog", "Image width : ${tempList[0]}")
 //                    Log.d("MyLog", "Image height : ${tempList[1]}")
 

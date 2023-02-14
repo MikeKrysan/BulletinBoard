@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.MikeKrysan.myapplication.R
 import com.MikeKrysan.myapplication.databinding.ListImageFragBinding
+import com.MikeKrysan.myapplication.utils.ImageManager
 import com.MikeKrysan.myapplication.utils.ImagePicker
 import com.MikeKrysan.myapplication.utils.ItemTouchMoveCallback
 
@@ -55,7 +56,8 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //            selectImageItem.copy(title="890")
 //            updateList.add(SelectImageItem(n.toString(), newList[n]))   //заполняем updateList, когда он заканчивается, мы передаем в адаптер уже заполненный список
 //        }
-        adapter.updateAdapter(newList, true)     //18.9.5    //21.8.3  //22.1.2
+        ImageManager.imageResize(newList)
+       // adapter.updateAdapter(newList, true)     //18.9.5    //21.8.3  //22.1.2     //26.2Пока что не будем передавать в адаптер
 //        bBack.setOnClickListener{
 //            activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()    //17.6.1
 //        }
