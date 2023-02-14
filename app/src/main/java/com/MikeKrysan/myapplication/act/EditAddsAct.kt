@@ -84,6 +84,10 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
 
                     openChooseImageFrag(returnValues)
 
+                } else if (returnValues.size == 1 && chooseImageFrag == null) { //24.4
+
+                    imageAdapter.update(returnValues)
+
                 } else if (chooseImageFrag != null) { //21.8.1 Если аноноимный класс не равен null, то мы выбираем картинки из фрагмента, логично нам не нужно его еще раз создавать, нужно взять и обновить адаптер.
 
                     chooseImageFrag?.updateAdapter(returnValues)//21.10
