@@ -3,6 +3,9 @@ package com.MikeKrysan.myapplication.utils
 import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.exifinterface.media.ExifInterface
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 import java.io.File
 
@@ -38,11 +41,11 @@ object ImageManager {
         return rotation
     }
 
-    fun imageResize(uris : List<String>) {  //26.2
+    suspend fun imageResize(uris : List<String>): String = withContext(Dispatchers.IO) {  //26.2  //27.3    //27.7
         val tempList = ArrayList<List<Int>>()
         for(n in uris.indices) {
             val size = getImageSize(uris[n])
-            Log.d("MyLog", "Width : ${size[WIDTH]} Height ${size[HEIGHT]}") //26.3
+//            Log.d("MyLog", "Width : ${size[WIDTH]} Height ${size[HEIGHT]}") //26.3
 
             val imageRatio = size[WIDTH].toFloat() / size[HEIGHT].toFloat()  //теперь мы знаем пропорцию нашей картинки
 
@@ -61,11 +64,11 @@ object ImageManager {
                     tempList.add(listOf(size[WIDTH], size[HEIGHT]))
                 }
             }
-
-
-            Log.d("MyLog", "Width : ${tempList[n][WIDTH]} Height ${tempList[n][HEIGHT]}")   //26.3
+//            Log.d("MyLog", "Width : ${tempList[n][WIDTH]} Height ${tempList[n][HEIGHT]}")   //26.3
         }
 
+        delay(10000)
+        return@withContext "Done"   //27.7
 
     }
 }

@@ -16,6 +16,10 @@ import com.MikeKrysan.myapplication.databinding.ListImageFragBinding
 import com.MikeKrysan.myapplication.utils.ImageManager
 import com.MikeKrysan.myapplication.utils.ImagePicker
 import com.MikeKrysan.myapplication.utils.ItemTouchMoveCallback
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, private val newList:ArrayList<String>): Fragment() { //17.2    //17.7.3 Добавляем конструктор нашему классу, который выводит фрагмент. Чтобы то, что мы будем передавть в этот конструктор было доступно на уровне всего класса нашего фрагмента, нужно указать val либо var //18.8 - newList:ArrayList
 
@@ -24,6 +28,7 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
     val adapter = SelectImageRvAdapter() //18.9.1
     val draggCallback = ItemTouchMoveCallback(adapter) //19.3.2
     val touchHelper = ItemTouchHelper(draggCallback)     //19.2.1 Классу ItemTouchHelper() нужно передать калбек (ItemTouchHelperCallback). У нас его нет, поэтому нужно создать этот класс, создать интсанцию этого класса, и передать ее в класс ItemTouchHelper()
+    private lateinit var job: Job  //27.5
 
     //17.2.1 Создаем основые и обязательные функции для фрагмента:
     override fun onCreateView(  //В этой функции начинается отрисовка нашего фрагмента
@@ -56,7 +61,11 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //            selectImageItem.copy(title="890")
 //            updateList.add(SelectImageItem(n.toString(), newList[n]))   //заполняем updateList, когда он заканчивается, мы передаем в адаптер уже заполненный список
 //        }
-        ImageManager.imageResize(newList)
+        //27.4: я пишу здесь основной поток, потому что я хочу, чтобы после того, как эта функция закончится, после ее все запустилось на основном потоке   //27.5:
+        job = CoroutineScope(Dispatchers.Main).launch{
+            val text = ImageManager.imageResize(newList)
+            Log.d("MyLog", "Result: $text")    //27.7
+        }
        // adapter.updateAdapter(newList, true)     //18.9.5    //21.8.3  //22.1.2     //26.2Пока что не будем передавать в адаптер
 //        bBack.setOnClickListener{
 //            activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()    //17.6.1
@@ -66,6 +75,7 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
     override fun onDetach() {   //17.8
         super.onDetach()
         fragCloseInterface.onFragClose(adapter.mainArray)       //17.8.1 Так как мы передали интерфейс с EditAddsAct, то он и запустится также в функции onFragClose() класса EditAddsAct и тогда view станет видимым
+        job.cancel()    //27.6 Все операции, которые происходили в CoroutineScope - завершились
 //        Log.d("MyLog", "Title 0 : ${adapter.mainArray[0].title}")    //18.9 Временная проверка
 //        Log.d("MyLog", "Title 1 : ${adapter.mainArray[1].title}")
 //        Log.d("MyLog", "Title 2 : ${adapter.mainArray[2].title}")
