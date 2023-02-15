@@ -21,11 +21,11 @@ import com.fxn.pix.Pix
 import com.fxn.utility.PermUtil
 
 class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
-    private var chooseImageFrag : ImageListFrag? = null     //21.8 *
+    var chooseImageFrag : ImageListFrag? = null     //21.8 *
     lateinit var rootElementForEditAddsAct:ActivityEditAddsBinding  //14.9 делаем rootElement public
     private val dialog = DialogSpinnerHelper() //14.2 Создаем диалог на уровне класса
     private var isImagesPermissionGranted = false   //16.3.1
-    private lateinit var imageAdapter : ImageAdapter    //20.6 Создали переменную на уровне класса для того чтобы она была доступна для любой функции. Адаптер мы будем обновлять, поэтому доступ к адаптеру нам нужен любой функции
+    lateinit var imageAdapter : ImageAdapter    //20.6 Создали переменную на уровне класса для того чтобы она была доступна для любой функции. Адаптер мы будем обновлять, поэтому доступ к адаптеру нам нужен любой функции
     var editImagePos = 0  //23.4
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,56 +54,57 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {   //16.8
         super.onActivityResult(requestCode, resultCode, data)
+        ImagePicker.showSelectedImages(resultCode, requestCode, data, this)
 
-        if (resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_IMAGES) {
-
-            if (data != null) {
-//                val returnValue: ArrayList<String> = data.getStringArrayListExtra(Pix.IMAGE_RESULTS) as ArrayList<String>   //1-й вариант. Автоматически переделанный студией код из java в kotlin
-
-                val returnValues = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)   //2-й вариант. Здесь котлин сам определяет что за тип данных мы получаем
-//                    Log.d("MyLog", "Image: ${returnValues?.get(0)}")      //16.9
-//                    Log.d("MyLog", "Image: ${returnValues?.get(1)}")
-//                    Log.d("MyLog", "Image: ${returnValues?.get(2)}")
-//                    if(returnValues?.size!! > 1) {                                                      //18.10 Start
-//                        rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE
-//                        val fm = supportFragmentManager.beginTransaction()
-//                        fm.replace(R.id.place_holder, ImageListFrag(this, returnValues))
-//                        fm.commit()                                                                     //18.10 End
-//                    }
-                if (returnValues?.size!! > 1 && chooseImageFrag == null) {                                  //21.8.1
-
-//                    chooseImageFrag = ImageListFrag(                                                  //22.3.1start закоментили. Код вынесли в отдельную функцию
-//                        this,
-//                        returnValues
-//                    ) //21.8.2 Создаем наш фрагмент, записываем ссылку в chooseImageFrag
-//                    rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE
-//                    val fm = supportFragmentManager.beginTransaction()
-//                    fm.replace(
-//                        R.id.place_holder,
-//                        chooseImageFrag!!
-//                    )   //21.8.2 Теперь передаем ссылку фрагмента взяв ответственность на себя, что там не null
-//                    fm.commit()                                                                           //22.3.1 end закоментили
-
-                    openChooseImageFrag(returnValues)
-
-                } else if (returnValues.size == 1 && chooseImageFrag == null) { //24.4
-
-//                    imageAdapter.update(returnValues) //25.3
-                    val tempList = ImageManager.getImageSize(returnValues[0])
-//                    Log.d("MyLog", "Image width : ${tempList[0]}")
-//                    Log.d("MyLog", "Image height : ${tempList[1]}")
-
-                } else if (chooseImageFrag != null) { //21.8.1 Если аноноимный класс не равен null, то мы выбираем картинки из фрагмента, логично нам не нужно его еще раз создавать, нужно взять и обновить адаптер.
-
-                    chooseImageFrag?.updateAdapter(returnValues)//21.10
-                }
-            }
-        } else if(resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_SINGLEIMAGE) {   //23.6
-            if(data != null) {
-                val uris = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)
-                chooseImageFrag?.setSingleImage(uris?.get(0)!!,editImagePos)    //Обновляем позицию из нашего адаптера. Говорю котлин, что там точно не null
-            }
-        }
+//        if (resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_IMAGES) {
+//
+//            if (data != null) {
+////                val returnValue: ArrayList<String> = data.getStringArrayListExtra(Pix.IMAGE_RESULTS) as ArrayList<String>   //1-й вариант. Автоматически переделанный студией код из java в kotlin
+//
+//                val returnValues = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)   //2-й вариант. Здесь котлин сам определяет что за тип данных мы получаем
+////                    Log.d("MyLog", "Image: ${returnValues?.get(0)}")      //16.9
+////                    Log.d("MyLog", "Image: ${returnValues?.get(1)}")
+////                    Log.d("MyLog", "Image: ${returnValues?.get(2)}")
+////                    if(returnValues?.size!! > 1) {                                                      //18.10 Start
+////                        rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE
+////                        val fm = supportFragmentManager.beginTransaction()
+////                        fm.replace(R.id.place_holder, ImageListFrag(this, returnValues))
+////                        fm.commit()                                                                     //18.10 End
+////                    }
+//                if (returnValues?.size!! > 1 && chooseImageFrag == null) {                                  //21.8.1
+//
+////                    chooseImageFrag = ImageListFrag(                                                  //22.3.1start закоментили. Код вынесли в отдельную функцию
+////                        this,
+////                        returnValues
+////                    ) //21.8.2 Создаем наш фрагмент, записываем ссылку в chooseImageFrag
+////                    rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE
+////                    val fm = supportFragmentManager.beginTransaction()
+////                    fm.replace(
+////                        R.id.place_holder,
+////                        chooseImageFrag!!
+////                    )   //21.8.2 Теперь передаем ссылку фрагмента взяв ответственность на себя, что там не null
+////                    fm.commit()                                                                           //22.3.1 end закоментили
+//
+//                    openChooseImageFrag(returnValues)
+//
+//                } else if (returnValues.size == 1 && chooseImageFrag == null) { //24.4
+//
+////                    imageAdapter.update(returnValues) //25.3
+//                    val tempList = ImageManager.getImageSize(returnValues[0])
+////                    Log.d("MyLog", "Image width : ${tempList[0]}")
+////                    Log.d("MyLog", "Image height : ${tempList[1]}")
+//
+//                } else if (chooseImageFrag != null) { //21.8.1 Если аноноимный класс не равен null, то мы выбираем картинки из фрагмента, логично нам не нужно его еще раз создавать, нужно взять и обновить адаптер.
+//
+//                    chooseImageFrag?.updateAdapter(returnValues)//21.10
+//                }
+//            }
+//        } else if(resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_SINGLEIMAGE) {   //23.6
+//            if(data != null) {
+//                val uris = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)
+//                chooseImageFrag?.setSingleImage(uris?.get(0)!!,editImagePos)    //Обновляем позицию из нашего адаптера. Говорю котлин, что там точно не null
+//            }
+//        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -170,7 +171,7 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
     }
 
 
-    private fun openChooseImageFrag(newList : ArrayList<String>? ) { //22.3.1 Передавать в функцию я буду  список с картинками, который будет в моем фрагменте
+    fun openChooseImageFrag(newList : ArrayList<String>? ) { //22.3.1 Передавать в функцию я буду  список с картинками, который будет в моем фрагменте
         chooseImageFrag = ImageListFrag(this, newList)  //
         rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE
         val fm = supportFragmentManager.beginTransaction()
