@@ -537,6 +537,17 @@ import com.google.firebase.auth.FirebaseUser
  *      и после получать результат
  *      27.7 После завершения метода imageResize класса ImageManager выдадим сообщение "Done", вызвав в методе onViewCreated() класса ImageListFrag
  *
+ *      Урок28. Уменьшаем размер фото до выбранного размера, создаем Bitmap массив и показываем все выбранные фото в RecyclerView и в ViewPager. Теперь у нас не будет ошибки при выборе фото огромного размера.
+ *          Когда мы выбрали картинки и они добавились сса во ViewPager, при нажатии на карандаш запустится функция onClickGetImages() класса DditAddsAct. В этот раз уже запустится openChooseImageFrag(null) - мы передадим null, это означает, что
+ *          ссылок у нас нет и сами обновим chooseImageFrag?.updateAdapterFromEdit(imageAdapter.mainArray) и передадим bitmap которые находятся в нашем ViewPager. Раньше у нас были ссылки, и не нужно было всего этого делать, а теперь
+ *          идут и ссылки и bitmap вперемешку
+ *
+ *     Урок29. Добавляем ProgressBar для индикации ожидания сжатия картинок. Как только картинки будут сжаты и готовы к показу в RecyclerView прячем ProgressBar.
+ *
+ *
+ *
+ *
+ *
  *
  */
 

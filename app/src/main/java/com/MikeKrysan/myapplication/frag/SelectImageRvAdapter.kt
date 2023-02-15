@@ -1,6 +1,7 @@
 package com.MikeKrysan.myapplication.frag
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +18,7 @@ import com.MikeKrysan.myapplication.utils.ItemTouchMoveCallback
 class SelectImageRvAdapter: RecyclerView.Adapter<SelectImageRvAdapter.ImageHolder>(), ItemTouchMoveCallback.ItemTouchAdapter {  //18.1  //19.5
 
 //    val mainArray = ArrayList<SelectImageItem>()      //18.6.1 Создали массив. Пока что он пустой, его нужно будет передать в getItemCount(), потому что отсюда и будет браться размер, который нужно будет адаптеру заполнить в recyclerView   //<SelectImageItem> - массив будет хранить item - SelectImageItem, который содержит два элемента    //19.9.1 Даем доступ к адаптеру, убрав private
-    val mainArray = ArrayList<String>()    //22.1.2
+    val mainArray = ArrayList<Bitmap>()    //22.1.2
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.select_image_frag_item, parent, false)
@@ -57,7 +58,7 @@ class SelectImageRvAdapter: RecyclerView.Adapter<SelectImageRvAdapter.ImageHolde
         lateinit var imDeleteImage : ImageButton    //24.2
 //        fun setData(item: SelectImageItem) {    //18.3
 
-        fun setData(item: String) {    //22.1.2
+        fun setData(bitMap: Bitmap) {    //22.1.2
             tvTitle = itemView.findViewById(R.id.tvTitle)   //18.5 Инициализируем переменные
             image = itemView.findViewById(R.id.imageContent)
             imEditImage = itemView.findViewById(R.id.imEditImage)   //23.3
@@ -77,13 +78,13 @@ class SelectImageRvAdapter: RecyclerView.Adapter<SelectImageRvAdapter.ImageHolde
             }
 //            tvTitle.text = item.title   //18.5.1 вот так работает Data класс
             tvTitle.text = context.resources.getStringArray(R.array.title_array) [adapterPosition]  //22.1.2 закоментировал
-            image.setImageURI(Uri.parse(item))
+            image.setImageBitmap(bitMap)
         }
     }
 
 //    fun updateAdapter(newList : List<SelectImageItem>) {    //18.7
 //    fun updateAdapter(newList : List<SelectImageItem>, needClear : Boolean) {    //21.8.2
-    fun updateAdapter(newList : List<String>, needClear : Boolean) {    //22.1.2
+    fun updateAdapter(newList : List<Bitmap>, needClear : Boolean) {    //22.1.2
         //    mainArray.clear()   //18.7.1 Сперва очищаем
         if(needClear) mainArray.clear()
         mainArray.addAll(newList)   //18.7.2 После мы его заполняем всеми данными

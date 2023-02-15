@@ -1,5 +1,6 @@
 package com.MikeKrysan.myapplication.frag
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,14 +22,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, private val newList:ArrayList<String>): Fragment() { //17.2    //17.7.3 Добавляем конструктор нашему классу, который выводит фрагмент. Чтобы то, что мы будем передавть в этот конструктор было доступно на уровне всего класса нашего фрагмента, нужно указать val либо var //18.8 - newList:ArrayList
+class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, private val newList:ArrayList<String>?): Fragment() { //17.2    //17.7.3 Добавляем конструктор нашему классу, который выводит фрагмент. Чтобы то, что мы будем передавть в этот конструктор было доступно на уровне всего класса нашего фрагмента, нужно указать val либо var //18.8 - newList:ArrayList
 
     lateinit var rootElement : ListImageFragBinding     //21.2.2
 
     val adapter = SelectImageRvAdapter() //18.9.1
     val draggCallback = ItemTouchMoveCallback(adapter) //19.3.2
     val touchHelper = ItemTouchHelper(draggCallback)     //19.2.1 Классу ItemTouchHelper() нужно передать калбек (ItemTouchHelperCallback). У нас его нет, поэтому нужно создать этот класс, создать интсанцию этого класса, и передать ее в класс ItemTouchHelper()
-    private lateinit var job: Job  //27.5
+    private var job: Job? = null  //27.5
 
     //17.2.1 Создаем основые и обязательные функции для фрагмента:
     override fun onCreateView(  //В этой функции начинается отрисовка нашего фрагмента
@@ -62,9 +63,12 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //            updateList.add(SelectImageItem(n.toString(), newList[n]))   //заполняем updateList, когда он заканчивается, мы передаем в адаптер уже заполненный список
 //        }
         //27.4: я пишу здесь основной поток, потому что я хочу, чтобы после того, как эта функция закончится, после ее все запустилось на основном потоке   //27.5:
-        job = CoroutineScope(Dispatchers.Main).launch{
-            val text = ImageManager.imageResize(newList)
-            Log.d("MyLog", "Result: $text")    //27.7
+        if(newList != null) {
+            job = CoroutineScope(Dispatchers.Main).launch {
+                val bitmapList = ImageManager.imageResize(newList)
+                adapter.updateAdapter(bitmapList, true)
+//            Log.d("MyLog", "Result: $bitmapList")    //27.7
+            }
         }
        // adapter.updateAdapter(newList, true)     //18.9.5    //21.8.3  //22.1.2     //26.2Пока что не будем передавать в адаптер
 //        bBack.setOnClickListener{
@@ -72,10 +76,14 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //        }
     }
 
+    fun updateAdapterFromEdit(bitmapList: List<Bitmap>) {
+        adapter.updateAdapter(bitmapList, true)
+    }
+
     override fun onDetach() {   //17.8
         super.onDetach()
         fragCloseInterface.onFragClose(adapter.mainArray)       //17.8.1 Так как мы передали интерфейс с EditAddsAct, то он и запустится также в функции onFragClose() класса EditAddsAct и тогда view станет видимым
-        job.cancel()    //27.6 Все операции, которые происходили в CoroutineScope - завершились
+        job?.cancel()    //27.6 Все операции, которые происходили в CoroutineScope - завершились
 //        Log.d("MyLog", "Title 0 : ${adapter.mainArray[0].title}")    //18.9 Временная проверка
 //        Log.d("MyLog", "Title 1 : ${adapter.mainArray[1].title}")
 //        Log.d("MyLog", "Title 2 : ${adapter.mainArray[2].title}")
@@ -114,11 +122,20 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //            updateList.add(SelectImageItem(n.toString(), newList[n - adapter.mainArray.size]))    //22.1.1
 //        }
 //        adapter.updateAdapter(updateList, false)    //Указываем false. Список не очистится, просто добавятся к тем картинкам что уже есть новые
-        adapter.updateAdapter(newList, false)   //22.1.1
+        job = CoroutineScope(Dispatchers.Main).launch{
+            val bitmapList = ImageManager.imageResize(newList)
+            adapter.updateAdapter(bitmapList, false)
+        }
+//        adapter.updateAdapter(newList, false)   //22.1.1
      }
 
     fun setSingleImage(uri : String, pos : Int) {   //23.7.1
-        adapter.mainArray[pos] = uri    //На ту позицию, где я нажал, вставляю ссылку. Адаптер мне выдал позицию, на которую я нажал. Я получил картинку и перезаписал ее на этом месте
-        adapter.notifyDataSetChanged()  //Говорим адаптеру, что данные обновились
+        job = CoroutineScope(Dispatchers.Main).launch{
+            val bitmapList = ImageManager.imageResize(listOf(uri))
+            adapter.mainArray[pos] = bitmapList[0]  //Работает все как и раньше, просто вместо того, чтобы передавать ссылку, я эту ссылку превращаю в bitmap и передаю bitmap
+            adapter.notifyDataSetChanged()
+        }
+//        adapter.mainArray[pos] = uri    //На ту позицию, где я нажал, вставляю ссылку. Адаптер мне выдал позицию, на которую я нажал. Я получил картинку и перезаписал ее на этом месте
+//        adapter.notifyDataSetChanged()  //Говорим адаптеру, что данные обновились
     }
 }

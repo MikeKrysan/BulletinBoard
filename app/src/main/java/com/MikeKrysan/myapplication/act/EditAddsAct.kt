@@ -3,8 +3,8 @@ package com.MikeKrysan.myapplication.act
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -88,7 +88,7 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
 
                 } else if (returnValues.size == 1 && chooseImageFrag == null) { //24.4
 
-                    imageAdapter.update(returnValues) //25.3
+//                    imageAdapter.update(returnValues) //25.3
                     val tempList = ImageManager.getImageSize(returnValues[0])
 //                    Log.d("MyLog", "Image width : ${tempList[0]}")
 //                    Log.d("MyLog", "Image height : ${tempList[1]}")
@@ -133,8 +133,9 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
         }
     }
 
+
     fun onClickSelectCity(view: View) {  //15.3
-        val selectedCountry = rootElementForEditAddsAct.tvCountry.text.toString()   //Пока текста нет в textView для выбора города, будем показывать, что нужно выбрать обязательно страну чтобы выбрать город
+            val selectedCountry = rootElementForEditAddsAct.tvCountry.text.toString()   //Пока текста нет в textView для выбора города, будем показывать, что нужно выбрать обязательно страну чтобы выбрать город
             if(selectedCountry != getString(R.string.select_country)){  //Если то, что находится в textView не равно значению по-умолчанию, значит человек уже выбрал страну, и мы можем запускать код ниже
                 val listCity = CityHelper.getAllCities(selectedCountry, this)    //передали название страны и контекст
                 dialog.showSpinnerDialog(this, listCity, rootElementForEditAddsAct.tvCity)  //15.5.2
@@ -155,20 +156,21 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
         if(imageAdapter.mainArray.size == 0) {    //22.3.2   imageAdapter.mainArray - это и есть массив с выбранными картинками из окна выбора фото. Если нет фото-выбираем, а если есть-открываем фрагмент с выбранными картинками
             ImagePicker.getImages(this, 3, ImagePicker.REQUEST_CODE_GET_IMAGES)     //23.2.2
         } else {
-            openChooseImageFrag(imageAdapter.mainArray)
+            openChooseImageFrag(null)
+            chooseImageFrag?.updateAdapterFromEdit(imageAdapter.mainArray)
         }
 //        ImagePicker.getImages(this, 3)  //18.11 Чтобы запустилась проверка, поставим код временно из функции onRequestPermissionsResult()
     }
 
 //    override fun onFragClose(list : ArrayList<SelectImageItem>) {    //20.10.4
-    override fun onFragClose(list : ArrayList<String>) {   //22.2
+    override fun onFragClose(list : ArrayList<Bitmap>) {   //22.2
         rootElementForEditAddsAct.scrollViewMain.visibility = View.VISIBLE  //17.7.1Интерфейс нужно передать через фрагмент в контсруктор. Когда создаестя фрагмент, внутрь его передадим этот интерфейс, поэтому если там мы запускаем наш интерфейс, то он и здесь запуститься
         imageAdapter.update(list)   //20.11
         chooseImageFrag = null  //21.11
     }
 
 
-    private fun openChooseImageFrag(newList : ArrayList<String> ) { //22.3.1 Передавать в функцию я буду  список с картинками, который будет в моем фрагменте
+    private fun openChooseImageFrag(newList : ArrayList<String>? ) { //22.3.1 Передавать в функцию я буду  список с картинками, который будет в моем фрагменте
         chooseImageFrag = ImageListFrag(this, newList)  //
         rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE
         val fm = supportFragmentManager.beginTransaction()
