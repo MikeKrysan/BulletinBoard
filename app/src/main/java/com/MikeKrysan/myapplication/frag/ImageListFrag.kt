@@ -1,19 +1,20 @@
 package com.MikeKrysan.myapplication.frag
 
+import android.app.Activity
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.MikeKrysan.myapplication.R
 import com.MikeKrysan.myapplication.databinding.ListImageFragBinding
+import com.MikeKrysan.myapplication.dialogHelper.ProgressDialog
 import com.MikeKrysan.myapplication.utils.ImageManager
 import com.MikeKrysan.myapplication.utils.ImagePicker
 import com.MikeKrysan.myapplication.utils.ItemTouchMoveCallback
@@ -64,9 +65,7 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //        }
         //27.4: я пишу здесь основной поток, потому что я хочу, чтобы после того, как эта функция закончится, после ее все запустилось на основном потоке   //27.5:
         if(newList != null) {
-            job = CoroutineScope(Dispatchers.Main).launch {
-                val bitmapList = ImageManager.imageResize(newList)
-                adapter.updateAdapter(bitmapList, true)
+            resizeSelectedImages(newList, true)
 //            Log.d("MyLog", "Result: $bitmapList")    //27.7
             }
         }
@@ -74,7 +73,7 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //        bBack.setOnClickListener{
 //            activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()    //17.6.1
 //        }
-    }
+
 
     fun updateAdapterFromEdit(bitmapList: List<Bitmap>) {
         adapter.updateAdapter(bitmapList, true)
@@ -87,6 +86,17 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //        Log.d("MyLog", "Title 0 : ${adapter.mainArray[0].title}")    //18.9 Временная проверка
 //        Log.d("MyLog", "Title 1 : ${adapter.mainArray[1].title}")
 //        Log.d("MyLog", "Title 2 : ${adapter.mainArray[2].title}")
+    }
+
+    private fun resizeSelectedImages(newList: ArrayList<String>, needClear : Boolean) {
+
+        job = CoroutineScope(Dispatchers.Main).launch {
+            val dialog = ProgressDialog.createProgressDialog(activity as Activity)
+            val bitmapList = ImageManager.imageResize(newList)
+            dialog.dismiss()
+            adapter.updateAdapter(bitmapList, needClear)
+
+        }
     }
 
     private fun setUpToolbar(){ //21.3
@@ -122,18 +132,20 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //            updateList.add(SelectImageItem(n.toString(), newList[n - adapter.mainArray.size]))    //22.1.1
 //        }
 //        adapter.updateAdapter(updateList, false)    //Указываем false. Список не очистится, просто добавятся к тем картинкам что уже есть новые
-        job = CoroutineScope(Dispatchers.Main).launch{
-            val bitmapList = ImageManager.imageResize(newList)
-            adapter.updateAdapter(bitmapList, false)
-        }
+       resizeSelectedImages(newList, false)
 //        adapter.updateAdapter(newList, false)   //22.1.1
      }
 
     fun setSingleImage(uri : String, pos : Int) {   //23.7.1
+
+        val pBar = rootElement.rcViewSelectImage[pos].findViewById<ProgressBar>(R.id.pBar)
         job = CoroutineScope(Dispatchers.Main).launch{
+            pBar.visibility = View.VISIBLE
             val bitmapList = ImageManager.imageResize(listOf(uri))
+            pBar.visibility = View.GONE
             adapter.mainArray[pos] = bitmapList[0]  //Работает все как и раньше, просто вместо того, чтобы передавать ссылку, я эту ссылку превращаю в bitmap и передаю bitmap
-            adapter.notifyDataSetChanged()
+//            adapter.notifyDataSetChanged()
+            adapter.notifyItemChanged(pos)
         }
 //        adapter.mainArray[pos] = uri    //На ту позицию, где я нажал, вставляю ссылку. Адаптер мне выдал позицию, на которую я нажал. Я получил картинку и перезаписал ее на этом месте
 //        adapter.notifyDataSetChanged()  //Говорим адаптеру, что данные обновились

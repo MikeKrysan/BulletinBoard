@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.MikeKrysan.myapplication.R
@@ -56,6 +57,7 @@ class SelectImageRvAdapter: RecyclerView.Adapter<SelectImageRvAdapter.ImageHolde
         lateinit var image : ImageView
         lateinit var imEditImage : ImageButton  //23.3 Находим созданную кнопуку в select_image_frag_item.xml
         lateinit var imDeleteImage : ImageButton    //24.2
+//        lateinit var pBar : ProgressBar
 //        fun setData(item: SelectImageItem) {    //18.3
 
         fun setData(bitMap: Bitmap) {    //22.1.2
@@ -63,9 +65,12 @@ class SelectImageRvAdapter: RecyclerView.Adapter<SelectImageRvAdapter.ImageHolde
             image = itemView.findViewById(R.id.imageContent)
             imEditImage = itemView.findViewById(R.id.imEditImage)   //23.3
             imDeleteImage = itemView.findViewById(R.id.imDelete)    //24.2
+//            pBar = itemView.findViewById(R.id.pBar)
+
             //23.3 Добавляем слушателя нажатий:
             imEditImage.setOnClickListener {
-                 ImagePicker.getImages(context as EditAddsAct, 1, ImagePicker.REQUEST_CODE_GET_SINGLEIMAGE)   //23.5.1 Передаем контекст, который у нас есть. Как будто я передал мое активити
+//                pBar.visibility = View.VISIBLE
+                ImagePicker.getImages(context as EditAddsAct, 1, ImagePicker.REQUEST_CODE_GET_SINGLEIMAGE)   //23.5.1 Передаем контекст, который у нас есть. Как будто я передал мое активити
                 context.editImagePos = adapterPosition  //23.5.2 Я нажал на кнопку, и контекст получит номер позиции, на который я нажал. И теперь будет перезаписываться запись в переменной editImagePos EditAddsAct
             }
 

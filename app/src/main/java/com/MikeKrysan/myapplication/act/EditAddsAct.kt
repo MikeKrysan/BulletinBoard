@@ -51,7 +51,7 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
         rootElementForEditAddsAct.vpImages.adapter = imageAdapter   //20.7
     }
 
-    @SuppressLint("SuspiciousIndentation")
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {   //16.8
         super.onActivityResult(requestCode, resultCode, data)
 
