@@ -9,15 +9,13 @@ import com.fxn.pix.Options
 import com.fxn.pix.Pix
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 
 object ImagePicker {    //16.1
     const val MAX_IMAGE_COUNT = 3   //21.7.1
     const val REQUEST_CODE_GET_IMAGES =
         999 //если константу использовать в других классах, то студия не будет подчеркивать переменную, чтобы сделать ее приватной
-    const val REQUEST_CODE_GET_SINGLEIMAGE = 998    //23.2
+    const val REQUEST_CODE_GET_SINGLE_IMAGE = 998    //23.2
     fun getImages(
         context: AppCompatActivity,
         ImageCounter: Int,
@@ -64,7 +62,7 @@ object ImagePicker {    //16.1
 
                 }
             }
-        } else if (resultCode == AppCompatActivity.RESULT_OK && requestCode == REQUEST_CODE_GET_SINGLEIMAGE) {
+        } else if (resultCode == AppCompatActivity.RESULT_OK && requestCode == REQUEST_CODE_GET_SINGLE_IMAGE) {
 
             if (data != null) {
 

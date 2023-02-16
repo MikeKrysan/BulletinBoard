@@ -4,6 +4,7 @@ import android.app.Activity
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.MikeKrysan.myapplication.R
 import com.MikeKrysan.myapplication.databinding.ListImageFragBinding
 import com.MikeKrysan.myapplication.dialogHelper.ProgressDialog
+import com.MikeKrysan.myapplication.utils.AdapterCallback
 import com.MikeKrysan.myapplication.utils.ImageManager
 import com.MikeKrysan.myapplication.utils.ImagePicker
 import com.MikeKrysan.myapplication.utils.ItemTouchMoveCallback
@@ -23,14 +25,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, private val newList:ArrayList<String>?): Fragment() { //17.2    //17.7.3 Добавляем конструктор нашему классу, который выводит фрагмент. Чтобы то, что мы будем передавть в этот конструктор было доступно на уровне всего класса нашего фрагмента, нужно указать val либо var //18.8 - newList:ArrayList
+class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, private val newList:ArrayList<String>?): Fragment(), AdapterCallback { //17.2    //17.7.3 Добавляем конструктор нашему классу, который выводит фрагмент. Чтобы то, что мы будем передавть в этот конструктор было доступно на уровне всего класса нашего фрагмента, нужно указать val либо var //18.8 - newList:ArrayList
 
     lateinit var rootElement : ListImageFragBinding     //21.2.2
 
-    val adapter = SelectImageRvAdapter() //18.9.1
+    val adapter = SelectImageRvAdapter(this) //18.9.1
     val draggCallback = ItemTouchMoveCallback(adapter) //19.3.2
     val touchHelper = ItemTouchHelper(draggCallback)     //19.2.1 Классу ItemTouchHelper() нужно передать калбек (ItemTouchHelperCallback). У нас его нет, поэтому нужно создать этот класс, создать интсанцию этого класса, и передать ее в класс ItemTouchHelper()
     private var job: Job? = null  //27.5
+    private var addImageItem : MenuItem? = null
 
     //17.2.1 Создаем основые и обязательные функции для фрагмента:
     override fun onCreateView(  //В этой функции начинается отрисовка нашего фрагмента
@@ -74,6 +77,10 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //            activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()    //17.6.1
 //        }
 
+    override fun onItemDelete() {
+        addImageItem?.isVisible = true
+    }
+
 
     fun updateAdapterFromEdit(bitmapList: List<Bitmap>) {
         adapter.updateAdapter(bitmapList, true)
@@ -95,6 +102,7 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
             val bitmapList = ImageManager.imageResize(newList)
             dialog.dismiss()
             adapter.updateAdapter(bitmapList, needClear)
+            if(adapter.mainArray.size > 2 ) addImageItem?.isVisible = false
 
         }
     }
@@ -102,7 +110,7 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
     private fun setUpToolbar(){ //21.3
         rootElement.tb.inflateMenu(R.menu.menu_choose_image)
         val deleteItem = rootElement.tb.menu.findItem(R.id.id_delete_image)   //21.4 Создаем переменную, в нее ложим результат поиска.Мы берем меню которое только что надули и в нем ищем по идентификатору
-        val addImageItem = rootElement.tb.menu.findItem(R.id.id_add_image)
+        addImageItem = rootElement.tb.menu.findItem(R.id.id_add_image)
 
         //21.4.2:
         rootElement.tb.setNavigationOnClickListener{
@@ -113,11 +121,12 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
         //22.4.1:
         deleteItem.setOnMenuItemClickListener{
             adapter.updateAdapter(ArrayList(), true)  //21.6    //21.8.3
+            addImageItem?.isVisible = true
 //            Log.d("MyLog", "Delete item")
             true
         }
         //22.4.1:
-        addImageItem.setOnMenuItemClickListener {
+        addImageItem?.setOnMenuItemClickListener {
             val imageCount = ImagePicker.MAX_IMAGE_COUNT - adapter.mainArray.size   //21.7.2
             ImagePicker.getImages(activity as AppCompatActivity, imageCount, ImagePicker.REQUEST_CODE_GET_IMAGES)  //21.7 Ожидает AppCompatActivity а приходит FragmentActivity, делаем даункаст    //23.2.2
 //            Log.d("MyLog", "Add item")
@@ -150,4 +159,6 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //        adapter.mainArray[pos] = uri    //На ту позицию, где я нажал, вставляю ссылку. Адаптер мне выдал позицию, на которую я нажал. Я получил картинку и перезаписал ее на этом месте
 //        adapter.notifyDataSetChanged()  //Говорим адаптеру, что данные обновились
     }
+
+
 }
