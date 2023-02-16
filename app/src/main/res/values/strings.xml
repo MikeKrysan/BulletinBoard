@@ -36,7 +36,12 @@
     <string name="No_result">Нет результата</string>
     <!-- EditActivity -->
     <string name="select_country">*Выберите страну</string>
-    <string name="select_city">*Выберите город</string>
     <string name="country_not_selected">Выберите пожалуйста страну</string>
+    <string name="select_city">*Выберите город</string>
+    <string name="country">Страна</string>
+    <string name="city">Город</string>
+    <string name="index">Индекс</string>
+    <string name="tel">Телефон</string>
+    <string name="tel_number">Номер телефона</string>
 
 </resources>

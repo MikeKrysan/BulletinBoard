@@ -563,6 +563,8 @@ import com.google.firebase.auth.FirebaseUser
  *     Урок32. Добавляем Banner рекламу  AdMob
  *
  *     Урок33. Добавляем Interstitial рекламу от AdMob
+ *
+ *     Урок34. Начинаем делать экран для создания объявления
  *       
  *
  *
