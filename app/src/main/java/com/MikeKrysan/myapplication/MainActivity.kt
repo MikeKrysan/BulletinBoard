@@ -561,6 +561,8 @@ import com.google.firebase.auth.FirebaseUser
  *     картинка горизонтальная то выбираем CENTRE_CROPE заполняя картинкой весь ImageView а что не уместилось обрезается.
  *
  *     Урок32. Добавляем Banner рекламу  AdMob
+ *
+ *     Урок33. Добавляем Interstitial рекламу от AdMob
  *       
  *
  *

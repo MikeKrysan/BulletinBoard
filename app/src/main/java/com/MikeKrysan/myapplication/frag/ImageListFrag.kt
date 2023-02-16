@@ -3,14 +3,17 @@ package com.MikeKrysan.myapplication.frag
 import android.app.Activity
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.MikeKrysan.myapplication.R
+import com.MikeKrysan.myapplication.databinding.ListImageFragBinding
 import com.MikeKrysan.myapplication.dialogHelper.ProgressDialog
 import com.MikeKrysan.myapplication.utils.AdapterCallback
 import com.MikeKrysan.myapplication.utils.ImageManager
@@ -21,7 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, private val newList:ArrayList<String>?): BaseSelectImageFrag(), AdapterCallback { //17.2    //17.7.3 Добавляем конструктор нашему классу, который выводит фрагмент. Чтобы то, что мы будем передавть в этот конструктор было доступно на уровне всего класса нашего фрагмента, нужно указать val либо var //18.8 - newList:ArrayList
+class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, private val newList:ArrayList<String>?): BaseAdsFragment(), AdapterCallback { //17.2    //17.7.3 Добавляем конструктор нашему классу, который выводит фрагмент. Чтобы то, что мы будем передавть в этот конструктор было доступно на уровне всего класса нашего фрагмента, нужно указать val либо var //18.8 - newList:ArrayList
 
 //    lateinit var rootElement : ListImageFragBinding     //21.2.2
 
@@ -30,6 +33,7 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
     val touchHelper = ItemTouchHelper(draggCallback)     //19.2.1 Классу ItemTouchHelper() нужно передать калбек (ItemTouchHelperCallback). У нас его нет, поэтому нужно создать этот класс, создать интсанцию этого класса, и передать ее в класс ItemTouchHelper()
     private var job: Job? = null  //27.5
     private var addImageItem : MenuItem? = null
+    lateinit var binding: ListImageFragBinding
 
     //17.2.1 Создаем основые и обязательные функции для фрагмента:
 //    override fun onCreateView(   inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {     //В этой функции начинается отрисовка нашего фрагмента
@@ -37,6 +41,12 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //            rootElement = ListImageFragBinding.inflate(inflater)
 //            return rootElement.root
 //    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = ListImageFragBinding.inflate(layoutInflater)
+        adView = binding.adView
+        return binding.root
+    }
 
     //17.2.2
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {   //В этой функции получаем все элементы, которые нарисовались
@@ -89,6 +99,11 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //        Log.d("MyLog", "Title 2 : ${adapter.mainArray[2].title}")
     }
 
+    override fun onClose() {
+        super.onClose()
+        activity?.supportFragmentManager?.beginTransaction()?.remove(this@ImageListFrag)?.commit()
+    }
+
     private fun resizeSelectedImages(newList: ArrayList<String>, needClear : Boolean) {
 
         job = CoroutineScope(Dispatchers.Main).launch {
@@ -113,8 +128,8 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
             //21.4.2:
             tb.setNavigationOnClickListener {
 //            Log.d("MyLog", "Delete item")
-                activity?.supportFragmentManager?.beginTransaction()?.remove(this@ImageListFrag)
-                    ?.commit()    //21.5
+//                activity?.supportFragmentManager?.beginTransaction()?.remove(this@ImageListFrag)?.commit()    //21.5
+                showInterAd()
             }
 
             //22.4.1:
