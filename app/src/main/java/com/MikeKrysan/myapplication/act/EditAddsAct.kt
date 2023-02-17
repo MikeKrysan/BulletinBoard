@@ -147,6 +147,13 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
             }
     }
 
+    fun onClickSelectCat(view: View) {
+
+            val listCat = resources.getStringArray(R.array.category).toMutableList() as ArrayList
+            dialog.showSpinnerDialog(this, listCat, rootElementForEditAddsAct.tvCat)
+
+    }
+
     fun onClickGetImages(view: View) {  //16.5
 //        ImagePicker.getImages(this )   //16.6
 //        rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE //17.4
