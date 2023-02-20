@@ -1,6 +1,5 @@
 package com.MikeKrysan.myapplication.act
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -10,29 +9,29 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.MikeKrysan.myapplication.R
 import com.MikeKrysan.myapplication.adapters.ImageAdapter
+import com.MikeKrysan.myapplication.data.Ad
 import com.MikeKrysan.myapplication.database.DbManager
 import com.MikeKrysan.myapplication.databinding.ActivityEditAddsBinding
 import com.MikeKrysan.myapplication.dialogs.DialogSpinnerHelper
 import com.MikeKrysan.myapplication.frag.FragmentCloseInterface
 import com.MikeKrysan.myapplication.frag.ImageListFrag
 import com.MikeKrysan.myapplication.utils.CityHelper
-import com.MikeKrysan.myapplication.utils.ImageManager
 import com.MikeKrysan.myapplication.utils.ImagePicker
-import com.fxn.pix.Pix
 import com.fxn.utility.PermUtil
 
 class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
     var chooseImageFrag : ImageListFrag? = null     //21.8 *
-    lateinit var rootElementForEditAddsAct:ActivityEditAddsBinding  //14.9 делаем rootElement public
+    lateinit var rootElement:ActivityEditAddsBinding  //14.9 делаем rootElement public
     private val dialog = DialogSpinnerHelper() //14.2 Создаем диалог на уровне класса
     private var isImagesPermissionGranted = false   //16.3.1
     lateinit var imageAdapter : ImageAdapter    //20.6 Создали переменную на уровне класса для того чтобы она была доступна для любой функции. Адаптер мы будем обновлять, поэтому доступ к адаптеру нам нужен любой функции
     var editImagePos = 0  //23.4
+    private val dbManager = DbManager()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        rootElementForEditAddsAct = ActivityEditAddsBinding.inflate(layoutInflater)
-        setContentView(rootElementForEditAddsAct.root)
+        rootElement = ActivityEditAddsBinding.inflate(layoutInflater)
+        setContentView(rootElement.root)
 
         init()  //14.1
 
@@ -49,7 +48,7 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
 
     private fun init() {    //14.1
         imageAdapter = ImageAdapter()   //20.7.1 Инициализируем imageAdapter
-        rootElementForEditAddsAct.vpImages.adapter = imageAdapter   //20.7
+        rootElement.vpImages.adapter = imageAdapter   //20.7
     }
 
 
@@ -128,19 +127,19 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
     //OnClicks
     fun onClickSelectCountry(view: View) {  //14.5 Есть слушатель нажатий, но он пока ни к чему не подключен. Чтобы его подключить, в активити на textView находим onClick и назначаем ему только что созданый onClickSelectCountry
         val listCountry = CityHelper.getAllCountries(this)  //13.1
-        dialog.showSpinnerDialog(this, listCountry, rootElementForEditAddsAct.tvCountry) //15.5.1
-        if(rootElementForEditAddsAct.tvCity.text.toString() != getString(R.string.select_city)) {   //15.6
-            rootElementForEditAddsAct.tvCity.text = getString(R.string.select_city)  //Получаем с помощью функции getSting ресурс. Если мы напишем сразу напрямую ресурс R.string.select_country без getStrings, то будем показано число в textView
+        dialog.showSpinnerDialog(this, listCountry, rootElement.tvCountry) //15.5.1
+        if(rootElement.tvCity.text.toString() != getString(R.string.select_city)) {   //15.6
+            rootElement.tvCity.text = getString(R.string.select_city)  //Получаем с помощью функции getSting ресурс. Если мы напишем сразу напрямую ресурс R.string.select_country без getStrings, то будем показано число в textView
             //У некоторых функций уже есть внутри функция getString поэтому иногда мы просто передаем R.string.resources  и у нас корректно показываем текст. Но в данном случае мы напрямую текст передаем в textView, поэтому сперва нужно получить сам текст а не идентификатор
         }
     }
 
 
     fun onClickSelectCity(view: View) {  //15.3
-            val selectedCountry = rootElementForEditAddsAct.tvCountry.text.toString()   //Пока текста нет в textView для выбора города, будем показывать, что нужно выбрать обязательно страну чтобы выбрать город
+            val selectedCountry = rootElement.tvCountry.text.toString()   //Пока текста нет в textView для выбора города, будем показывать, что нужно выбрать обязательно страну чтобы выбрать город
             if(selectedCountry != getString(R.string.select_country)){  //Если то, что находится в textView не равно значению по-умолчанию, значит человек уже выбрал страну, и мы можем запускать код ниже
                 val listCity = CityHelper.getAllCities(selectedCountry, this)    //передали название страны и контекст
-                dialog.showSpinnerDialog(this, listCity, rootElementForEditAddsAct.tvCity)  //15.5.2
+                dialog.showSpinnerDialog(this, listCity, rootElement.tvCity)  //15.5.2
             }
             else {    // иначе выводим тост "выберите пожалуйста страну!"
 //                Toast.makeText(this, R.string.country_not_selected, Toast.LENGTH_LONG ).show()
@@ -151,7 +150,7 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
     fun onClickSelectCat(view: View) {
 
             val listCat = resources.getStringArray(R.array.category).toMutableList() as ArrayList
-            dialog.showSpinnerDialog(this, listCat, rootElementForEditAddsAct.tvCat)
+            dialog.showSpinnerDialog(this, listCat, rootElement.tvCat)
 
     }
 
@@ -172,13 +171,28 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
     }
 
     fun onClickPublish(view: View) {
-        val dbManager = DbManager()
-        dbManager.publishAd()
+        dbManager.publishAd(fillAd())
+    }
+
+    private fun fillAd() : Ad {
+        val ad: Ad
+        rootElement.apply {
+            ad = Ad(tvCountry.text.toString(),
+                    tvCity.text.toString(),
+                    editTel.text.toString(),
+                    edIndex.text.toString(),
+                    checkBoxWithSend.isChecked.toString(),
+                    tvCat.text.toString(),
+                    edPrice.text.toString(),
+                    edDescription.text.toString(),
+                    dbManager.db.push().key)
+        }
+        return ad
     }
 
 //    override fun onFragClose(list : ArrayList<SelectImageItem>) {    //20.10.4
     override fun onFragClose(list : ArrayList<Bitmap>) {   //22.2
-        rootElementForEditAddsAct.scrollViewMain.visibility = View.VISIBLE  //17.7.1Интерфейс нужно передать через фрагмент в контсруктор. Когда создаестя фрагмент, внутрь его передадим этот интерфейс, поэтому если там мы запускаем наш интерфейс, то он и здесь запуститься
+        rootElement.scrollViewMain.visibility = View.VISIBLE  //17.7.1Интерфейс нужно передать через фрагмент в контсруктор. Когда создаестя фрагмент, внутрь его передадим этот интерфейс, поэтому если там мы запускаем наш интерфейс, то он и здесь запуститься
         imageAdapter.update(list)   //20.11
         chooseImageFrag = null  //21.11
     }
@@ -186,7 +200,7 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
 
     fun openChooseImageFrag(newList : ArrayList<String>? ) { //22.3.1 Передавать в функцию я буду  список с картинками, который будет в моем фрагменте
         chooseImageFrag = ImageListFrag(this, newList)  //
-        rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE
+        rootElement.scrollViewMain.visibility = View.GONE
         val fm = supportFragmentManager.beginTransaction()
         fm.replace(R.id.place_holder, chooseImageFrag!!)
         fm.commit()

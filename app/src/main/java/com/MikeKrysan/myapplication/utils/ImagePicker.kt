@@ -53,9 +53,9 @@ object ImagePicker {    //16.1
 
                     CoroutineScope(Dispatchers.Main).launch {
 
-                        edAct.rootElementForEditAddsAct.pBarLoad.visibility = View.VISIBLE
+                        edAct.rootElement.pBarLoad.visibility = View.VISIBLE
                         val bitMapArray = ImageManager.imageResize(returnValues) as ArrayList<Bitmap>
-                        edAct.rootElementForEditAddsAct.pBarLoad.visibility = View.GONE
+                        edAct.rootElement.pBarLoad.visibility = View.GONE
                         edAct.imageAdapter.update(bitMapArray)
 
                     }
