@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.MikeKrysan.myapplication.R
 import com.MikeKrysan.myapplication.adapters.ImageAdapter
+import com.MikeKrysan.myapplication.database.DbManager
 import com.MikeKrysan.myapplication.databinding.ActivityEditAddsBinding
 import com.MikeKrysan.myapplication.dialogs.DialogSpinnerHelper
 import com.MikeKrysan.myapplication.frag.FragmentCloseInterface
@@ -168,6 +169,11 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
             chooseImageFrag?.updateAdapterFromEdit(imageAdapter.mainArray)
         }
 //        ImagePicker.getImages(this, 3)  //18.11 Чтобы запустилась проверка, поставим код временно из функции onRequestPermissionsResult()
+    }
+
+    fun onClickPublish(view: View) {
+        val dbManager = DbManager()
+        dbManager.publishAd()
     }
 
 //    override fun onFragClose(list : ArrayList<SelectImageItem>) {    //20.10.4
