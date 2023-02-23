@@ -54,6 +54,9 @@
     <string name="with_send">С отправкой</string>
     <string name="Send">Отправка</string>
     <string name="publish">Опубликовать</string>
+    <!-- AdListItem -->
+    <string name="price_desc">Цена:</string>
+
 
 
 
