@@ -9,7 +9,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class DbManager {
+class DbManager(val readDataCallback: ReadDataCallback?) {
     val db = Firebase.database.getReference("main")
     val auth = Firebase.auth
 
@@ -25,8 +25,9 @@ class DbManager {
                 for(item in snapshot.children) {
                     val ad = item.children.iterator().next().child("ad").getValue(Ad::class.java)
                     if(ad != null) adArray.add(ad)
-                    Log.d("MyLog", "Data: ${ad?.tel}")
+//                    Log.d("MyLog", "Data: ${ad?.tel}")
                 }
+                readDataCallback?.readData(adArray)
             }
 
             override fun onCancelled(error: DatabaseError) {

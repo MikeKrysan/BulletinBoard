@@ -26,7 +26,7 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
     private var isImagesPermissionGranted = false   //16.3.1
     lateinit var imageAdapter : ImageAdapter    //20.6 Создали переменную на уровне класса для того чтобы она была доступна для любой функции. Адаптер мы будем обновлять, поэтому доступ к адаптеру нам нужен любой функции
     var editImagePos = 0  //23.4
-    private val dbManager = DbManager()
+    private val dbManager = DbManager(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -183,6 +183,7 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
                     edIndex.text.toString(),
                     checkBoxWithSend.isChecked.toString(),
                     tvCat.text.toString(),
+                    edTitle.text.toString(),
                     edPrice.text.toString(),
                     edDescription.text.toString(),
                     dbManager.db.push().key)

@@ -103,15 +103,6 @@
                         android:textColor="@color/green_main" />
 
                     <TextView
-                        android:id="@+id/tvTitleIndex"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="10dp"
-                        android:text="@string/index"
-                        android:textColor="@color/green_main" />
-
-                    <TextView
                         android:id="@+id/tvCountry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -197,6 +188,15 @@
 
                     </LinearLayout>
 
+                    <TextView
+                        android:id="@+id/tvTitleIndex"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/index"
+                        android:textColor="@color/green_main" />
+
                     <EditText
                         android:id="@+id/edIndex"
                         android:layout_width="match_parent"
@@ -221,7 +221,7 @@
                     </LinearLayout>
 
                     <TextView
-                        android:id="@+id/tvTitleIndex2"
+                        android:id="@+id/tvSend"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
@@ -283,6 +283,26 @@
                         android:textColor="@color/black"
                         android:textSize="18sp"
                         android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/title"
+                        android:textColor="@color/green_main" />
+
+                    <EditText
+                        android:id="@+id/edTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/title_hint"
+                        android:inputType="text"
+                        android:minHeight="48dp"
+                        android:padding="10dp"
+                        android:textColorHint="@color/grey_dark"
+                        android:textSize="18sp" />
 
                     <LinearLayout
                         android:id="@+id/divider01"

@@ -10,7 +10,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.MikeKrysan.myapplication.act.EditAddsAct
+import com.MikeKrysan.myapplication.adapters.AdsRcAdapter
+import com.MikeKrysan.myapplication.data.Ad
+import com.MikeKrysan.myapplication.database.DbManager
+import com.MikeKrysan.myapplication.database.ReadDataCallback
 import com.MikeKrysan.myapplication.databinding.ActivityMainBinding
 import com.MikeKrysan.myapplication.dialogHelper.DialogConst
 import com.MikeKrysan.myapplication.dialogHelper.DialogHelper
@@ -578,6 +583,10 @@ import com.google.firebase.auth.FirebaseUser
  *
  *     Урок40. Создаем RecyclerView Adapter
  *
+ *     Урок41. Учимся добавлять библиотеки вручную как модуль. Удаляем хранилище - Урок 16.2. JCenter отключен!
+ *
+ *     Урок42. Подключаем адаптер к Recyclerview, создаем интерфейс ReadDataCallBack, настраиваем адаптер и item объявления. Добавляем Title (заголовок)
+ *
  *       
  *
  *
@@ -588,13 +597,15 @@ import com.google.firebase.auth.FirebaseUser
  *
  */
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ReadDataCallback {
 
 //    private var rootElement:ActivityMainBinding? = null //4.3.1переменная создана на уровне класса, чтобы к ней можно было добратся из любого места внутри класса
     private lateinit var tvAccaunt: TextView   //6.2
     private lateinit var rootElement:ActivityMainBinding
     private val dialogHelper = DialogHelper(this)   //5.3 Инициализируем DialogHelper. Передаем в конструкторе этот класс - MainActivity
     val myAuth = FirebaseAuth.getInstance() //5.13 Инициализируем объект myAuth
+    val dbManager = DbManager(this)
+    val adapter = AdsRcAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -604,6 +615,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val view = rootElement.root //4.3.3 Передаем переменную на экран. Root элемент - это элемент, который содержит в себе все view
         setContentView(view)    //4.3.4 Рисуем экран
         init()
+        initRecyclerView()
+        dbManager.readDataFromDb()
 
     }
 
@@ -659,6 +672,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onStart() {    //6.5
         super.onStart()
         uiUpdate(myAuth.currentUser)    //Если мы не зарегистрировались, currentUser будет null ("Войдите или зарегистрируйтесь"), если не null - текущий адресс email
+    }
+
+    private fun initRecyclerView() {    // Подключаем адаптер к RecyclerView объявлений пользователя
+        rootElement.apply{
+            mainContent.rcView.layoutManager = LinearLayoutManager(this@MainActivity)
+            mainContent.rcView.adapter = adapter
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {    //2.7.2 Когда мы нажали на элемент из главного меню, мы можем проверить id этого элемента
@@ -722,6 +742,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             user.email
         }
 
+    }
+
+    override fun readData(list: List<Ad>) {
+        adapter.updateAdapter(list)
     }
 
 }
