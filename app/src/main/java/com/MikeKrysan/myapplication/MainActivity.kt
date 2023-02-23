@@ -576,6 +576,8 @@ import com.google.firebase.auth.FirebaseUser
  *
  *     Урок39. Создаем разметку для шаблона объявления в списке, добавляем RecyclerView
  *
+ *     Урок40. Создаем RecyclerView Adapter
+ *
  *       
  *
  *
