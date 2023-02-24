@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import com.MikeKrysan.myapplication.R
 import com.MikeKrysan.myapplication.adapters.ImageAdapter
@@ -27,6 +28,8 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
     lateinit var imageAdapter : ImageAdapter    //20.6 Создали переменную на уровне класса для того чтобы она была доступна для любой функции. Адаптер мы будем обновлять, поэтому доступ к адаптеру нам нужен любой функции
     var editImagePos = 0  //23.4
     private val dbManager = DbManager(null)
+    var launcherMultiSelectImage: ActivityResultLauncher<Intent>? = null
+    var launcherSingleSelectImage: ActivityResultLauncher<Intent>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,71 +52,73 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
     private fun init() {    //14.1
         imageAdapter = ImageAdapter()   //20.7.1 Инициализируем imageAdapter
         rootElement.vpImages.adapter = imageAdapter   //20.7
+        launcherMultiSelectImage = ImagePicker.getLauncherForMultiSelectImages(this)
+        launcherSingleSelectImage = ImagePicker.getLauncherForSingleImage(this)
     }
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {   //16.8
-        super.onActivityResult(requestCode, resultCode, data)
-        ImagePicker.showSelectedImages(resultCode, requestCode, data, this)
-
-//        if (resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_IMAGES) {
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {   //16.8
+//        super.onActivityResult(requestCode, resultCode, data)
+//        ImagePicker.showSelectedImages(resultCode, requestCode, data, this)
 //
-//            if (data != null) {
-////                val returnValue: ArrayList<String> = data.getStringArrayListExtra(Pix.IMAGE_RESULTS) as ArrayList<String>   //1-й вариант. Автоматически переделанный студией код из java в kotlin
-//
-//                val returnValues = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)   //2-й вариант. Здесь котлин сам определяет что за тип данных мы получаем
-////                    Log.d("MyLog", "Image: ${returnValues?.get(0)}")      //16.9
-////                    Log.d("MyLog", "Image: ${returnValues?.get(1)}")
-////                    Log.d("MyLog", "Image: ${returnValues?.get(2)}")
-////                    if(returnValues?.size!! > 1) {                                                      //18.10 Start
-////                        rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE
-////                        val fm = supportFragmentManager.beginTransaction()
-////                        fm.replace(R.id.place_holder, ImageListFrag(this, returnValues))
-////                        fm.commit()                                                                     //18.10 End
-////                    }
-//                if (returnValues?.size!! > 1 && chooseImageFrag == null) {                                  //21.8.1
-//
-////                    chooseImageFrag = ImageListFrag(                                                  //22.3.1start закоментили. Код вынесли в отдельную функцию
-////                        this,
-////                        returnValues
-////                    ) //21.8.2 Создаем наш фрагмент, записываем ссылку в chooseImageFrag
-////                    rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE
-////                    val fm = supportFragmentManager.beginTransaction()
-////                    fm.replace(
-////                        R.id.place_holder,
-////                        chooseImageFrag!!
-////                    )   //21.8.2 Теперь передаем ссылку фрагмента взяв ответственность на себя, что там не null
-////                    fm.commit()                                                                           //22.3.1 end закоментили
-//
-//                    openChooseImageFrag(returnValues)
-//
-//                } else if (returnValues.size == 1 && chooseImageFrag == null) { //24.4
-//
-////                    imageAdapter.update(returnValues) //25.3
-//                    val tempList = ImageManager.getImageSize(returnValues[0])
-////                    Log.d("MyLog", "Image width : ${tempList[0]}")
-////                    Log.d("MyLog", "Image height : ${tempList[1]}")
-//
-//                } else if (chooseImageFrag != null) { //21.8.1 Если аноноимный класс не равен null, то мы выбираем картинки из фрагмента, логично нам не нужно его еще раз создавать, нужно взять и обновить адаптер.
-//
-//                    chooseImageFrag?.updateAdapter(returnValues)//21.10
-//                }
-//            }
-//        } else if(resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_SINGLEIMAGE) {   //23.6
-//            if(data != null) {
-//                val uris = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)
-//                chooseImageFrag?.setSingleImage(uris?.get(0)!!,editImagePos)    //Обновляем позицию из нашего адаптера. Говорю котлин, что там точно не null
-//            }
-//        }
-    }
+////        if (resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_IMAGES) {
+////
+////            if (data != null) {
+//////                val returnValue: ArrayList<String> = data.getStringArrayListExtra(Pix.IMAGE_RESULTS) as ArrayList<String>   //1-й вариант. Автоматически переделанный студией код из java в kotlin
+////
+////                val returnValues = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)   //2-й вариант. Здесь котлин сам определяет что за тип данных мы получаем
+//////                    Log.d("MyLog", "Image: ${returnValues?.get(0)}")      //16.9
+//////                    Log.d("MyLog", "Image: ${returnValues?.get(1)}")
+//////                    Log.d("MyLog", "Image: ${returnValues?.get(2)}")
+//////                    if(returnValues?.size!! > 1) {                                                      //18.10 Start
+//////                        rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE
+//////                        val fm = supportFragmentManager.beginTransaction()
+//////                        fm.replace(R.id.place_holder, ImageListFrag(this, returnValues))
+//////                        fm.commit()                                                                     //18.10 End
+//////                    }
+////                if (returnValues?.size!! > 1 && chooseImageFrag == null) {                                  //21.8.1
+////
+//////                    chooseImageFrag = ImageListFrag(                                                  //22.3.1start закоментили. Код вынесли в отдельную функцию
+//////                        this,
+//////                        returnValues
+//////                    ) //21.8.2 Создаем наш фрагмент, записываем ссылку в chooseImageFrag
+//////                    rootElementForEditAddsAct.scrollViewMain.visibility = View.GONE
+//////                    val fm = supportFragmentManager.beginTransaction()
+//////                    fm.replace(
+//////                        R.id.place_holder,
+//////                        chooseImageFrag!!
+//////                    )   //21.8.2 Теперь передаем ссылку фрагмента взяв ответственность на себя, что там не null
+//////                    fm.commit()                                                                           //22.3.1 end закоментили
+////
+////                    openChooseImageFrag(returnValues)
+////
+////                } else if (returnValues.size == 1 && chooseImageFrag == null) { //24.4
+////
+//////                    imageAdapter.update(returnValues) //25.3
+////                    val tempList = ImageManager.getImageSize(returnValues[0])
+//////                    Log.d("MyLog", "Image width : ${tempList[0]}")
+//////                    Log.d("MyLog", "Image height : ${tempList[1]}")
+////
+////                } else if (chooseImageFrag != null) { //21.8.1 Если аноноимный класс не равен null, то мы выбираем картинки из фрагмента, логично нам не нужно его еще раз создавать, нужно взять и обновить адаптер.
+////
+////                    chooseImageFrag?.updateAdapter(returnValues)//21.10
+////                }
+////            }
+////        } else if(resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_SINGLEIMAGE) {   //23.6
+////            if(data != null) {
+////                val uris = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)
+////                chooseImageFrag?.setSingleImage(uris?.get(0)!!,editImagePos)    //Обновляем позицию из нашего адаптера. Говорю котлин, что там точно не null
+////            }
+////        }
+//    }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)     //16.3
+
         when (requestCode) {
             PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS -> {
                 //If request is cancelled, the result arrays are empty.
                 if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    ImagePicker.getImages(this, 3, ImagePicker.REQUEST_CODE_GET_IMAGES)  //17.9.2 * imageCounter    //23.2.2
+//                    ImagePicker.getImages(this, 3, ImagePicker.REQUEST_CODE_GET_IMAGES)  //17.9.2 * imageCounter    //23.2.2
 //                      isImagesPermissionGranted = true
                 } else {
 //                    isImagesPermissionGranted = false
@@ -122,6 +127,7 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
                 return
             }
         }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)     //16.3
     }
 
     //OnClicks
@@ -162,7 +168,8 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
 //        fm.commit()     //чтобы все изменения применились, запускаем commit
 
         if(imageAdapter.mainArray.size == 0) {    //22.3.2   imageAdapter.mainArray - это и есть массив с выбранными картинками из окна выбора фото. Если нет фото-выбираем, а если есть-открываем фрагмент с выбранными картинками
-            ImagePicker.getImages(this, 3, ImagePicker.REQUEST_CODE_GET_IMAGES)     //23.2.2
+//            ImagePicker.getImages(this, 3, ImagePicker.REQUEST_CODE_GET_IMAGES)     //23.2.2
+            ImagePicker.launcher(this, launcherMultiSelectImage, 3)
         } else {
             openChooseImageFrag(null)
             chooseImageFrag?.updateAdapterFromEdit(imageAdapter.mainArray)

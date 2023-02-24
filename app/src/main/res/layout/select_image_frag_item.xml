@@ -26,13 +26,13 @@
                 android:layout_marginEnd="16dp"
                 android:text="TextView"
                 android:textColor="@color/black"
-                app:layout_constraintEnd_toEndOf="@+id/imageContent"
+                app:layout_constraintEnd_toEndOf="@+id/imageView"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toEndOf="@+id/imDrag"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:id="@+id/imageContent"
+                android:id="@+id/imageView"
                 android:layout_width="0dp"
                 android:layout_height="200dp"
                 android:layout_margin="10dp"
@@ -63,8 +63,8 @@
                 android:background="@drawable/edit_image_bg"
                 android:gravity="center"
                 android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="@+id/imageContent"
-                app:layout_constraintEnd_toEndOf="@+id/imageContent">
+                app:layout_constraintBottom_toBottomOf="@+id/imageView"
+                app:layout_constraintEnd_toEndOf="@+id/imageView">
 
                 <ImageButton
                     android:id="@+id/imEditImage"
@@ -92,10 +92,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/imageContent"
-                app:layout_constraintEnd_toEndOf="@+id/imageContent"
-                app:layout_constraintStart_toStartOf="@+id/imageContent"
-                app:layout_constraintTop_toTopOf="@+id/imageContent" />
+                app:layout_constraintBottom_toBottomOf="@+id/imageView"
+                app:layout_constraintEnd_toEndOf="@+id/imageView"
+                app:layout_constraintStart_toStartOf="@+id/imageView"
+                app:layout_constraintTop_toTopOf="@+id/imageView" />
 
             <LinearLayout
                 android:id="@+id/linearLayout"
