@@ -25,6 +25,8 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 //import kotlinx.android.synthetic.main.activity_main.*
 //import kotlinx.android.synthetic.main.main_content.*
@@ -593,10 +595,15 @@ import com.google.firebase.auth.FirebaseUser
  *          Создаем callback для получения нескольких фото. Создаем функцию для запуска активити для выбора фото. Добавляем запуск активити для выбора изображений в EditAdsAct.
  *          Добавляем callback для выбора только одного фото. Тестируем приложение
  *
+ *     Урок46. Показываем или прячем панель для редактирования в зависимости от аккаунта. Если это владелец объявления, то показываем панель для редактирования (кнопки "редактировать",
+ *          "удалить"). Если это не владелец объявления, то прячем панель
+ Добавляем в класс Ad новую переменную uid.
+ Создаем функцию isOwner() в AdsRcAdapter.
+Присваиваем id контейнеру в котором находятся кнопки редактирования и удаления.
+Создаем функцию showEditPanel() в AdsRcAdapter.
+Создаем новые объявления и тестируем.
+ *
  *       
- *
- *
- *
  *
  *
  *
@@ -609,9 +616,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var tvAccaunt: TextView   //6.2
     private lateinit var rootElement:ActivityMainBinding
     private val dialogHelper = DialogHelper(this)   //5.3 Инициализируем DialogHelper. Передаем в конструкторе этот класс - MainActivity
-    val myAuth = FirebaseAuth.getInstance() //5.13 Инициализируем объект myAuth
+    val myAuth = Firebase.auth //5.13 Инициализируем объект myAuth
     val dbManager = DbManager(this)
-    val adapter = AdsRcAdapter()
+    val adapter = AdsRcAdapter(myAuth)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
