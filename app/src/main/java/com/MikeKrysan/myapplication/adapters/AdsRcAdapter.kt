@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.MikeKrysan.myapplication.data.Ad
+import com.MikeKrysan.myapplication.model.Ad
 import com.MikeKrysan.myapplication.databinding.AdListItemBinding
 import com.google.firebase.auth.FirebaseAuth
 

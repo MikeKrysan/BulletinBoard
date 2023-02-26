@@ -5,6 +5,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('C:\\Users\\User_1\\AndroidStudioProjects\\keys\\key_fb.jks')
+            storePassword 'nwdE023F'
+            keyAlias 'FbKey'
+            keyPassword 'nwdE023F'
+        }
+    }
     compileSdk 33
 
     defaultConfig {
@@ -22,6 +30,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
@@ -40,6 +49,7 @@ dependencies {
 
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.activity:activity-ktx:1.6.1'
     implementation("com.fxn769:pix:1.5.6")
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'

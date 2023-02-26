@@ -8,22 +8,20 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.MikeKrysan.myapplication.act.EditAddsAct
 import com.MikeKrysan.myapplication.adapters.AdsRcAdapter
-import com.MikeKrysan.myapplication.data.Ad
-import com.MikeKrysan.myapplication.database.DbManager
-import com.MikeKrysan.myapplication.database.ReadDataCallback
 import com.MikeKrysan.myapplication.databinding.ActivityMainBinding
 import com.MikeKrysan.myapplication.dialogHelper.DialogConst
 import com.MikeKrysan.myapplication.dialogHelper.DialogHelper
 import com.MikeKrysan.myapplication.dialogHelper.GoogleAccConst
+import com.MikeKrysan.myapplication.viewModel.FirebaseViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.navigation.NavigationView
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -597,28 +595,35 @@ import com.google.firebase.ktx.Firebase
  *
  *     Урок46. Показываем или прячем панель для редактирования в зависимости от аккаунта. Если это владелец объявления, то показываем панель для редактирования (кнопки "редактировать",
  *          "удалить"). Если это не владелец объявления, то прячем панель
- Добавляем в класс Ad новую переменную uid.
- Создаем функцию isOwner() в AdsRcAdapter.
-Присваиваем id контейнеру в котором находятся кнопки редактирования и удаления.
-Создаем функцию showEditPanel() в AdsRcAdapter.
-Создаем новые объявления и тестируем.
+            - Добавляем в класс Ad новую переменную uid.
+            - Создаем функцию isOwner() в AdsRcAdapter.
+            - Присваиваем id контейнеру в котором находятся кнопки редактирования и удаления.
+            - Создаем функцию showEditPanel() в AdsRcAdapter.
+            - Создаем новые объявления и тестируем.
  *
- *       
+ *      Урок4. Смотрим, как подписывать приложение и как выбрать Build Variant. Мы укажем настройки подписки и создадим release вариант нашего приложения, что позволит нам создавать подписанный
+ *          apk-файл и загрузить его на PlayMarket или поделиться с друзьями
+ *
+ *      Урок48. Используем архитектуру MVVM.
+ *          - Убираем прямую связь между DbManager и MainActivity
+ *          - Создаем Model
+ *          - Создаем ViewModel и подключаем к Model (DbManager)
+ *          - Подключаем ViewModel к View (MainActivity)
  *
  *
  *
  *
  */
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ReadDataCallback {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
 
 //    private var rootElement:ActivityMainBinding? = null //4.3.1переменная создана на уровне класса, чтобы к ней можно было добратся из любого места внутри класса
     private lateinit var tvAccaunt: TextView   //6.2
     private lateinit var rootElement:ActivityMainBinding
     private val dialogHelper = DialogHelper(this)   //5.3 Инициализируем DialogHelper. Передаем в конструкторе этот класс - MainActivity
     val myAuth = Firebase.auth //5.13 Инициализируем объект myAuth
-    val dbManager = DbManager(this)
     val adapter = AdsRcAdapter(myAuth)
+    private val firebaseViewModel: FirebaseViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -629,7 +634,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(view)    //4.3.4 Рисуем экран
         init()
         initRecyclerView()
-        dbManager.readDataFromDb()
+        initViewModel()
+        firebaseViewModel.loadAllAds()
 
     }
 
@@ -666,6 +672,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun initViewModel() {
+        firebaseViewModel.liveAdsData.observe(this, {
+            adapter.updateAdapter(it)
+        })
     }
 
     private fun init(){
@@ -757,8 +769,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
-    override fun readData(list: List<Ad>) {
-        adapter.updateAdapter(list)
-    }
+
 
 }

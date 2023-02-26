@@ -10,8 +10,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import com.MikeKrysan.myapplication.R
 import com.MikeKrysan.myapplication.adapters.ImageAdapter
-import com.MikeKrysan.myapplication.data.Ad
-import com.MikeKrysan.myapplication.database.DbManager
+import com.MikeKrysan.myapplication.model.Ad
+import com.MikeKrysan.myapplication.model.DbManager
 import com.MikeKrysan.myapplication.databinding.ActivityEditAddsBinding
 import com.MikeKrysan.myapplication.dialogs.DialogSpinnerHelper
 import com.MikeKrysan.myapplication.frag.FragmentCloseInterface
@@ -27,7 +27,7 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
     private var isImagesPermissionGranted = false   //16.3.1
     lateinit var imageAdapter : ImageAdapter    //20.6 Создали переменную на уровне класса для того чтобы она была доступна для любой функции. Адаптер мы будем обновлять, поэтому доступ к адаптеру нам нужен любой функции
     var editImagePos = 0  //23.4
-    private val dbManager = DbManager(null)
+    private val dbManager = DbManager()
     var launcherMultiSelectImage: ActivityResultLauncher<Intent>? = null
     var launcherSingleSelectImage: ActivityResultLauncher<Intent>? = null
 
