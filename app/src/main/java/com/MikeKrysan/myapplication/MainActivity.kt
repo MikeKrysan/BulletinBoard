@@ -601,16 +601,22 @@ import com.google.firebase.ktx.Firebase
             - Создаем функцию showEditPanel() в AdsRcAdapter.
             - Создаем новые объявления и тестируем.
  *
- *      Урок4. Смотрим, как подписывать приложение и как выбрать Build Variant. Мы укажем настройки подписки и создадим release вариант нашего приложения, что позволит нам создавать подписанный
+ *      Урок46_. Смотрим, как подписывать приложение и как выбрать Build Variant. Мы укажем настройки подписки и создадим release вариант нашего приложения, что позволит нам создавать подписанный
  *          apk-файл и загрузить его на PlayMarket или поделиться с друзьями
  *
- *      Урок48. Используем архитектуру MVVM.
+ *      Урок46_1. Используем архитектуру MVVM.
  *          - Убираем прямую связь между DbManager и MainActivity
  *          - Создаем Model
  *          - Создаем ViewModel и подключаем к Model (DbManager)
  *          - Подключаем ViewModel к View (MainActivity)
  *
- *
+ *      Урок47. Добавляем нижнее меню (BottomNavigationView)
+ *          - добавляем Bottom Navigation View и создаем xml файл для меню
+ *          - убираем текст из меню
+ *          - создаем новые иконки для кнопок меню
+ *          - меняем цвет состояния иконок. Создаем drawable selector в xml
+ *          - добавляем слушатель нажатий для созданного меню
+ *          - добавляем выбор элемента по возврату на MainActivity
  *
  *
  */
@@ -636,23 +642,29 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         initRecyclerView()
         initViewModel()
         firebaseViewModel.loadAllAds()
+        bottomMenuOnClick()
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        rootElement.mainContent.bNavView.selectedItemId = R.id.id_home
     }
 
     //11.13:
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId == R.id.id_new_adds) {   //Здесь нам приходит item на который нажали, и проверяем его идентификатор. Если у нас есть совпадение, значит я нажал на эту кнопку "New" и запустится новое активити
-            val i = Intent(this, EditAddsAct::class.java)  //запускаем Активити. Передаем контекст, на котором находимся, и передаем активити, на которым мы хотим перейти
-            startActivity(i)    //теперь запускаем intent(намерение) и нужное активити
-        }
-            return super.onOptionsItemSelected(item)
-    }
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        if(item.itemId == R.id.id_new_adds) {   //Здесь нам приходит item на который нажали, и проверяем его идентификатор. Если у нас есть совпадение, значит я нажал на эту кнопку "New" и запустится новое активити
+//            val i = Intent(this, EditAddsAct::class.java)  //запускаем Активити. Передаем контекст, на котором находимся, и передаем активити, на которым мы хотим перейти
+//            startActivity(i)    //теперь запускаем intent(намерение) и нужное активити
+//        }
+//            return super.onOptionsItemSelected(item)
+//    }
 
     //11.8:
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
+//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+//        menuInflater.inflate(R.menu.main_menu, menu)
+//        return super.onCreateOptionsMenu(menu)
+//    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {   //8.10
         if(requestCode == GoogleAccConst.GOOGLE_SIGN_IN_REQUEST_CODE){
@@ -692,6 +704,29 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        navView.setNavigationItemSelectedListener(this) //2.7.1
         rootElement.navView.setNavigationItemSelectedListener(this)
         tvAccaunt = rootElement.navView.getHeaderView(0).findViewById(R.id.tvAccountEmail)  //6.2.1
+    }
+
+    private fun bottomMenuOnClick() = with(rootElement) {
+        mainContent.bNavView.setOnNavigationItemSelectedListener {  item ->
+            when(item.itemId) {
+                R.id.id_new_ad -> {
+                    val i = Intent(this@MainActivity, EditAddsAct::class.java)
+                    startActivity(i)
+                }
+                R.id.id_my_ads -> {
+                    Toast.makeText(this@MainActivity, "MyAds", Toast.LENGTH_LONG).show()
+                }
+                R.id.id_favs -> {
+                    Toast.makeText(this@MainActivity, "Favs", Toast.LENGTH_LONG).show()
+
+                }
+                R.id.id_home -> {
+                    Toast.makeText(this@MainActivity, "Home", Toast.LENGTH_LONG).show()
+
+                }
+            }
+            true
+        }
     }
 
     override fun onStart() {    //6.5
