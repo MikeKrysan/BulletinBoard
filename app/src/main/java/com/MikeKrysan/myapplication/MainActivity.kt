@@ -17,6 +17,7 @@ import com.MikeKrysan.myapplication.databinding.ActivityMainBinding
 import com.MikeKrysan.myapplication.dialogHelper.DialogConst
 import com.MikeKrysan.myapplication.dialogHelper.DialogHelper
 import com.MikeKrysan.myapplication.dialogHelper.GoogleAccConst
+import com.MikeKrysan.myapplication.model.Ad
 import com.MikeKrysan.myapplication.viewModel.FirebaseViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
@@ -623,10 +624,10 @@ import com.google.firebase.ktx.Firebase
  *
  *      Урок50. Редактирование объявления, часть 2. Пишем логику для редактирования и публикации отредактированного объявления
  *
- *
+ *      Урок51. Удаление объявлений, DiffUtils.Callback. На этом уроке пишем логику для удаления обновлений и обновление адаптера через DiffUtil класс
  */
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, AdsRcAdapter.DeleteItemListener{
 
 //    private var rootElement:ActivityMainBinding? = null //4.3.1переменная создана на уровне класса, чтобы к ней можно было добратся из любого места внутри класса
     private lateinit var tvAccaunt: TextView   //6.2
@@ -812,6 +813,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     companion object {
         const val EDIT_STATE = "edit_state"
         const val ADS_DATA = "ads_data"
+    }
+
+    override fun onDeleteItem(ad: Ad) {
+        firebaseViewModel.deleteItem(ad)
     }
 
 }

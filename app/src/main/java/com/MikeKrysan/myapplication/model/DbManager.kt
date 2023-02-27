@@ -1,5 +1,6 @@
 package com.MikeKrysan.myapplication.model
 
+import android.widget.Toast
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -29,6 +30,14 @@ class DbManager {
     fun getAllAds(readDataCallback: ReadDataCallback?) {
         val query = db.orderByChild(auth.uid + "/ad/price")
         readDataFromDb(query, readDataCallback)
+    }
+
+    fun deleteAd(ad: Ad, listener: FinishWorkListener) {
+        if(ad.key == null || ad.uid == null) return
+        db.child(ad.key).child(ad.uid).removeValue().addOnCompleteListener{
+            if(it.isSuccessful) listener.onFinish()
+//            else Toast.makeText(this, "Не удалось удалить объявление", ...)
+        }
     }
 
     private fun readDataFromDb(query: Query, readDataCallback: ReadDataCallback?) {
