@@ -12,8 +12,13 @@ class DbManager {
     val db = Firebase.database.getReference("main")
     val auth = Firebase.auth
 
-    fun publishAd(ad: Ad) {
-        if(auth.uid != null)db.child(ad.key ?: "empty").child(auth.uid!!).child("ad").setValue(ad)
+    fun publishAd(ad: Ad, finishListener: FinishWorkListener) {
+        if(auth.uid != null)db.child(ad.key ?: "empty")
+            .child(auth.uid!!).child("ad")
+            .setValue(ad).addOnCompleteListener{
+//                if(it.isSuccessful)   //можно проверить сообщением тост, передались ли данные на базу данных
+                finishListener.onFinish()
+            }
     }
 
     fun getMyAds(readDataCallback: ReadDataCallback?) {
@@ -43,6 +48,10 @@ class DbManager {
 
     interface ReadDataCallback {
         fun readData(list : ArrayList<Ad>)
+    }
+
+    interface FinishWorkListener {
+        fun onFinish()
     }
 
 }

@@ -620,6 +620,10 @@ import com.google.firebase.ktx.Firebase
  *      Урок48. Узнаем, как сортировать и фильтровать данные с помощью класса Querry в Firebase Real Time Database
  *
  *      Урок49. Редактирование объявления. На этом уроке пишем логику для передачи объявления при нажатии на кнопку "редактировать" на EditAdsActivity для редактирования
+ *
+ *      Урок50. Редактирование объявления, часть 2. Пишем логику для редактирования и публикации отредактированного объявления
+ *
+ *
  */
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{

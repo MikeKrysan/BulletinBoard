@@ -27,10 +27,12 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     private val dialog = DialogSpinnerHelper() //14.2 Создаем диалог на уровне класса
     private var isImagesPermissionGranted = false   //16.3.1
     lateinit var imageAdapter : ImageAdapter    //20.6 Создали переменную на уровне класса для того чтобы она была доступна для любой функции. Адаптер мы будем обновлять, поэтому доступ к адаптеру нам нужен любой функции
-    var editImagePos = 0  //23.4
     private val dbManager = DbManager()
     var launcherMultiSelectImage: ActivityResultLauncher<Intent>? = null
     var launcherSingleSelectImage: ActivityResultLauncher<Intent>? = null
+    var editImagePos = 0  //23.4
+    private var isEditState = false
+    private var ad: Ad? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,8 +53,10 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     }
 
     private fun checkEditState() {
-        if(isEditState()) {
-            fillViews(intent.getSerializableExtra(MainActivity.ADS_DATA) as Ad)
+        isEditState = isEditState() //true по-умолчанию
+        if(isEditState) {
+            ad = intent.getSerializableExtra(MainActivity.ADS_DATA) as Ad
+            if(ad != null) fillViews(ad!!)
         }
     }
 
@@ -202,7 +206,22 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     }
 
     fun onClickPublish(view: View) {
-        dbManager.publishAd(fillAd())
+        val adTemp = fillAd()
+        if(isEditState) {
+            dbManager.publishAd(adTemp.copy(key = ad?.key), onPublishFinish())
+        } else {
+            dbManager.publishAd(adTemp, onPublishFinish())
+        }
+//        finish()
+    }
+
+    private fun onPublishFinish():DbManager.FinishWorkListener {
+        return object: DbManager.FinishWorkListener {
+            override fun onFinish() {
+                finish()
+            }
+
+        }
     }
 
     private fun fillAd() : Ad {
