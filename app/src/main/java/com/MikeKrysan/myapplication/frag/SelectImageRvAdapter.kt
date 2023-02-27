@@ -3,20 +3,15 @@ package com.MikeKrysan.myapplication.frag
 import android.content.Context
 import android.graphics.Bitmap
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.MikeKrysan.myapplication.R
-import com.MikeKrysan.myapplication.act.EditAddsAct
+import com.MikeKrysan.myapplication.act.EditAdsAct
 import com.MikeKrysan.myapplication.databinding.SelectImageFragItemBinding
 import com.MikeKrysan.myapplication.utils.AdapterCallback
 import com.MikeKrysan.myapplication.utils.ImageManager
 import com.MikeKrysan.myapplication.utils.ImagePicker
 import com.MikeKrysan.myapplication.utils.ItemTouchMoveCallback
-import kotlin.coroutines.coroutineContext
 
 class SelectImageRvAdapter(val adapterCallback: AdapterCallback): RecyclerView.Adapter<SelectImageRvAdapter.ImageHolder>(), ItemTouchMoveCallback.ItemTouchAdapter {  //18.1  //19.5
 
@@ -82,7 +77,7 @@ class SelectImageRvAdapter(val adapterCallback: AdapterCallback): RecyclerView.A
 //                pBar.visibility = View.VISIBLE
 //                ImagePicker.getImages(context as EditAddsAct, 1, ImagePicker.REQUEST_CODE_GET_SINGLE_IMAGE)   //23.5.1 Передаем контекст, который у нас есть. Как будто я передал мое активити
 //                context.editImagePos = adapterPosition //23.5.2 Я нажал на кнопку, и контекст получит номер позиции, на который я нажал. И теперь будет перезаписываться запись в переменной editImagePos EditAddsAct
-                ImagePicker.launcher(context as EditAddsAct, context.launcherSingleSelectImage, 1)
+                ImagePicker.launcher(context as EditAdsAct, context.launcherSingleSelectImage, 1)
                 context.editImagePos = adapterPosition
             }
 

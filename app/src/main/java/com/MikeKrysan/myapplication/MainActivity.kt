@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
@@ -12,7 +11,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.MikeKrysan.myapplication.act.EditAddsAct
+import com.MikeKrysan.myapplication.act.EditAdsAct
 import com.MikeKrysan.myapplication.adapters.AdsRcAdapter
 import com.MikeKrysan.myapplication.databinding.ActivityMainBinding
 import com.MikeKrysan.myapplication.dialogHelper.DialogConst
@@ -619,6 +618,8 @@ import com.google.firebase.ktx.Firebase
  *          - добавляем выбор элемента по возврату на MainActivity
  *
  *      Урок48. Узнаем, как сортировать и фильтровать данные с помощью класса Querry в Firebase Real Time Database
+ *
+ *      Урок49. Редактирование объявления. На этом уроке пишем логику для передачи объявления при нажатии на кнопку "редактировать" на EditAdsActivity для редактирования
  */
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
@@ -628,7 +629,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var rootElement:ActivityMainBinding
     private val dialogHelper = DialogHelper(this)   //5.3 Инициализируем DialogHelper. Передаем в конструкторе этот класс - MainActivity
     val myAuth = Firebase.auth //5.13 Инициализируем объект myAuth
-    val adapter = AdsRcAdapter(myAuth)
+    val adapter = AdsRcAdapter(this)
     private val firebaseViewModel: FirebaseViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -710,7 +711,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mainContent.bNavView.setOnNavigationItemSelectedListener {  item ->
             when(item.itemId) {
                 R.id.id_new_ad -> {
-                    val i = Intent(this@MainActivity, EditAddsAct::class.java)
+                    val i = Intent(this@MainActivity, EditAdsAct::class.java)
                     startActivity(i)
                 }
                 R.id.id_my_ads -> {
@@ -802,9 +803,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }   else {
             user.email
         }
-
     }
 
-
+    companion object {
+        const val EDIT_STATE = "edit_state"
+        const val ADS_DATA = "ads_data"
+    }
 
 }

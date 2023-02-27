@@ -7,7 +7,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.MikeKrysan.myapplication.act.EditAddsAct
+import com.MikeKrysan.myapplication.act.EditAdsAct
 import com.fxn.pix.Options
 import com.fxn.pix.Pix
 import com.fxn.utility.PermUtil
@@ -35,7 +35,7 @@ object ImagePicker {    //16.1
 //        Pix.start(context, options)
     }
 
-    fun launcher(edAct: EditAddsAct, launcher: ActivityResultLauncher<Intent>?, imageCounter: Int) {
+    fun launcher(edAct: EditAdsAct, launcher: ActivityResultLauncher<Intent>?, imageCounter: Int) {
         //Проверяем по аналогии из библиотеки Pix функция start() - 316строка
         PermUtil.checkForCamaraWritePermissions(edAct) {
             val intent = Intent(edAct, Pix::class.java).apply {
@@ -46,7 +46,7 @@ object ImagePicker {    //16.1
 
     }
 
-    fun getLauncherForMultiSelectImages(edAct: EditAddsAct): ActivityResultLauncher<Intent> {
+    fun getLauncherForMultiSelectImages(edAct: EditAdsAct): ActivityResultLauncher<Intent> {
         return edAct.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == AppCompatActivity.RESULT_OK) {
                 if (result.data != null) {
@@ -68,7 +68,7 @@ object ImagePicker {    //16.1
         }
     }
 
-    fun getLauncherForSingleImage(edAct: EditAddsAct): ActivityResultLauncher<Intent> {
+    fun getLauncherForSingleImage(edAct: EditAdsAct): ActivityResultLauncher<Intent> {
         return edAct.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == AppCompatActivity.RESULT_OK) {
                 if (result.data != null) {

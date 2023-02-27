@@ -12,7 +12,7 @@ import androidx.core.view.get
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.MikeKrysan.myapplication.R
-import com.MikeKrysan.myapplication.act.EditAddsAct
+import com.MikeKrysan.myapplication.act.EditAdsAct
 import com.MikeKrysan.myapplication.databinding.ListImageFragBinding
 import com.MikeKrysan.myapplication.dialogHelper.ProgressDialog
 import com.MikeKrysan.myapplication.utils.AdapterCallback
@@ -149,7 +149,7 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //                )  //21.7 Ожидает AppCompatActivity а приходит FragmentActivity, делаем даункаст    //23.2.2
 //            Log.d("MyLog", "Add item")
 
-                ImagePicker.launcher(activity as EditAddsAct, (activity as EditAddsAct).launcherMultiSelectImage, imageCount)
+                ImagePicker.launcher(activity as EditAdsAct, (activity as EditAdsAct).launcherMultiSelectImage, imageCount)
                 true
             }
 

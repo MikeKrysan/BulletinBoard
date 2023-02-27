@@ -1,14 +1,12 @@
 package com.MikeKrysan.myapplication.dialogs
 
 import android.app.AlertDialog
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.MikeKrysan.myapplication.R
-import com.MikeKrysan.myapplication.act.EditAddsAct
 
 class RcViewDialogSpinnerAdapter(var tvSelection: TextView, var dialog:AlertDialog) : RecyclerView.Adapter<RcViewDialogSpinnerAdapter.SpViewHolder>() {    //Адаптер принимает ViewHolder, который мы сейчас создадим. Адаптер ждет ViewHolder, а мы передаем просто класс SpViewHolder,   //14.7class RcViewDialogSpinnerAdapter(context: Context)  //14.8.2 -б)    //14.17    //15.5.5
     //поэтому классу SpViewHolder нужно унаследоваться от RecyclerView.ViewHolder. Все равно будет ругатся, пишет что это другой класс, а я пишу класс SpViewHolder напрямую, поэтому указываем

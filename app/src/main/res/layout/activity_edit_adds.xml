@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/grey_dark"
     android:onClick="onClickSelectCity"
-    tools:context=".act.EditAddsAct">
+    tools:context=".act.EditAdsAct">
 
     <ScrollView
         android:id="@+id/scrollViewMain"

@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+import com.MikeKrysan.myapplication.MainActivity
 import com.MikeKrysan.myapplication.R
 import com.MikeKrysan.myapplication.adapters.ImageAdapter
 import com.MikeKrysan.myapplication.model.Ad
@@ -20,7 +21,7 @@ import com.MikeKrysan.myapplication.utils.CityHelper
 import com.MikeKrysan.myapplication.utils.ImagePicker
 import com.fxn.utility.PermUtil
 
-class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
+class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     var chooseImageFrag : ImageListFrag? = null     //21.8 *
     lateinit var rootElement:ActivityEditAddsBinding  //14.9 делаем rootElement public
     private val dialog = DialogSpinnerHelper() //14.2 Создаем диалог на уровне класса
@@ -37,6 +38,7 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
         setContentView(rootElement.root)
 
         init()  //14.1
+        checkEditState()
 
 //        val listCountry = CityHelper.getAllCountries(this)  //13.1
 
@@ -46,7 +48,29 @@ class EditAddsAct : AppCompatActivity(), FragmentCloseInterface {
 
 //        val dialog  = DialogSpinnerHelper()     //13.4 Создаем объект класса DialogSpinnerHelper
 //        dialog.showSpinnerDialog(this, listCountry) //Окно появилось, но нет поиска и списка, потому что нет адаптера, и никакой recyclerView к адаптеру не подключен
+    }
 
+    private fun checkEditState() {
+        if(isEditState()) {
+            fillViews(intent.getSerializableExtra(MainActivity.ADS_DATA) as Ad)
+        }
+    }
+
+    //Функция, которая будет проверять, мы зашли для создадния нового объявления, либо для редактирования:
+    private fun isEditState(): Boolean {
+        return intent.getBooleanExtra(MainActivity.EDIT_STATE, false)
+    }
+
+    private fun fillViews(ad : Ad) = with(rootElement) {
+        tvCountry.text = ad.country
+        tvCity.text = ad.city
+        editTel.setText(ad.tel)
+        edIndex.setText(ad.index)
+        checkBoxWithSend.isChecked = ad.withSend.toBoolean()
+        tvCat.text = ad.category
+        edTitle.setText(ad.title)
+        edPrice.setText(ad.price)
+        edDescription.setText(ad.description)
     }
 
     private fun init() {    //14.1
