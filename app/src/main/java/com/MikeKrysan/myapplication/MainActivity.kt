@@ -625,9 +625,13 @@ import com.google.firebase.ktx.Firebase
  *      Урок50. Редактирование объявления, часть 2. Пишем логику для редактирования и публикации отредактированного объявления
  *
  *      Урок51. Удаление объявлений, DiffUtils.Callback. На этом уроке пишем логику для удаления обновлений и обновление адаптера через DiffUtil класс
+ *
+ *      Урок52. Создаем счетчик просмотров объявлений
+ *
+ *      Урок53. Создаем категорию Избраное Часть 1. Пишем код для добавления и удаления объявления в Избранное
  */
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, AdsRcAdapter.DeleteItemListener{
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, AdsRcAdapter.Listener{
 
 //    private var rootElement:ActivityMainBinding? = null //4.3.1переменная создана на уровне класса, чтобы к ней можно было добратся из любого места внутри класса
     private lateinit var tvAccaunt: TextView   //6.2
@@ -817,6 +821,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onDeleteItem(ad: Ad) {
         firebaseViewModel.deleteItem(ad)
+    }
+
+    override fun onAdViewed(ad: Ad) {
+        firebaseViewModel.adViewed(ad)
     }
 
 }
