@@ -5,6 +5,8 @@
     <!-- Menu Drawer Strings -->
     <string name="ads_cat1">Объявления</string>
     <string name="ads_my_ads">Мои объявления</string>
+    <string name="my_fav">Избранные</string>
+    <string name="dif">Разные</string>
     <string name="ads_car">Машины</string>
     <string name="ads_pc">Компьютеры</string>
     <string name="ads_smartphone">Смартфоны</string>
@@ -56,7 +58,6 @@
     <string name="publish">Опубликовать</string>
     <!-- AdListItem -->
     <string name="price_desc">Цена:</string>
-
 
 
 

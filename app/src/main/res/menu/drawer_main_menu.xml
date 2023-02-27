@@ -9,6 +9,12 @@
                 android:title="@string/ads_my_ads"
                 android:id="@+id/id_my_ads" />
             <item
+                android:title="@string/my_fav"
+                android:id="@+id/id_my_fav"/>
+            <item
+                android:title="@string/dif"
+                android:id="@+id/id_div"/>
+            <item
                 android:title="@string/ads_car"
                 android:id="@+id/id_car" />
             <item

@@ -618,7 +618,7 @@ import com.google.firebase.ktx.Firebase
  *          - добавляем слушатель нажатий для созданного меню
  *          - добавляем выбор элемента по возврату на MainActivity
  *
- *
+ *      Урок48. Узнаем, как сортировать и фильтровать данные с помощью класса Querry в Firebase Real Time Database
  */
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
@@ -714,15 +714,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     startActivity(i)
                 }
                 R.id.id_my_ads -> {
-                    Toast.makeText(this@MainActivity, "MyAds", Toast.LENGTH_LONG).show()
+                    firebaseViewModel.loadMyAds()
+                    mainContent.toolbar.title = getString(R.string.ads_my_ads)
                 }
                 R.id.id_favs -> {
                     Toast.makeText(this@MainActivity, "Favs", Toast.LENGTH_LONG).show()
 
                 }
                 R.id.id_home -> {
-                    Toast.makeText(this@MainActivity, "Home", Toast.LENGTH_LONG).show()
-
+                    firebaseViewModel.loadAllAds()
+                    mainContent.toolbar.title = getString(R.string.dif)
                 }
             }
             true

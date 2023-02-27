@@ -8,13 +8,20 @@ import com.MikeKrysan.myapplication.model.DbManager
 class FirebaseViewModel: ViewModel() {
     private val dbManager = DbManager()
     val liveAdsData = MutableLiveData<ArrayList<Ad>>()
+
     fun loadAllAds() {
-        dbManager.readDataFromDb(object: DbManager.ReadDataCallback{
+        dbManager.getAllAds(object: DbManager.ReadDataCallback{
             override fun readData(list: ArrayList<Ad>) {
                 liveAdsData.value = list
             }
-
         })
+    }
 
+    fun loadMyAds() {
+        dbManager.getMyAds(object: DbManager.ReadDataCallback{
+            override fun readData(list: ArrayList<Ad>) {
+                liveAdsData.value = list
+            }
+        })
     }
 }
