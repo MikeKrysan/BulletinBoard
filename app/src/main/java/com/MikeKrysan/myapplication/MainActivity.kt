@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -631,6 +632,8 @@ import com.google.firebase.ktx.Firebase
  *      Урок53. Создаем категорию Избраное Часть 1. Пишем код для добавления и удаления объявления в Избранное
  *
  *      Урок54. Создаем категорию Избранное  Часть 2. На этом уроки делаем счетчик избранных.
+ *
+ *      Урок55. Фильтруем избранные объявления и добавляем TextView "Пусто" для индикации отсутствия объявлений
  */
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, AdsRcAdapter.Listener{
@@ -701,6 +704,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun initViewModel() {
         firebaseViewModel.liveAdsData.observe(this, {
             adapter.updateAdapter(it)
+            rootElement.mainContent.tvEmpty.visibility = if(it.isEmpty()) View.VISIBLE else View.GONE
         })
     }
 
@@ -730,8 +734,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     mainContent.toolbar.title = getString(R.string.ads_my_ads)
                 }
                 R.id.id_favs -> {
-                    Toast.makeText(this@MainActivity, "Favs", Toast.LENGTH_LONG).show()
-
+                    firebaseViewModel.loadMyFavs()
                 }
                 R.id.id_home -> {
                     firebaseViewModel.loadAllAds()
