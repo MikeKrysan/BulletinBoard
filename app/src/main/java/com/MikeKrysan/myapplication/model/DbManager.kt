@@ -28,6 +28,40 @@ class DbManager {
         if(auth.uid != null)db.child(ad.key ?: "empty")
             .child(INFO_NODE).setValue(InfoItem(counter.toString(), ad.emailCounter, ad.callsCounter))
     }
+    //функция, которая будет определять, какую из двух функций необходимо запустить: addToFavs() или removeFromFavs
+    fun onFavClick(ad: Ad, listener: FinishWorkListener) {
+        if(ad.isFav) {
+            removeFromFavs(ad, listener)
+        } else {
+            addToFavs(ad, listener)
+        }
+    }
+
+    private fun addToFavs(ad: Ad, listener: FinishWorkListener) {
+        ad.key?.let {
+            auth.uid?.let {
+                    uid -> db.child(it)
+                .child(FAVS_NODE)
+                .child(uid)
+                .setValue(uid).addOnCompleteListener {
+                        if(it.isSuccessful) listener.onFinish()
+                    }
+            }
+        }
+    }
+
+    private fun removeFromFavs(ad: Ad, listener: FinishWorkListener) {
+        ad.key?.let {
+            auth.uid?.let {
+                    uid -> db.child(it)
+                .child(FAVS_NODE)
+                .child(uid)
+                .removeValue().addOnCompleteListener {
+                    if(it.isSuccessful) listener.onFinish()
+                }
+            }
+        }
+    }
 
     fun getMyAds(readDataCallback: ReadDataCallback?) {
         val query = db.orderByChild(auth.uid + "/ad/uid").equalTo(auth.uid)
@@ -82,6 +116,7 @@ class DbManager {
         const val AD_NODE = "ad"
         const val MAIN_NODE = "main"
         const val INFO_NODE = "info"
+        const val FAVS_NODE = "favs"
     }
 
 }
