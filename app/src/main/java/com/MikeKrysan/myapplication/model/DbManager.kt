@@ -1,5 +1,6 @@
 package com.MikeKrysan.myapplication.model
 
+import android.util.Log
 import android.widget.Toast
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -92,6 +93,14 @@ class DbManager {
                         if(ad == null) ad = it.child(AD_NODE).getValue(Ad::class.java)
                     }
                     val infoItem = item.child(INFO_NODE).getValue(InfoItem::class.java)
+
+                    val favCounter = item.child(FAVS_NODE).childrenCount
+                    val isFav = auth.uid?.let { item.child(FAVS_NODE).child(it).getValue(String::class.java) }   //делаем безопасный запуск по идентификатору. Если не null, то все что находится в let запуститься и туда передастся it, а it это и есть наш идентификатор. Т.о. я пытаюсь взять наи идентификатор
+                    ad?.isFav = isFav != null   //Если isFav null, значит строкой выше мы не нашли идентификатора, и это значит, что сюда запишется false. Если выше в строке не null, то здесь запишеться true
+//                    Log.d("MyLog", "Counter favs: $favCounter")
+                    ad?.favCounter = favCounter.toString()
+
+
                     ad?.viewsCounter = infoItem?.viewsCounter ?: "0"
                     ad?.emailCounter = infoItem?.emailsCounter ?: "0"
                     ad?.callsCounter = infoItem?.callsCounter ?: "0"

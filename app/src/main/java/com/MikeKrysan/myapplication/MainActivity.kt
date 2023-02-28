@@ -629,6 +629,8 @@ import com.google.firebase.ktx.Firebase
  *      Урок52. Создаем счетчик просмотров объявлений
  *
  *      Урок53. Создаем категорию Избраное Часть 1. Пишем код для добавления и удаления объявления в Избранное
+ *
+ *      Урок54. Создаем категорию Избранное  Часть 2. На этом уроки делаем счетчик избранных.
  */
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, AdsRcAdapter.Listener{
