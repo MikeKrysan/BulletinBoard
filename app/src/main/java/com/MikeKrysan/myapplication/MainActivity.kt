@@ -12,6 +12,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.MikeKrysan.myapplication.accaunthelper.AccauntHelper
 import com.MikeKrysan.myapplication.act.EditAdsAct
 import com.MikeKrysan.myapplication.adapters.AdsRcAdapter
 import com.MikeKrysan.myapplication.databinding.ActivityMainBinding
@@ -634,6 +635,14 @@ import com.google.firebase.ktx.Firebase
  *      Урок54. Создаем категорию Избранное  Часть 2. На этом уроки делаем счетчик избранных.
  *
  *      Урок55. Фильтруем избранные объявления и добавляем TextView "Пусто" для индикации отсутствия объявлений
+ *
+ *      Урок56. Добавляем анонимного пользователя. Часть 1
+ *          - функция signInAnonymously()
+ *          - активируем анонимный вход на Firebase Authentication
+ *          - проверка выхода анонимного пользователя
+ *          - удаляем анонимный аккаунт если зарегистрировались
+ *          - блокируем добав в избранное у анонимного пользователя
+ *          - обновляем UI в зависимости под каким аккаунтом вошли
  */
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, AdsRcAdapter.Listener{
@@ -760,49 +769,37 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {    //2.7.2 Когда мы нажали на элемент из главного меню, мы можем проверить id этого элемента
         when(item.itemId){
             R.id.id_my_ads -> {
-
                 Toast.makeText(this, "Pressed id_my_ads", Toast.LENGTH_SHORT).show()
-
             }
             R.id.id_car -> {
-
                 Toast.makeText(this, "Pressed id_car", Toast.LENGTH_SHORT).show()
-
             }
             R.id.id_pc -> {
-
                 Toast.makeText(this, "Pressed id_pc", Toast.LENGTH_SHORT).show()
-
             }
             R.id.id_smart -> {
-
                 Toast.makeText(this, "Pressed id_smart", Toast.LENGTH_SHORT).show()
-
             }
             R.id.id_appliance -> {
-
                 Toast.makeText(this, "Pressed id_appliance", Toast.LENGTH_SHORT).show()
-
             }
             R.id.id_sign_up -> {
-
 //                Toast.makeText(this, "Pressed id_sign_up", Toast.LENGTH_LONG).show()
                 dialogHelper.createSignDialog(DialogConst.SIGN_UP_STATE)    //5.4 //5.9 Для регистрации передаем константу регистрации
-
             }
             R.id.id_sign_in -> {
-
 //                Toast.makeText(this, "Pressed id_sign_in", Toast.LENGTH_LONG).show()
                 dialogHelper.createSignDialog(DialogConst.SIGN_IN_STATE)   //5.4  //5.10 Вход и константа берется для входа
-
             }
             R.id.id_sign_out -> {
-
+                if(myAuth.currentUser?.isAnonymous == true) {
+                    rootElement.drawerLayout.closeDrawer(GravityCompat.START)
+                    return true
+                }
 //                Toast.makeText(this, "Pressed id_sign_out", Toast.LENGTH_LONG).show()
                 uiUpdate(null)  //6.4
                 myAuth.signOut()    //для выхода своей функции писать не нужно, мы воспользуемся функцией класса Auth
                 dialogHelper.accHelper.signOutGoogle()  //11.2
-
             }
         }
 //        drawerLayout.closeDrawer(GravityCompat.START)   //При нажатии на одну из кнопок выполнится одно из условий и после этого запустится closeDrawer, и меню закроется
@@ -811,11 +808,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun uiUpdate(user: FirebaseUser?) {  //6.3 в user содержится информация, под каким email мы зарегистрировались и оттуда мы и будем доставать email. Будем доставать email под которым зарегистировались, и передавть user-a
-
-        tvAccaunt.text = if(user == null){
-            resources.getString(R.string.not_reg)
-        }   else {
-            user.email
+        if(user == null){
+            dialogHelper.accHelper.signInAnonymously(object: AccauntHelper.Listener {
+                override fun onComplete() {
+//                    tvAccaunt.setText(R.string.Guest) //либо:
+                    tvAccaunt.text = getString(R.string.Guest)
+                }
+            })
+        }   else if(user.isAnonymous){
+            tvAccaunt.text = getString(R.string.Guest)
+        } else if(!user.isAnonymous) {
+            tvAccaunt.text = user.email
         }
     }
 
