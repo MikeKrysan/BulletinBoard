@@ -2,9 +2,9 @@ package com.MikeKrysan.myapplication.utils
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.support.media.ExifInterface
 import android.util.Log
 import android.widget.ImageView
-import androidx.exifinterface.media.ExifInterface
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

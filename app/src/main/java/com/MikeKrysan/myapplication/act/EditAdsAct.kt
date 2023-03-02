@@ -19,7 +19,6 @@ import com.MikeKrysan.myapplication.frag.FragmentCloseInterface
 import com.MikeKrysan.myapplication.frag.ImageListFrag
 import com.MikeKrysan.myapplication.utils.CityHelper
 import com.MikeKrysan.myapplication.utils.ImagePicker
-import com.fxn.utility.PermUtil
 
 class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     var chooseImageFrag : ImageListFrag? = null     //21.8 *
@@ -140,23 +139,23 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
 ////        }
 //    }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-
-        when (requestCode) {
-            PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS -> {
-                //If request is cancelled, the result arrays are empty.
-                if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                    ImagePicker.getImages(this, 3, ImagePicker.REQUEST_CODE_GET_IMAGES)  //17.9.2 * imageCounter    //23.2.2
-//                      isImagesPermissionGranted = true
-                } else {
-//                    isImagesPermissionGranted = false
-                    Toast.makeText(this, "Approve permissions to open Pix ImagePicker", Toast.LENGTH_LONG).show()
-                }
-                return
-            }
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)     //16.3
-    }
+//    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+//
+//        when (requestCode) {
+//            PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS -> {
+//                //If request is cancelled, the result arrays are empty.
+//                if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+////                    ImagePicker.getImages(this, 3, ImagePicker.REQUEST_CODE_GET_IMAGES)  //17.9.2 * imageCounter    //23.2.2
+////                      isImagesPermissionGranted = true
+//                } else {
+////                    isImagesPermissionGranted = false
+//                    Toast.makeText(this, "Approve permissions to open Pix ImagePicker", Toast.LENGTH_LONG).show()
+//                }
+//                return
+//            }
+//        }
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)     //16.3
+//    }
 
     //OnClicks
     fun onClickSelectCountry(view: View) {  //14.5 Есть слушатель нажатий, но он пока ни к чему не подключен. Чтобы его подключить, в активити на textView находим onClick и назначаем ему только что созданый onClickSelectCountry
