@@ -31,7 +31,7 @@ import com.google.firebase.ktx.Firebase
 //import kotlinx.android.synthetic.main.activity_main.*
 //import kotlinx.android.synthetic.main.main_content.*
 
-/*
+
 /**
  * Урок 1
  * 1.1 Создали папку menu в resources
@@ -662,7 +662,12 @@ import com.google.firebase.ktx.Firebase
  *      Урок63. Добавляем возможность загрузки нескольких фото на Firebase Storage
  */
 
+/*
+
  */
+
+
+ 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, AdsRcAdapter.Listener{
 

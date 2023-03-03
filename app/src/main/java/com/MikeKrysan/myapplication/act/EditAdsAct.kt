@@ -28,6 +28,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     lateinit var imageAdapter : ImageAdapter    //20.6 Создали переменную на уровне класса для того чтобы она была доступна для любой функции. Адаптер мы будем обновлять, поэтому доступ к адаптеру нам нужен любой функции
     private val dbManager = DbManager()
     var editImagePos = 0  //23.4
+    private var imageIndex = 0
     private var isEditState = false
     private var ad: Ad? = null
 
@@ -201,13 +202,13 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     }
 
     fun onClickPublish(view: View) {
-        val adTemp = fillAd()
+        ad = fillAd()
         //если редактирование:
         if(isEditState) {
-            dbManager.publishAd(adTemp.copy(key = ad?.key), onPublishFinish())
+            ad?.copy(key = ad?.key)?.let { dbManager.publishAd(it, onPublishFinish()) }
             //если публикация
         } else {
-            uploadImages(adTemp)  //Сначала заргужаем картинки. Текстовую часть загрузим после
+            uploadImages()  //Сначала заргужаем картинки. Текстовую часть загрузим после
         }
 //        finish()
     }
@@ -259,11 +260,33 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     }
 
     //взятие картинки из приложения и загрузка в базу
-    private fun uploadImages(adTemp: Ad) {
-       val byteArray = prepareImageByteArray(imageAdapter.mainArray[0]) //Пока что беру первую картинку для загрузки в базу даных из адаптера
+    //Жмем первый раз на кнопку "Опубликовать объявление"
+    private fun uploadImages() {
+        if(imageAdapter.mainArray.size == imageIndex) { //я выбрал 2 картинки, к примеру. Сейчас imageIndex = 0, потому что я первый раз нажал
+            dbManager.publishAd(ad!!, onPublishFinish())
+            return
+        }
+       val byteArray = prepareImageByteArray(imageAdapter.mainArray[imageIndex])    //берем картинку с позиции 0 и превращаем ее в byteArray
         //Интерфейс можно передавать не в аргументы функции, а в фигурные скобки
+        //Загружаем эту картинку на Firebase
         uploadImage(byteArray) {
-            dbManager.publishAd(adTemp.copy(mainImage = it.result.toString()), onPublishFinish())
+//            dbManager.publishAd(ad!!, onPublishFinish())
+            nextImage(it.result.toString()) //как только она загрузится, приходит ссылка этой картинки в виде it.result
+        }
+    }
+
+    private fun nextImage(uri: String) {
+        setImageUriToAd(uri)    //ссылку, которую мы получили на картинку в uploadImages, нужно записать в наше объявление, ведь мы хотим ее сохранить вместе с текстом
+        imageIndex++    //прежде чем увеличить счетчик на 1, мы выбираем setImageUriToAd()
+        uploadImages()  // *  .Далее, если есть картинки, которые мы добавили к объявлению, функция сама себя перезапускает, поскольку есть еще картинки
+    }
+
+    //функция, которая нужна для того, чтобы брать данные из массива функции uploadImages и загружала в mainImage, image2, image3 класса Ad
+    private fun setImageUriToAd(uri: String) {
+        when(imageIndex) {                          //это условие проверяет позицию, на которую мы только что загрузили картинку
+            0 -> ad = ad?.copy(mainImage = uri) //ссылка, которую мы хотим опубликовать впервые запишется в mainImage
+            1 -> ad = ad?.copy(image2 = uri)
+            2 -> ad = ad?.copy(image3 = uri)
         }
     }
 
@@ -289,3 +312,8 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
 //* Делаем возможным быть анонимному классу null. Если он null, мы еще не создали фрагмент, и тогда можно смело запускать условие if(returnValues?.size!! > 1)
 // функции onActivityResult и создавать новый фрагмент. Но если он не null, значит он уже был создан. Это значит, что если функция onActivityResult запустилась,
 // тобишь мы ее запустили из этого фрагмента
+
+//Добавление объявления в базу данных состоит из двух этапов:
+//1) Загружаем картинку на Firebase Storage.
+//2) Нам выдает ссылку, и ссылку(текстовую часть) загружаем уже в realtime Database
+//Но мы не сразу публикуем объявление, пока все картинки не загрузятся, пока все ссылки не получим, мы не опубликуем наше объявление. Пока что все записывается в класс Ad
