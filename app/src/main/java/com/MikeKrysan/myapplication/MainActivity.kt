@@ -31,6 +31,7 @@ import com.google.firebase.ktx.Firebase
 //import kotlinx.android.synthetic.main.activity_main.*
 //import kotlinx.android.synthetic.main.main_content.*
 
+/*
 /**
  * Урок 1
  * 1.1 Создали папку menu в resources
@@ -649,13 +650,17 @@ import com.google.firebase.ktx.Firebase
  *
  *      Урок58. Вышло новое обновление для библиотеки Pix, по этой причине мы переделываем код под новую версию данной библиотеки которая
  *      теперь поддерживает версию андроид 11  а также можем уже удалить jcenter из проекта так как библиотеку уже перенесли на mavenCentral
- *
  *      Урок59. Новая версия Pix Image Picker, часть 2
- *      Урок59. Новая версия Pix Image Picker, часть 3
- *      Урок59. Новая версия Pix Image Picker, часть 2
- *
- *
-
+ *      Урок60. Новая версия Pix Image Picker, часть 3
+ *      Урок61. Новая версия Pix Image Picker, часть 4
+ *      
+ *      Урок62. Загрузка фото на Firebase Storage
+ *          - создание функции prepareImageByteArray()
+ *          - cоздание функции uploadImage()
+ *          - создание функции uploadImages()
+ *          
+ *      Урок63. Добавляем возможность загрузки нескольких фото на Firebase Storage
+ */
 
  */
 

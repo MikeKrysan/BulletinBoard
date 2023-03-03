@@ -17,6 +17,8 @@ import com.MikeKrysan.myapplication.frag.FragmentCloseInterface
 import com.MikeKrysan.myapplication.frag.ImageListFrag
 import com.MikeKrysan.myapplication.utils.CityHelper
 import com.MikeKrysan.myapplication.utils.ImagePicker
+import com.google.android.gms.tasks.OnCompleteListener
+import java.io.ByteArrayOutputStream
 
 class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     var chooseImageFrag : ImageListFrag? = null     //21.8 *
@@ -200,10 +202,12 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
 
     fun onClickPublish(view: View) {
         val adTemp = fillAd()
+        //если редактирование:
         if(isEditState) {
             dbManager.publishAd(adTemp.copy(key = ad?.key), onPublishFinish())
+            //если публикация
         } else {
-            dbManager.publishAd(adTemp, onPublishFinish())
+            uploadImages(adTemp)  //Сначала заргужаем картинки. Текстовую часть загрузим после
         }
 //        finish()
     }
@@ -229,6 +233,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
                     edTitle.text.toString(),
                     edPrice.text.toString(),
                     edDescription.text.toString(),
+                    "empty",
                     dbManager.db.push().key,
                     "0",
                     dbManager.auth.uid)
@@ -253,6 +258,32 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
         fm.commit()
     }
 
+    //взятие картинки из приложения и загрузка в базу
+    private fun uploadImages(adTemp: Ad) {
+       val byteArray = prepareImageByteArray(imageAdapter.mainArray[0]) //Пока что беру первую картинку для загрузки в базу даных из адаптера
+        //Интерфейс можно передавать не в аргументы функции, а в фигурные скобки
+        uploadImage(byteArray) {
+            dbManager.publishAd(adTemp.copy(mainImage = it.result.toString()), onPublishFinish())
+        }
+    }
+
+    //подготвка картинки к загрузке в базу
+    private fun prepareImageByteArray(bitMap: Bitmap): ByteArray {
+        val outStream = ByteArrayOutputStream()
+        bitMap.compress(Bitmap.CompressFormat.JPEG, 20, outStream)
+        return outStream.toByteArray()
+    }
+
+    //загрузка картинки в базу
+    private fun uploadImage(byteArray: ByteArray, listener: OnCompleteListener<Uri>) {
+        val imStorageRef = dbManager.dbStorage  //Ссылка на то место, где мы хотим сохранить данную картинку
+            .child(dbManager.auth.uid!!)    //берем аутоидентификатор пользователя, и под ним уже все записываем
+            .child("image_${System.currentTimeMillis()}")   //создаем узел, где будут хранится картинки пользователя. Присваиваем название картинки, взяв время, чтобы одна и та же картинка не перазаписывалась, и не выдумывая каждый раз названия картинки
+        val upTask = imStorageRef.putBytes(byteArray)   //uploadTask  - загрузка картинки. На путь и название ранее созданные добавляем байты
+        upTask.continueWithTask{    //узнаю, когда завершилась загрузка
+            task -> imStorageRef.downloadUrl    //мы получаем нашу ссылку
+        }.addOnCompleteListener(listener)   //проверяем, получили картинку или нет. Но я не хочу, чтобы эта проверка запускалась в этой функции, я хочу передать интерфейс, и запустить там, где я буду запускать функцию uploadImages()
+    }
 }
 
 //* Делаем возможным быть анонимному классу null. Если он null, мы еще не создали фрагмент, и тогда можно смело запускать условие if(returnValues?.size!! > 1)

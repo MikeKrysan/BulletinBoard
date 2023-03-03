@@ -93,8 +93,8 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface): Bas
 
     override fun onDetach() {   //17.8
         super.onDetach()
-        fragCloseInterface.onFragClose(adapter.mainArray)       //17.8.1 Так как мы передали интерфейс с EditAddsAct, то он и запустится также в функции onFragClose() класса EditAddsAct и тогда view станет видимым
-        job?.cancel()    //27.6 Все операции, которые происходили в CoroutineScope - завершились
+//        fragCloseInterface.onFragClose(adapter.mainArray)       //17.8.1 Так как мы передали интерфейс с EditAddsAct, то он и запустится также в функции onFragClose() класса EditAddsAct и тогда view станет видимым
+//        job?.cancel()    //27.6 Все операции, которые происходили в CoroutineScope - завершились
 //        Log.d("MyLog", "Title 0 : ${adapter.mainArray[0].title}")    //18.9 Временная проверка
 //        Log.d("MyLog", "Title 1 : ${adapter.mainArray[1].title}")
 //        Log.d("MyLog", "Title 2 : ${adapter.mainArray[2].title}")
@@ -103,6 +103,8 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface): Bas
     override fun onClose() {
         super.onClose()
         activity?.supportFragmentManager?.beginTransaction()?.remove(this@ImageListFrag)?.commit()
+        fragCloseInterface.onFragClose(adapter.mainArray)
+        job?.cancel()
     }
 
     fun resizeSelectedImages(newList: ArrayList<Uri>, needClear : Boolean, activity: Activity) {
