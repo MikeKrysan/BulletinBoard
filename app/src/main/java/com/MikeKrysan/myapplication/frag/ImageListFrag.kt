@@ -2,6 +2,7 @@ package com.MikeKrysan.myapplication.frag
 
 import android.app.Activity
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -24,7 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, private val newList:ArrayList<String>?): BaseAdsFragment(), AdapterCallback { //17.2    //17.7.3 Добавляем конструктор нашему классу, который выводит фрагмент. Чтобы то, что мы будем передавть в этот конструктор было доступно на уровне всего класса нашего фрагмента, нужно указать val либо var //18.8 - newList:ArrayList
+class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, private val newList:ArrayList<Uri>?): BaseAdsFragment(), AdapterCallback { //17.2    //17.7.3 Добавляем конструктор нашему классу, который выводит фрагмент. Чтобы то, что мы будем передавть в этот конструктор было доступно на уровне всего класса нашего фрагмента, нужно указать val либо var //18.8 - newList:ArrayList
 
 //    lateinit var rootElement : ListImageFragBinding     //21.2.2
 
@@ -104,11 +105,11 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
         activity?.supportFragmentManager?.beginTransaction()?.remove(this@ImageListFrag)?.commit()
     }
 
-    private fun resizeSelectedImages(newList: ArrayList<String>, needClear : Boolean) {
+    private fun resizeSelectedImages(newList: ArrayList<Uri>, needClear : Boolean) {
 
         job = CoroutineScope(Dispatchers.Main).launch {
             val dialog = ProgressDialog.createProgressDialog(activity as Activity)
-            val bitmapList = ImageManager.imageResize(newList)
+            val bitmapList = ImageManager.imageResize(newList, activity as Activity)
             dialog.dismiss()
             adapter.updateAdapter(bitmapList, needClear)
             if(adapter.mainArray.size > 2 ) addImageItem?.isVisible = false
@@ -149,14 +150,14 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //                )  //21.7 Ожидает AppCompatActivity а приходит FragmentActivity, делаем даункаст    //23.2.2
 //            Log.d("MyLog", "Add item")
 
-                ImagePicker.launcher(activity as EditAdsAct, (activity as EditAdsAct).launcherMultiSelectImage, imageCount)
+                ImagePicker.launcher(activity as EditAdsAct, imageCount)
                 true
             }
 
         }
     }
 
-    fun updateAdapter(newList:ArrayList<String>) {  //21.8.2
+    fun updateAdapter(newList:ArrayList<Uri>) {  //21.8.2
 //        val updateList = ArrayList<SelectImageItem>()     //22.1.1
 ////        for(n in adapter.mainArray.size until newList.size ) {    //Если во фрагменте мы выбрали уже к примеру 2 картинки(adapter.mainArray.size = 2) и хотим добавить еще одну картинку (newList.size) - цикл не запустится так как не будут выполнены условия 2<=1, поэтому меняем условия работы цикла:
 //        for(n in adapter.mainArray.size until newList.size + adapter.mainArray.size) {    //21.9 у нас может быть не нулявая позиция. Нам нужно начинать с позиции нашего массива.    //22.1.1
@@ -167,12 +168,12 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //        adapter.updateAdapter(newList, false)   //22.1.1
      }
 
-    fun setSingleImage(uri : String, pos : Int) {   //23.7.1
+    fun setSingleImage(uri : Uri, pos : Int) {   //23.7.1
 
         val pBar = binding.rcViewSelectImage[pos].findViewById<ProgressBar>(R.id.pBar)
         job = CoroutineScope(Dispatchers.Main).launch{
             pBar.visibility = View.VISIBLE
-            val bitmapList = ImageManager.imageResize(listOf(uri))
+            val bitmapList = ImageManager.imageResize(arrayListOf(uri), activity as Activity)
             pBar.visibility = View.GONE
             adapter.mainArray[pos] = bitmapList[0]  //Работает все как и раньше, просто вместо того, чтобы передавать ссылку, я эту ссылку превращаю в bitmap и передаю bitmap
 //            adapter.notifyDataSetChanged()

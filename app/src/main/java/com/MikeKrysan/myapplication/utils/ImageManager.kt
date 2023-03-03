@@ -1,16 +1,17 @@
 package com.MikeKrysan.myapplication.utils
 
+import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.support.media.ExifInterface
-import android.util.Log
 import android.widget.ImageView
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 import java.io.File
+import java.io.InputStream
 
 object ImageManager {
 
@@ -18,22 +19,31 @@ object ImageManager {
     private const val WIDTH = 0
     private const val HEIGHT = 1
 
-    fun getImageSize(uri : String) : List<Int>  { //25.2
-
+    fun getImageSize(uri : Uri, act: Activity) : List<Int>  { //25.2
+        val inStream = act.contentResolver.openInputStream(uri)
+        val fTemp = File(act.cacheDir, "temp.tmp")
+        if (inStream != null) {
+            fTemp.copyInStreamToFile(inStream)
+        }
         val options = BitmapFactory.Options().apply {
             inJustDecodeBounds = true  //получаем не всю картинку, а только края, чтобы узнать размеры картинки
         }
-        BitmapFactory.decodeFile(uri, options)
+        BitmapFactory.decodeFile(fTemp.path, options)
 
-        return if(imageRotation(uri) == 90)    //25.5
+        return if(imageRotation(fTemp) == 90)    //25.5
             listOf(options.outHeight, options.outWidth)
         else listOf(options.outWidth, options.outHeight)
 
     }
 
-    private fun imageRotation(uri : String) : Int {   //25.4
+    private fun File.copyInStreamToFile(inStream: InputStream) {
+        this.outputStream().use{
+            out -> inStream.copyTo(out)
+        }
+    }
+
+    private fun imageRotation(imageFile: File) : Int {   //25.4
         val rotation: Int
-        val imageFile = File(uri)
         val exif  = ExifInterface(imageFile.absolutePath)
         val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
         rotation = if(orientation == ExifInterface.ORIENTATION_ROTATE_90 || orientation == ExifInterface.ORIENTATION_ROTATE_270) {
@@ -52,11 +62,11 @@ object ImageManager {
         }
     }
 
-    suspend fun imageResize(uris : List<String>): List<Bitmap> = withContext(Dispatchers.IO) {  //26.2  //27.3    //27.7
+    suspend fun imageResize(uris: ArrayList<Uri>, act: Activity): List<Bitmap> = withContext(Dispatchers.IO) {  //26.2  //27.3    //27.7
         val tempList = ArrayList<List<Int>>()
         val bitmapList = ArrayList<Bitmap>()
         for(n in uris.indices) {
-            val size = getImageSize(uris[n])
+            val size = getImageSize(uris[n], act)
 //            Log.d("MyLog", "Width : ${size[WIDTH]} Height ${size[HEIGHT]}") //26.3
 
             val imageRatio = size[WIDTH].toFloat() / size[HEIGHT].toFloat()  //теперь мы знаем пропорцию нашей картинки
@@ -82,7 +92,7 @@ object ImageManager {
         for(i in uris.indices) {
 
         kotlin.runCatching {
-                bitmapList.add(Picasso.get().load(File(uris[i])).resize(tempList[i][WIDTH], tempList[i][HEIGHT]).get())
+                bitmapList.add(Picasso.get().load((uris[i])).resize(tempList[i][WIDTH], tempList[i][HEIGHT]).get())
             }
 
         }

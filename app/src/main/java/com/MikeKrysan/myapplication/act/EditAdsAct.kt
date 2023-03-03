@@ -1,8 +1,8 @@
 package com.MikeKrysan.myapplication.act
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -27,8 +27,6 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     private var isImagesPermissionGranted = false   //16.3.1
     lateinit var imageAdapter : ImageAdapter    //20.6 Создали переменную на уровне класса для того чтобы она была доступна для любой функции. Адаптер мы будем обновлять, поэтому доступ к адаптеру нам нужен любой функции
     private val dbManager = DbManager()
-    var launcherMultiSelectImage: ActivityResultLauncher<Intent>? = null
-    var launcherSingleSelectImage: ActivityResultLauncher<Intent>? = null
     var editImagePos = 0  //23.4
     private var isEditState = false
     private var ad: Ad? = null
@@ -79,9 +77,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     private fun init() {    //14.1
         imageAdapter = ImageAdapter()   //20.7.1 Инициализируем imageAdapter
         rootElement.vpImages.adapter = imageAdapter   //20.7
-        launcherMultiSelectImage = ImagePicker.getLauncherForMultiSelectImages(this)
-        launcherSingleSelectImage = ImagePicker.getLauncherForSingleImage(this)
-    }
+           }
 
 
 //    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {   //16.8
@@ -196,7 +192,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
 
         if(imageAdapter.mainArray.size == 0) {    //22.3.2   imageAdapter.mainArray - это и есть массив с выбранными картинками из окна выбора фото. Если нет фото-выбираем, а если есть-открываем фрагмент с выбранными картинками
 //            ImagePicker.getImages(this, 3, ImagePicker.REQUEST_CODE_GET_IMAGES)     //23.2.2
-            ImagePicker.launcher(this, launcherMultiSelectImage, 3)
+            ImagePicker.launcher(this, 3)
         } else {
             openChooseImageFrag(null)
             chooseImageFrag?.updateAdapterFromEdit(imageAdapter.mainArray)
@@ -250,7 +246,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     }
 
 
-    fun openChooseImageFrag(newList : ArrayList<String>? ) { //22.3.1 Передавать в функцию я буду  список с картинками, который будет в моем фрагменте
+    fun openChooseImageFrag(newList : ArrayList<Uri>? ) { //22.3.1 Передавать в функцию я буду  список с картинками, который будет в моем фрагменте
         chooseImageFrag = ImageListFrag(this, newList)  //
         rootElement.scrollViewMain.visibility = View.GONE
         val fm = supportFragmentManager.beginTransaction()
