@@ -21,38 +21,40 @@ object ImageManager {
 
     fun getImageSize(uri : Uri, act: Activity) : List<Int>  { //25.2
         val inStream = act.contentResolver.openInputStream(uri)
-        val fTemp = File(act.cacheDir, "temp.tmp")
-        if (inStream != null) {
-            fTemp.copyInStreamToFile(inStream)
-        }
+//        val fTemp = File(act.cacheDir, "temp.tmp")
+//        if (inStream != null) {
+//            fTemp.copyInStreamToFile(inStream)
+//        }
         val options = BitmapFactory.Options().apply {
             inJustDecodeBounds = true  //получаем не всю картинку, а только края, чтобы узнать размеры картинки
         }
-        BitmapFactory.decodeFile(fTemp.path, options)
+        BitmapFactory.decodeStream(inStream, null, options)
+//        BitmapFactory.decodeFile(fTemp.path, options)
 
-        return if(imageRotation(fTemp) == 90)    //25.5
-            listOf(options.outHeight, options.outWidth)
-        else listOf(options.outWidth, options.outHeight)
+        return listOf(options.outWidth, options.outHeight)
+//        return if(imageRotation(fTemp) == 90)    //25.5
+//            listOf(options.outHeight, options.outWidth)
+//        else listOf(options.outWidth, options.outHeight)
 
     }
 
-    private fun File.copyInStreamToFile(inStream: InputStream) {
-        this.outputStream().use{
-            out -> inStream.copyTo(out)
-        }
-    }
+//    private fun File.copyInStreamToFile(inStream: InputStream) {
+//        this.outputStream().use{
+//            out -> inStream.copyTo(out)
+//        }
+//    }
 
-    private fun imageRotation(imageFile: File) : Int {   //25.4
-        val rotation: Int
-        val exif  = ExifInterface(imageFile.absolutePath)
-        val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
-        rotation = if(orientation == ExifInterface.ORIENTATION_ROTATE_90 || orientation == ExifInterface.ORIENTATION_ROTATE_270) {
-            90
-        } else {
-            0
-        }
-        return rotation
-    }
+//    private fun imageRotation(imageFile: File) : Int {   //25.4
+//        val rotation: Int
+//        val exif  = ExifInterface(imageFile.absolutePath)
+//        val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+//        rotation = if(orientation == ExifInterface.ORIENTATION_ROTATE_90 || orientation == ExifInterface.ORIENTATION_ROTATE_270) {
+//            90
+//        } else {
+//            0
+//        }
+//        return rotation
+//    }
 
     fun chooseScaleType(im: ImageView, bitMap : Bitmap) {
         if(bitMap.width > bitMap.height) {
