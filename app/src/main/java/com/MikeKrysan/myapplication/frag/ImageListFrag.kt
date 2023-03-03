@@ -125,6 +125,7 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface): Bas
             val deleteItem =
                 tb.menu.findItem(R.id.id_delete_image)   //21.4 Создаем переменную, в нее ложим результат поиска.Мы берем меню которое только что надули и в нем ищем по идентификатору
             addImageItem = tb.menu.findItem(R.id.id_add_image)
+            if(adapter.mainArray.size > 2 ) addImageItem?.isVisible = false
 
             //21.4.2:
             tb.setNavigationOnClickListener {
@@ -150,21 +151,21 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface): Bas
 //                )  //21.7 Ожидает AppCompatActivity а приходит FragmentActivity, делаем даункаст    //23.2.2
 //            Log.d("MyLog", "Add item")
 
-                ImagePicker.getMultiImages(activity as EditAdsAct, imageCount)
+                ImagePicker.addImages(activity as EditAdsAct, imageCount)
                 true
             }
 
         }
     }
 
-    fun updateAdapter(newList:ArrayList<Uri>) {  //21.8.2
+    fun updateAdapter(newList:ArrayList<Uri>, activity: Activity) {  //21.8.2
 //        val updateList = ArrayList<SelectImageItem>()     //22.1.1
 ////        for(n in adapter.mainArray.size until newList.size ) {    //Если во фрагменте мы выбрали уже к примеру 2 картинки(adapter.mainArray.size = 2) и хотим добавить еще одну картинку (newList.size) - цикл не запустится так как не будут выполнены условия 2<=1, поэтому меняем условия работы цикла:
 //        for(n in adapter.mainArray.size until newList.size + adapter.mainArray.size) {    //21.9 у нас может быть не нулявая позиция. Нам нужно начинать с позиции нашего массива.    //22.1.1
 //            updateList.add(SelectImageItem(n.toString(), newList[n - adapter.mainArray.size]))    //22.1.1
 //        }
 //        adapter.updateAdapter(updateList, false)    //Указываем false. Список не очистится, просто добавятся к тем картинкам что уже есть новые
-       resizeSelectedImages(newList, false, activity as Activity)
+       resizeSelectedImages(newList, false, activity)
 //        adapter.updateAdapter(newList, false)   //22.1.1
      }
 

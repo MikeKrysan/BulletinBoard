@@ -651,6 +651,10 @@ import com.google.firebase.ktx.Firebase
  *      теперь поддерживает версию андроид 11  а также можем уже удалить jcenter из проекта так как библиотеку уже перенесли на mavenCentral
  *
  *      Урок59. Новая версия Pix Image Picker, часть 2
+ *      Урок59. Новая версия Pix Image Picker, часть 3
+ *      Урок59. Новая версия Pix Image Picker, часть 2
+ *
+ *
 
 
  */
