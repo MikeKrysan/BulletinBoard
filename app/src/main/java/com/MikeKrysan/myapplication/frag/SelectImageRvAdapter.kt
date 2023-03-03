@@ -1,5 +1,6 @@
 package com.MikeKrysan.myapplication.frag
 
+
 import android.content.Context
 import android.graphics.Bitmap
 import android.view.LayoutInflater
@@ -77,7 +78,7 @@ class SelectImageRvAdapter(val adapterCallback: AdapterCallback): RecyclerView.A
 //                pBar.visibility = View.VISIBLE
 //                ImagePicker.getImages(context as EditAddsAct, 1, ImagePicker.REQUEST_CODE_GET_SINGLE_IMAGE)   //23.5.1 Передаем контекст, который у нас есть. Как будто я передал мое активити
 //                context.editImagePos = adapterPosition //23.5.2 Я нажал на кнопку, и контекст получит номер позиции, на который я нажал. И теперь будет перезаписываться запись в переменной editImagePos EditAddsAct
-                ImagePicker.launcher(context as EditAdsAct, 1)
+                ImagePicker.getSingleImage(context as EditAdsAct)
                 context.editImagePos = adapterPosition
             }
 

@@ -25,7 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, private val newList:ArrayList<Uri>?): BaseAdsFragment(), AdapterCallback { //17.2    //17.7.3 Добавляем конструктор нашему классу, который выводит фрагмент. Чтобы то, что мы будем передавть в этот конструктор было доступно на уровне всего класса нашего фрагмента, нужно указать val либо var //18.8 - newList:ArrayList
+class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface): BaseAdsFragment(), AdapterCallback { //17.2    //17.7.3 Добавляем конструктор нашему классу, который выводит фрагмент. Чтобы то, что мы будем передавть в этот конструктор было доступно на уровне всего класса нашего фрагмента, нужно указать val либо var //18.8 - newList:ArrayList
 
 //    lateinit var rootElement : ListImageFragBinding     //21.2.2
 
@@ -71,10 +71,10 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //            updateList.add(SelectImageItem(n.toString(), newList[n]))   //заполняем updateList, когда он заканчивается, мы передаем в адаптер уже заполненный список
 //        }
             //27.4: я пишу здесь основной поток, потому что я хочу, чтобы после того, как эта функция закончится, после ее все запустилось на основном потоке   //27.5:
-            if (newList != null) {
-                resizeSelectedImages(newList, true)
-//            Log.d("MyLog", "Result: $bitmapList")    //27.7
-            }
+//            if (newList != null) {
+//                resizeSelectedImages(newList, true)
+////            Log.d("MyLog", "Result: $bitmapList")    //27.7
+//            }
         }
     }
        // adapter.updateAdapter(newList, true)     //18.9.5    //21.8.3  //22.1.2     //26.2Пока что не будем передавать в адаптер
@@ -105,11 +105,11 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
         activity?.supportFragmentManager?.beginTransaction()?.remove(this@ImageListFrag)?.commit()
     }
 
-    private fun resizeSelectedImages(newList: ArrayList<Uri>, needClear : Boolean) {
+    fun resizeSelectedImages(newList: ArrayList<Uri>, needClear : Boolean, activity: Activity) {
 
         job = CoroutineScope(Dispatchers.Main).launch {
-            val dialog = ProgressDialog.createProgressDialog(activity as Activity)
-            val bitmapList = ImageManager.imageResize(newList, activity as Activity)
+            val dialog = ProgressDialog.createProgressDialog(activity)
+            val bitmapList = ImageManager.imageResize(newList, activity)
             dialog.dismiss()
             adapter.updateAdapter(bitmapList, needClear)
             if(adapter.mainArray.size > 2 ) addImageItem?.isVisible = false
@@ -150,7 +150,7 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //                )  //21.7 Ожидает AppCompatActivity а приходит FragmentActivity, делаем даункаст    //23.2.2
 //            Log.d("MyLog", "Add item")
 
-                ImagePicker.launcher(activity as EditAdsAct, imageCount)
+                ImagePicker.getMultiImages(activity as EditAdsAct, imageCount)
                 true
             }
 
@@ -164,7 +164,7 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
 //            updateList.add(SelectImageItem(n.toString(), newList[n - adapter.mainArray.size]))    //22.1.1
 //        }
 //        adapter.updateAdapter(updateList, false)    //Указываем false. Список не очистится, просто добавятся к тем картинкам что уже есть новые
-       resizeSelectedImages(newList, false)
+       resizeSelectedImages(newList, false, activity as Activity)
 //        adapter.updateAdapter(newList, false)   //22.1.1
      }
 

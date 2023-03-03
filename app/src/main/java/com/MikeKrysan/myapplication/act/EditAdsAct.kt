@@ -1,12 +1,10 @@
 package com.MikeKrysan.myapplication.act
 
-import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import com.MikeKrysan.myapplication.MainActivity
 import com.MikeKrysan.myapplication.R
@@ -192,7 +190,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
 
         if(imageAdapter.mainArray.size == 0) {    //22.3.2   imageAdapter.mainArray - это и есть массив с выбранными картинками из окна выбора фото. Если нет фото-выбираем, а если есть-открываем фрагмент с выбранными картинками
 //            ImagePicker.getImages(this, 3, ImagePicker.REQUEST_CODE_GET_IMAGES)     //23.2.2
-            ImagePicker.launcher(this, 3)
+            ImagePicker.getMultiImages(this, 3)
         } else {
             openChooseImageFrag(null)
             chooseImageFrag?.updateAdapterFromEdit(imageAdapter.mainArray)
@@ -247,7 +245,8 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
 
 
     fun openChooseImageFrag(newList : ArrayList<Uri>? ) { //22.3.1 Передавать в функцию я буду  список с картинками, который будет в моем фрагменте
-        chooseImageFrag = ImageListFrag(this, newList)  //
+        chooseImageFrag = ImageListFrag(this)
+        if(newList != null) chooseImageFrag?.resizeSelectedImages(newList, true, this)
         rootElement.scrollViewMain.visibility = View.GONE
         val fm = supportFragmentManager.beginTransaction()
         fm.replace(R.id.place_holder, chooseImageFrag!!)
