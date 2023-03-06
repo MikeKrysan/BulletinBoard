@@ -8,6 +8,8 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
@@ -680,6 +682,8 @@ import com.google.firebase.ktx.Firebase
 
     Урок71. Делаем счетчик фото в EditAdsActivity
 
+    Урок72. Заменяем устаревшую функцию onActivityResult для входа по Google аккаунту - КАК И РАНЕЕ, ВХОД ПО ГУГЛ-АККАУНТУ ОТВАЛИЛСЯ И НЕ РАБОТАЕТ
+
  */
 
 
@@ -693,6 +697,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val dialogHelper = DialogHelper(this)   //5.3 Инициализируем DialogHelper. Передаем в конструкторе этот класс - MainActivity
     val myAuth = Firebase.auth //5.13 Инициализируем объект myAuth
     val adapter = AdsRcAdapter(this)
+    lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
     private val firebaseViewModel: FirebaseViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -715,6 +720,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         rootElement.mainContent.bNavView.selectedItemId = R.id.id_home
     }
 
+    private fun onActivityResult() {
+        //Создаем launcher
+        googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+            //Создается колбек, который ожидает результата
+            val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                if(account != null) {
+                    Log.d("MyLog", "Api 0")
+                    dialogHelper.accHelper.signInFirebaseWithGoogle(account.idToken!!)
+                }
+            } catch (e:ApiException) {
+                Log.d("MyLog", "Api error: ${e.message}")
+            }
+        }
+    }
+
+    override fun onStart() {    //6.5
+        super.onStart()
+        uiUpdate(myAuth.currentUser)    //Если мы не зарегистрировались, currentUser будет null ("Войдите или зарегистрируйтесь"), если не null - текущий адресс email
+    }
+
     //11.13:
 //    override fun onOptionsItemSelected(item: MenuItem): Boolean {
 //        if(item.itemId == R.id.id_new_adds) {   //Здесь нам приходит item на который нажали, и проверяем его идентификатор. Если у нас есть совпадение, значит я нажал на эту кнопку "New" и запустится новое активити
@@ -730,25 +757,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        return super.onCreateOptionsMenu(menu)
 //    }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {   //8.10
-        if(requestCode == GoogleAccConst.GOOGLE_SIGN_IN_REQUEST_CODE){
-//            Log.d("MyLog", "Sign in result")
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)  //Как только мы выбрали один из аккаунтов, то запускается функция onActivityResult() и нам передает intent - это сообщение к системе. Т.о. наше activity приложения обменивается данными с системой андроид
-          try {   //мы не просто берем аккаунт, а пытаемся его взять, поскольку может быть множество ошибок
-
-                val account = task.getResult(ApiException::class.java)  //Я слежу за ошибками, которые могут произойти во время регистрации либо входа
-                //У нас уже есть аккаунт, но прежде чем достать токен, нужно проверить что наш аккаунт не равен null:
-                if(account != null) {
-                    Log.d("MyLog", "Api 0")
-                    dialogHelper.accHelper.signInFirebaseWithGoogle(account.idToken!!)
-                }
-
-            } catch (e:ApiException) {
-                Log.d("MyLog", "Api error: ${e.message}")
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data)
-    }
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {   //8.10
+//        if(requestCode == GoogleAccConst.GOOGLE_SIGN_IN_REQUEST_CODE){
+////            Log.d("MyLog", "Sign in result")
+//            val task = GoogleSignIn.getSignedInAccountFromIntent(data)  //Как только мы выбрали один из аккаунтов, то запускается функция onActivityResult() и нам передает intent - это сообщение к системе. Т.о. наше activity приложения обменивается данными с системой андроид
+//          try {   //мы не просто берем аккаунт, а пытаемся его взять, поскольку может быть множество ошибок
+//
+//                val account = task.getResult(ApiException::class.java)  //Я слежу за ошибками, которые могут произойти во время регистрации либо входа
+//                //У нас уже есть аккаунт, но прежде чем достать токен, нужно проверить что наш аккаунт не равен null:
+//                if(account != null) {
+//                    Log.d("MyLog", "Api 0")
+//                    dialogHelper.accHelper.signInFirebaseWithGoogle(account.idToken!!)
+//                }
+//
+//            } catch (e:ApiException) {
+//                Log.d("MyLog", "Api error: ${e.message}")
+//            }
+//        }
+//        super.onActivityResult(requestCode, resultCode, data)
+//    }
 
     private fun initViewModel() {
         firebaseViewModel.liveAdsData.observe(this, {
@@ -759,6 +786,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun init(){
          setSupportActionBar(rootElement.mainContent.toolbar)   //11.9  Сначала указываем, какой тулбар используется в активити, а после уже запускаем нажатие на кнопку меню
+         onActivityResult()    //Инициализируем наш launcher
         // в левом верхнем углу. Если эту строку поставить внизу, то мы сперва добавим нажатие на кнопку, но мы еще не будем знать, какой тулбар используется и тогда
         // считываться не будет нажатие на кнопку
 //        val toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close)  //2.6.3  Создали кнопку toggle
@@ -792,11 +820,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             true
         }
-    }
-
-    override fun onStart() {    //6.5
-        super.onStart()
-        uiUpdate(myAuth.currentUser)    //Если мы не зарегистрировались, currentUser будет null ("Войдите или зарегистрируйтесь"), если не null - текущий адресс email
     }
 
     private fun initRecyclerView() {    // Подключаем адаптер к RecyclerView объявлений пользователя

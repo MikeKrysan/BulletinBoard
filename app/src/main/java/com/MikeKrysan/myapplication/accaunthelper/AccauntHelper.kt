@@ -5,7 +5,6 @@ import android.widget.Toast
 import com.MikeKrysan.myapplication.MainActivity
 import com.MikeKrysan.myapplication.R
 import com.MikeKrysan.myapplication.constants.FirebaseAuthConstants
-import com.MikeKrysan.myapplication.dialogHelper.GoogleAccConst
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -18,10 +17,7 @@ class AccauntHelper(act: MainActivity) {     //5.12.2 Cоздаем констр
     private lateinit var googleSignInClient: GoogleSignInClient  //8.6 Присвоим возвращенного клиента переменной
 
 
-    fun signUpWithEmail(
-        email: String,
-        password: String
-    ) {    //5.12.1 Создаем функции для регистрации. Как только пользователь введет почту и пароль в диалоговом окне и нажмет кнопку зарегистрироваться, эта функция получит эти данные
+    fun signUpWithEmail(email: String, password: String) {    //5.12.1 Создаем функции для регистрации. Как только пользователь введет почту и пароль в диалоговом окне и нажмет кнопку зарегистрироваться, эта функция получит эти данные
         if (email.isNotEmpty() && password.isNotEmpty()) {//isNotEmpty даст на выходе либо true либо false; проверяем, все ли данные введены, чтобы была возможность зарегистрироваться
             act.myAuth.currentUser?.delete()?.addOnCompleteListener() { task ->
                 if (task.isSuccessful) {
@@ -99,11 +95,7 @@ class AccauntHelper(act: MainActivity) {     //5.12.2 Cоздаем констр
         if (e is FirebaseAuthWeakPasswordException) {
 //            Log.d("MyLog", "Exception : ${e.errorCode}")
             if (e.errorCode == FirebaseAuthConstants.ERROR_WEAK_PASSWORD) {
-                Toast.makeText(
-                    act,
-                    act.resources.getString(R.string.error_weak_password),
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast.makeText(act, act.resources.getString(R.string.error_weak_password), Toast.LENGTH_LONG).show()
             }
         }
         //FirebaseAuthWeakPasswordException
@@ -178,19 +170,12 @@ class AccauntHelper(act: MainActivity) {     //5.12.2 Cоздаем констр
         if (act.myAuth.currentUser != null) {
             act.myAuth.currentUser?.linkWithCredential(credential)?.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(
-                        act,
-                        act.resources.getString(R.string.link_done),
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Toast.makeText(act,
+                        act.resources.getString(R.string.link_done), Toast.LENGTH_LONG).show()
                 }
             }
         } else {
-            Toast.makeText(
-                act,
-                act.resources.getString(R.string.enter_to_Google),
-                Toast.LENGTH_LONG
-            ).show()
+            Toast.makeText(act, act.resources.getString(R.string.enter_to_Google), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -206,7 +191,8 @@ class AccauntHelper(act: MainActivity) {     //5.12.2 Cоздаем констр
     fun signInWithGoogle() {     //8.7
         googleSignInClient = getSignInClient()
         val intent = googleSignInClient.signInIntent   //8.7.1 Создаем intent
-        act.startActivityForResult(intent, GoogleAccConst.GOOGLE_SIGN_IN_REQUEST_CODE)   //8.9
+//        act.startActivityForResult(intent, GoogleAccConst.GOOGLE_SIGN_IN_REQUEST_CODE)   //8.9
+        act.googleSignInLauncher.launch(intent)
     }
 
     fun signOutGoogle() {     //11.1
@@ -214,10 +200,7 @@ class AccauntHelper(act: MainActivity) {     //5.12.2 Cоздаем констр
     }
 
     fun signInFirebaseWithGoogle(token: String) { //8.12
-        val credential = GoogleAuthProvider.getCredential(
-            token,
-            null
-        ) //даем полномочия Firebase регистрировать акаунт гугл для нашего приложения
+        val credential = GoogleAuthProvider.getCredential(token, null) //даем полномочия Firebase регистрировать акаунт гугл для нашего приложения
         act.myAuth.currentUser?.delete()?.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 act.myAuth.signInWithCredential(credential).addOnCompleteListener { task ->
@@ -225,15 +208,11 @@ class AccauntHelper(act: MainActivity) {     //5.12.2 Cоздаем констр
                         Toast.makeText(act, "Sign in done", Toast.LENGTH_LONG).show()
                         act.uiUpdate(task.result?.user)  //8.14
                     } else {
-                        Log.d(
-                            "MyLog",
-                            "Google Sign In Exception: ${task.exception}"
-                        )   //9.1.4 Отлавливаем возможные ошибки регистрации через гугл аккаунт(сбой сети например)
+                        Log.d("MyLog", "Google Sign In Exception: ${task.exception}")   //9.1.4 Отлавливаем возможные ошибки регистрации через гугл аккаунт(сбой сети например)
                     }
                 }
             }
         }
-
     }
 
     //Чтобы нас не спамили, или не регистрировались боты, мы вводим функцию, с помощью которой на почту пользователю будет приходить запрос на подтверждение верификации
