@@ -3,7 +3,6 @@ package com.MikeKrysan.myapplication.utils
 import android.graphics.Bitmap
 import android.net.Uri
 import android.view.View
-import androidx.fragment.app.Fragment
 import com.MikeKrysan.myapplication.R
 import com.MikeKrysan.myapplication.act.EditAdsAct
 import io.ak1.pix.helpers.PixEventCallback
@@ -93,9 +92,9 @@ object ImagePicker {    //16.1
             edAct.openChooseImageFrag(uris as ArrayList<Uri>)
         } else if (uris.size == 1 && edAct.chooseImageFrag == null) {
             CoroutineScope(Dispatchers.Main).launch {
-                edAct.rootElement.pBarLoad.visibility = View.VISIBLE
+                edAct.binding.pBarLoad.visibility = View.VISIBLE
                 val bitMapArray = ImageManager.imageResize(uris as ArrayList<Uri>, edAct) as ArrayList<Bitmap>
-                edAct.rootElement.pBarLoad.visibility = View.GONE
+                edAct.binding.pBarLoad.visibility = View.GONE
                 edAct.imageAdapter.update(bitMapArray)
                 closePixFrag(edAct)
             }

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.viewpager2.widget.ViewPager2
 import com.MikeKrysan.myapplication.MainActivity
 import com.MikeKrysan.myapplication.R
 import com.MikeKrysan.myapplication.adapters.ImageAdapter
@@ -23,7 +24,7 @@ import java.io.ByteArrayOutputStream
 
 class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     var chooseImageFrag : ImageListFrag? = null     //21.8 *
-    lateinit var rootElement:ActivityEditAddsBinding  //14.9 делаем rootElement public
+    lateinit var binding:ActivityEditAddsBinding  //14.9 делаем rootElement public
     private val dialog = DialogSpinnerHelper() //14.2 Создаем диалог на уровне класса
     private var isImagesPermissionGranted = false   //16.3.1
     lateinit var imageAdapter : ImageAdapter    //20.6 Создали переменную на уровне класса для того чтобы она была доступна для любой функции. Адаптер мы будем обновлять, поэтому доступ к адаптеру нам нужен любой функции
@@ -35,11 +36,12 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        rootElement = ActivityEditAddsBinding.inflate(layoutInflater)
-        setContentView(rootElement.root)
+        binding = ActivityEditAddsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         init()  //14.1
         checkEditState()
+        imageChangeCounter()
 
 //        val listCountry = CityHelper.getAllCountries(this)  //13.1
 
@@ -64,7 +66,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
         return intent.getBooleanExtra(MainActivity.EDIT_STATE, false)
     }
 
-    private fun fillViews(ad : Ad) = with(rootElement) {
+    private fun fillViews(ad : Ad) = with(binding) {
         tvCountry.text = ad.country
         tvCity.text = ad.city
         editTel.setText(ad.tel)
@@ -79,7 +81,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
 
     private fun init() {    //14.1
         imageAdapter = ImageAdapter()   //20.7.1 Инициализируем imageAdapter
-        rootElement.vpImages.adapter = imageAdapter   //20.7
+        binding.vpImages.adapter = imageAdapter   //20.7
            }
 
 
@@ -159,19 +161,19 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     //OnClicks
     fun onClickSelectCountry(view: View) {  //14.5 Есть слушатель нажатий, но он пока ни к чему не подключен. Чтобы его подключить, в активити на textView находим onClick и назначаем ему только что созданый onClickSelectCountry
         val listCountry = CityHelper.getAllCountries(this)  //13.1
-        dialog.showSpinnerDialog(this, listCountry, rootElement.tvCountry) //15.5.1
-        if(rootElement.tvCity.text.toString() != getString(R.string.select_city)) {   //15.6
-            rootElement.tvCity.text = getString(R.string.select_city)  //Получаем с помощью функции getSting ресурс. Если мы напишем сразу напрямую ресурс R.string.select_country без getStrings, то будем показано число в textView
+        dialog.showSpinnerDialog(this, listCountry, binding.tvCountry) //15.5.1
+        if(binding.tvCity.text.toString() != getString(R.string.select_city)) {   //15.6
+            binding.tvCity.text = getString(R.string.select_city)  //Получаем с помощью функции getSting ресурс. Если мы напишем сразу напрямую ресурс R.string.select_country без getStrings, то будем показано число в textView
             //У некоторых функций уже есть внутри функция getString поэтому иногда мы просто передаем R.string.resources  и у нас корректно показываем текст. Но в данном случае мы напрямую текст передаем в textView, поэтому сперва нужно получить сам текст а не идентификатор
         }
     }
 
 
     fun onClickSelectCity(view: View) {  //15.3
-            val selectedCountry = rootElement.tvCountry.text.toString()   //Пока текста нет в textView для выбора города, будем показывать, что нужно выбрать обязательно страну чтобы выбрать город
+            val selectedCountry = binding.tvCountry.text.toString()   //Пока текста нет в textView для выбора города, будем показывать, что нужно выбрать обязательно страну чтобы выбрать город
             if(selectedCountry != getString(R.string.select_country)){  //Если то, что находится в textView не равно значению по-умолчанию, значит человек уже выбрал страну, и мы можем запускать код ниже
                 val listCity = CityHelper.getAllCities(selectedCountry, this)    //передали название страны и контекст
-                dialog.showSpinnerDialog(this, listCity, rootElement.tvCity)  //15.5.2
+                dialog.showSpinnerDialog(this, listCity, binding.tvCity)  //15.5.2
             }
             else {    // иначе выводим тост "выберите пожалуйста страну!"
 //                Toast.makeText(this, R.string.country_not_selected, Toast.LENGTH_LONG ).show()
@@ -182,7 +184,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     fun onClickSelectCat(view: View) {
 
             val listCat = resources.getStringArray(R.array.category).toMutableList() as ArrayList
-            dialog.showSpinnerDialog(this, listCat, rootElement.tvCat)
+            dialog.showSpinnerDialog(this, listCat, binding.tvCat)
 
     }
 
@@ -227,7 +229,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     //Функция для считывания данных объявления с базы данных
     private fun fillAd() : Ad {
         val ad: Ad
-        rootElement.apply {
+        binding.apply {
             ad = Ad(tvCountry.text.toString(),
                     tvCity.text.toString(),
                     editTel.text.toString(),
@@ -250,7 +252,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
 
 //    override fun onFragClose(list : ArrayList<SelectImageItem>) {    //20.10.4
     override fun onFragClose(list : ArrayList<Bitmap>) {   //22.2
-        rootElement.scrollViewMain.visibility = View.VISIBLE  //17.7.1Интерфейс нужно передать через фрагмент в контсруктор. Когда создаестя фрагмент, внутрь его передадим этот интерфейс, поэтому если там мы запускаем наш интерфейс, то он и здесь запуститься
+        binding.scrollViewMain.visibility = View.VISIBLE  //17.7.1Интерфейс нужно передать через фрагмент в контсруктор. Когда создаестя фрагмент, внутрь его передадим этот интерфейс, поэтому если там мы запускаем наш интерфейс, то он и здесь запуститься
         imageAdapter.update(list)   //20.11
         chooseImageFrag = null  //21.11
     }
@@ -259,7 +261,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     fun openChooseImageFrag(newList : ArrayList<Uri>? ) { //22.3.1 Передавать в функцию я буду  список с картинками, который будет в моем фрагменте
         chooseImageFrag = ImageListFrag(this)
         if(newList != null) chooseImageFrag?.resizeSelectedImages(newList, true, this)
-        rootElement.scrollViewMain.visibility = View.GONE
+        binding.scrollViewMain.visibility = View.GONE
         val fm = supportFragmentManager.beginTransaction()
         fm.replace(R.id.place_holder, chooseImageFrag!!)
         fm.commit()
@@ -313,6 +315,17 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
             task -> imStorageRef.downloadUrl    //мы получаем нашу ссылку
         }.addOnCompleteListener(listener)   //проверяем, получили картинку или нет. Но я не хочу, чтобы эта проверка запускалась в этой функции, я хочу передать интерфейс, и запустить там, где я буду запускать функцию uploadImages()
     }
+
+    private fun imageChangeCounter() {
+        binding.vpImages.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){  //регистирируем специальный коллбек, который будет следить за показом актуального фото и отображением позиции. Данный колбек будет запускатся всякий раз, когда мы скролим картинки
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                val imageCounter = "${position+1}/${binding.vpImages.adapter?.itemCount}"      //Создаем переменную для заполнения
+                binding.tvImageCounter.text =  imageCounter //заполняем переменную нужными данными
+            }
+        })
+    }
+
 }
 
 //* Делаем возможным быть анонимному классу null. Если он null, мы еще не создали фрагмент, и тогда можно смело запускать условие if(returnValues?.size!! > 1)

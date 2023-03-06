@@ -678,6 +678,8 @@ import com.google.firebase.ktx.Firebase
 
     Урок70. Краткое описание объявления в 4 строчки. Счетчик фото в DescriptionActivity. Счетчик количества просмотров. Заполняем ViewPager на EditActivity
 
+    Урок71. Делаем счетчик фото в EditAdsActivity
+
  */
 
 
