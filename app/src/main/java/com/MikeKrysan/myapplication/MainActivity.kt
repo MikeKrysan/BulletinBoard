@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.MikeKrysan.myapplication.accaunthelper.AccauntHelper
 import com.MikeKrysan.myapplication.act.DescriptionActivity
 import com.MikeKrysan.myapplication.act.EditAdsAct
@@ -690,6 +691,8 @@ import com.squareup.picasso.Picasso
 
     Урок73. Заканчиваем NavigationView, добавляем показ аватарки в NavigationView при регистрации. Фото аккаунта в меню, меняем цвет категорий
 
+    Урок74. Начинаем делать Pagination (получение объявлений из БД порциями). Делаем слушателя скролла для RecyclerView
+
  */
 
 
@@ -719,7 +722,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         initViewModel()
         firebaseViewModel.loadAllAds()
         bottomMenuOnClick()
-
+        scrollListener()
     }
 
     override fun onResume() {
@@ -897,11 +900,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    companion object {
-        const val EDIT_STATE = "edit_state"
-        const val ADS_DATA = "ads_data"
-    }
-
     override fun onDeleteItem(ad: Ad) {
         firebaseViewModel.deleteItem(ad)
     }
@@ -931,4 +929,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         spanAccCat.setSpan(ForegroundColorSpan(ContextCompat.getColor(this@MainActivity, R.color.color_red)), 0, accountCat.title!!.length, 0)
         accountCat.title = spanAccCat
     }
+
+    private fun scrollListener() = with(binding.mainContent) {
+        rcView.addOnScrollListener(object: RecyclerView.OnScrollListener(){
+            //функция, которая следит за состоянием изменения при скроле, берем ее и дополнительно дописываем:
+            override fun onScrollStateChanged(recView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recView, newState)
+                if(!recView.canScrollVertically(SCROLL_DOWN) && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    Log.d("MyLog", "Can't scroll down")
+                }
+            }
+        })
+    }
+
+    companion object {
+        const val EDIT_STATE = "edit_state"
+        const val ADS_DATA = "ads_data"
+        const val SCROLL_DOWN = 1
+    }
+
 }
