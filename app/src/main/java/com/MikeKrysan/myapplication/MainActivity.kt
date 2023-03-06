@@ -1,17 +1,21 @@
 package com.MikeKrysan.myapplication
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.MikeKrysan.myapplication.accaunthelper.AccauntHelper
@@ -21,7 +25,6 @@ import com.MikeKrysan.myapplication.adapters.AdsRcAdapter
 import com.MikeKrysan.myapplication.databinding.ActivityMainBinding
 import com.MikeKrysan.myapplication.dialogHelper.DialogConst
 import com.MikeKrysan.myapplication.dialogHelper.DialogHelper
-import com.MikeKrysan.myapplication.dialogHelper.GoogleAccConst
 import com.MikeKrysan.myapplication.model.Ad
 import com.MikeKrysan.myapplication.viewModel.FirebaseViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -30,6 +33,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.squareup.picasso.Picasso
 
 //import kotlinx.android.synthetic.main.activity_main.*
 //import kotlinx.android.synthetic.main.main_content.*
@@ -684,6 +688,8 @@ import com.google.firebase.ktx.Firebase
 
     Урок72. Заменяем устаревшую функцию onActivityResult для входа по Google аккаунту - КАК И РАНЕЕ, ВХОД ПО ГУГЛ-АККАУНТУ ОТВАЛИЛСЯ И НЕ РАБОТАЕТ
 
+    Урок73. Заканчиваем NavigationView, добавляем показ аватарки в NavigationView при регистрации. Фото аккаунта в меню, меняем цвет категорий
+
  */
 
 
@@ -693,7 +699,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 //    private var rootElement:ActivityMainBinding? = null //4.3.1переменная создана на уровне класса, чтобы к ней можно было добратся из любого места внутри класса
     private lateinit var tvAccaunt: TextView   //6.2
-    private lateinit var rootElement:ActivityMainBinding
+    private lateinit var imAccount: ImageView   //
+    private lateinit var binding:ActivityMainBinding
     private val dialogHelper = DialogHelper(this)   //5.3 Инициализируем DialogHelper. Передаем в конструкторе этот класс - MainActivity
     val myAuth = Firebase.auth //5.13 Инициализируем объект myAuth
     val adapter = AdsRcAdapter(this)
@@ -703,9 +710,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        setContentView(R.layout.activity_main)
-        rootElement = ActivityMainBinding.inflate(layoutInflater)   //4.3.2 Инициализируем переменную. Надуваем разметку с помощью layoutInflater. Теперь эта переменная может в себе хранить разметку экрана. Разметка рисуется графическим процессором
+        binding = ActivityMainBinding.inflate(layoutInflater)   //4.3.2 Инициализируем переменную. Надуваем разметку с помощью layoutInflater. Теперь эта переменная может в себе хранить разметку экрана. Разметка рисуется графическим процессором
         //не будет нулевых значений, так как у нас есть реалные ссылки на объекты, которые уже нарисованы
-        val view = rootElement.root //4.3.3 Передаем переменную на экран. Root элемент - это элемент, который содержит в себе все view
+        val view = binding.root //4.3.3 Передаем переменную на экран. Root элемент - это элемент, который содержит в себе все view
         setContentView(view)    //4.3.4 Рисуем экран
         init()
         initRecyclerView()
@@ -717,7 +724,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onResume() {
         super.onResume()
-        rootElement.mainContent.bNavView.selectedItemId = R.id.id_home
+        binding.mainContent.bNavView.selectedItemId = R.id.id_home
     }
 
     private fun onActivityResult() {
@@ -780,26 +787,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun initViewModel() {
         firebaseViewModel.liveAdsData.observe(this, {
             adapter.updateAdapter(it)
-            rootElement.mainContent.tvEmpty.visibility = if(it.isEmpty()) View.VISIBLE else View.GONE
+            binding.mainContent.tvEmpty.visibility = if(it.isEmpty()) View.VISIBLE else View.GONE
         })
     }
 
-    private fun init(){
-         setSupportActionBar(rootElement.mainContent.toolbar)   //11.9  Сначала указываем, какой тулбар используется в активити, а после уже запускаем нажатие на кнопку меню
-         onActivityResult()    //Инициализируем наш launcher
+    private fun init() {
+        setSupportActionBar(binding.mainContent.toolbar)   //11.9  Сначала указываем, какой тулбар используется в активити, а после уже запускаем нажатие на кнопку меню
+        onActivityResult()    //Инициализируем наш launcher
+        navViewSetings()
         // в левом верхнем углу. Если эту строку поставить внизу, то мы сперва добавим нажатие на кнопку, но мы еще не будем знать, какой тулбар используется и тогда
         // считываться не будет нажатие на кнопку
 //        val toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close)  //2.6.3  Создали кнопку toggle
-        val toggle = ActionBarDrawerToggle(this, rootElement.drawerLayout, rootElement.mainContent.toolbar, R.string.open, R.string.close)  //4.4
+        val toggle = ActionBarDrawerToggle(this, binding.drawerLayout, binding.mainContent.toolbar, R.string.open, R.string.close)  //4.4
 //        drawerLayout.addDrawerListener(toggle)  //2.6.4
-        rootElement.drawerLayout.addDrawerListener(toggle)
+        binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 //        navView.setNavigationItemSelectedListener(this) //2.7.1
-        rootElement.navView.setNavigationItemSelectedListener(this)
-        tvAccaunt = rootElement.navView.getHeaderView(0).findViewById(R.id.tvAccountEmail)  //6.2.1
+        binding.navView.setNavigationItemSelectedListener(this)
+        tvAccaunt = binding.navView.getHeaderView(0).findViewById(R.id.tvAccountEmail)  //6.2.1
+        imAccount = binding.navView.getHeaderView(0).findViewById(R.id.imAccountImage)
     }
 
-    private fun bottomMenuOnClick() = with(rootElement) {
+    private fun bottomMenuOnClick() = with(binding) {
         mainContent.bNavView.setOnNavigationItemSelectedListener {  item ->
             when(item.itemId) {
                 R.id.id_new_ad -> {
@@ -823,7 +832,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun initRecyclerView() {    // Подключаем адаптер к RecyclerView объявлений пользователя
-        rootElement.apply{
+        binding.apply{
             mainContent.rcView.layoutManager = LinearLayoutManager(this@MainActivity)
             mainContent.rcView.adapter = adapter
         }
@@ -856,7 +865,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.id_sign_out -> {
                 if(myAuth.currentUser?.isAnonymous == true) {
-                    rootElement.drawerLayout.closeDrawer(GravityCompat.START)
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
                     return true
                 }
 //                Toast.makeText(this, "Pressed id_sign_out", Toast.LENGTH_LONG).show()
@@ -866,7 +875,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 //        drawerLayout.closeDrawer(GravityCompat.START)   //При нажатии на одну из кнопок выполнится одно из условий и после этого запустится closeDrawer, и меню закроется
-        rootElement.drawerLayout.closeDrawer(GravityCompat.START)
+        binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
 
@@ -876,12 +885,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 override fun onComplete() {
 //                    tvAccaunt.setText(R.string.Guest) //либо:
                     tvAccaunt.text = getString(R.string.Guest)
+                    imAccount.setImageResource(R.drawable.ic_account_def)
                 }
             })
         }   else if(user.isAnonymous){
             tvAccaunt.text = getString(R.string.Guest)
+            imAccount.setImageResource(R.drawable.ic_account_def)
         } else if(!user.isAnonymous) {
             tvAccaunt.text = user.email
+            Picasso.get().load(user.photoUrl).into(imAccount)    //Ссылку на картинку гугл-пользователя скачаем с помощью библиотеки Picasso
         }
     }
 
@@ -906,4 +918,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         firebaseViewModel.onFavClick(ad)
     }
 
+    //Меняем цвет категорий NavigationView прогрaмно:
+    private fun navViewSetings() = with(binding) {
+        val menu = navView.menu
+        val adsCat = menu.findItem(R.id.adsCat)
+        val spanAdsCat = SpannableString(adsCat.title)    //Создаем spanable string - специальный класс, который позволяет менять цвет по буквам внутри String
+        spanAdsCat.setSpan(ForegroundColorSpan(ContextCompat.getColor(this@MainActivity, R.color.color_red)), 0, adsCat.title!!.length, 0)
+        adsCat.title = spanAdsCat
+
+        val accountCat = menu.findItem(R.id.accCat)
+        val spanAccCat = SpannableString(accountCat.title)
+        spanAccCat.setSpan(ForegroundColorSpan(ContextCompat.getColor(this@MainActivity, R.color.color_red)), 0, accountCat.title!!.length, 0)
+        accountCat.title = spanAccCat
+    }
 }

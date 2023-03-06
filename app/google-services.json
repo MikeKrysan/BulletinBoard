@@ -31,6 +31,14 @@
           }
         },
         {
+          "client_id": "513608213086-8cta6ol0j6kd7acjs5eoa4cgh91bn1ni.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.MikeKrysan.myapplication",
+            "certificate_hash": "9eed56bfdc7280f687eb63fb9e4ef523bc18fd24"
+          }
+        },
+        {
           "client_id": "513608213086-03t1cdq37j7ivdk13d3r827kfio24p48.apps.googleusercontent.com",
           "client_type": 3
         }
