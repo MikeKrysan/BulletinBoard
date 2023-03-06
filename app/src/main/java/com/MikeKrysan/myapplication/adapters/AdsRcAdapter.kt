@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.MikeKrysan.myapplication.MainActivity
 import com.MikeKrysan.myapplication.R
+import com.MikeKrysan.myapplication.act.DescriptionActivity
 import com.MikeKrysan.myapplication.act.EditAdsAct
 import com.MikeKrysan.myapplication.databinding.AdListItemBinding
 import com.MikeKrysan.myapplication.model.Ad
@@ -61,6 +62,12 @@ class AdsRcAdapter(val act: MainActivity) : RecyclerView.Adapter<AdsRcAdapter.Ad
             ibEditAd.setOnClickListener(onClickEdit(ad))
             ibDeleteAd.setOnClickListener{
                 act.onDeleteItem(ad)
+            }
+            //Добавляем слушателя на весь элемент, чтобы посмотреть объявление
+            itemView.setOnClickListener {
+                val i = Intent(binding.root.context, DescriptionActivity::class.java)   //Создаем сначала intent, с помощью которого будем открывать активити и передавать объявление, на которое нажали. Указываем класс, который мы хотимм открыть - DescriptionActivity
+                i.putExtra("AD", ad)    //положили в intent информацию, которую хотим передать на этот активити
+                binding.root.context.startActivity(i)   //запускаем активити, которое мы указали.
             }
         }
 

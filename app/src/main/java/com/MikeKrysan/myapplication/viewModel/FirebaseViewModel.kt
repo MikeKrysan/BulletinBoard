@@ -30,7 +30,6 @@ class FirebaseViewModel: ViewModel() {
                 }
                 liveAdsData.postValue(updatedList)
             }
-
         })
     }
 

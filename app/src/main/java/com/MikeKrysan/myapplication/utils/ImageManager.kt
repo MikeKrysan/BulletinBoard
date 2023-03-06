@@ -70,9 +70,7 @@ object ImageManager {
         for(n in uris.indices) {
             val size = getImageSize(uris[n], act)
 //            Log.d("MyLog", "Width : ${size[WIDTH]} Height ${size[HEIGHT]}") //26.3
-
             val imageRatio = size[WIDTH].toFloat() / size[HEIGHT].toFloat()  //теперь мы знаем пропорцию нашей картинки
-
             //Если число больше 1, значит что ширина больше высоты. Уменьшаем ширину до 1000(максимальный размер, сами задаем его). Если ширина меньше одного, значит ширина меньше высоты, вертикальная ориентация. Уменьшаем высоту до 1000
             if(imageRatio > 1) {
                 //Делаем еще одну проверку, если картинка не превышает максимального размера
@@ -89,17 +87,26 @@ object ImageManager {
                 }
             }
 //            Log.d("MyLog", "Width : ${tempList[n][WIDTH]} Height ${tempList[n][HEIGHT]}")   //26.3
-
         }
         for(i in uris.indices) {
 
         kotlin.runCatching {
                 bitmapList.add(Picasso.get().load((uris[i])).resize(tempList[i][WIDTH], tempList[i][HEIGHT]).get())
             }
-
         }
-
         return@withContext bitmapList   //27.7
-
     }
+
+    //создадим функцию, которая будет передавать bitmap в Firebase без зжатия размера картинок:
+    suspend fun getBitmapFromUris(uris: List<String?>): List<Bitmap> = withContext(Dispatchers.IO) {
+        val bitmapList = ArrayList<Bitmap>()    //Создаем временый список
+        //Получаем все bitmap которые есть: (1, либо 2, либо 3). Все это происходит на второстепенном потоке, с помощью корутинов
+        for(i in uris.indices) {
+            kotlin.runCatching {
+                bitmapList.add(Picasso.get().load((uris[i])).get()) //берем bitmap-ы с помощью библиотеки Picasso. Получаем их c помощью uri-ссылок, которые пришли
+            }
+        }
+        return@withContext bitmapList   //Возвращает bitmap list
+    }
+
 }
