@@ -63,12 +63,6 @@ class AdsRcAdapter(val act: MainActivity) : RecyclerView.Adapter<AdsRcAdapter.Ad
             ibDeleteAd.setOnClickListener{
                 act.onDeleteItem(ad)
             }
-            //Добавляем слушателя на весь элемент, чтобы посмотреть объявление
-            itemView.setOnClickListener {
-                val i = Intent(binding.root.context, DescriptionActivity::class.java)   //Создаем сначала intent, с помощью которого будем открывать активити и передавать объявление, на которое нажали. Указываем класс, который мы хотимм открыть - DescriptionActivity
-                i.putExtra("AD", ad)    //положили в intent информацию, которую хотим передать на этот активити
-                binding.root.context.startActivity(i)   //запускаем активити, которое мы указали.
-            }
         }
 
         private fun isFav(ad: Ad) {

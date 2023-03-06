@@ -13,6 +13,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.MikeKrysan.myapplication.accaunthelper.AccauntHelper
+import com.MikeKrysan.myapplication.act.DescriptionActivity
 import com.MikeKrysan.myapplication.act.EditAdsAct
 import com.MikeKrysan.myapplication.adapters.AdsRcAdapter
 import com.MikeKrysan.myapplication.databinding.ActivityMainBinding
@@ -675,6 +676,8 @@ import com.google.firebase.ktx.Firebase
     Урок69. Делаем возможность отправки сообщения владельцу объявления и звонок по телефону. А также добавляем Email-адресс в класс Ad
             При нажатии на кнопку "позвонить", открывается стандартное приложение из смартфона и туда передаем номер телефона, на который мы хотим позвонить
 
+    Урок70. Краткое описание объявления в 4 строчки. Счетчик фото в DescriptionActivity. Счетчик количества просмотров. Заполняем ViewPager на EditActivity
+
  */
 
 
@@ -868,6 +871,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onAdViewed(ad: Ad) {
         firebaseViewModel.adViewed(ad)
+        //При нажатии на экран объявления открываем его на новом активити - DescriptionActivity
+        val i = Intent(this, DescriptionActivity::class.java)   //Создаем сначала intent, с помощью которого будем открывать активити и передавать объявление, на которое нажали. Указываем класс, который мы хотимм открыть - DescriptionActivity
+        i.putExtra("AD", ad)    //положили в intent информацию, которую хотим передать на этот активити
+        startActivity(i)   //запускаем активити, которое мы указали.
     }
 
     override fun onFavClicked(ad: Ad) {

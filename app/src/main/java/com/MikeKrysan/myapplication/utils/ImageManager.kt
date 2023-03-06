@@ -6,8 +6,12 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.support.media.ExifInterface
 import android.widget.ImageView
+import com.MikeKrysan.myapplication.adapters.ImageAdapter
+import com.MikeKrysan.myapplication.model.Ad
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 import java.io.File
@@ -98,7 +102,7 @@ object ImageManager {
     }
 
     //создадим функцию, которая будет передавать bitmap в Firebase без зжатия размера картинок:
-    suspend fun getBitmapFromUris(uris: List<String?>): List<Bitmap> = withContext(Dispatchers.IO) {
+    private suspend fun getBitmapFromUris(uris: List<String?>): List<Bitmap> = withContext(Dispatchers.IO) {
         val bitmapList = ArrayList<Bitmap>()    //Создаем временый список
         //Получаем все bitmap которые есть: (1, либо 2, либо 3). Все это происходит на второстепенном потоке, с помощью корутинов
         for(i in uris.indices) {
@@ -107,6 +111,16 @@ object ImageManager {
             }
         }
         return@withContext bitmapList   //Возвращает bitmap list
+    }
+
+    //Функция для заполнения картинок. Функция запустится на второстепенном потоке, после окончания работы на нем, должна запустится обновление нашего адаптера во ViewPager на главном потоке
+    fun fillImageArray(ad: Ad, adapter: ImageAdapter) {
+        val listUris = listOf(ad.mainImage, ad.image2, ad.image3)   //Из объявления Ad достаем ссылки на картинки
+        //создаем корутин, указывем, на каком потоке будет работать. Указываю, что на основном. Запускаем корутину функцией launch{}:
+        CoroutineScope(Dispatchers.Main).launch {
+            val bitMapList = getBitmapFromUris(listUris)
+            adapter.update(bitMapList as ArrayList<Bitmap>)
+        }
     }
 
 }

@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.provider.SyncStateContract.Helpers.update
 import android.widget.Toast
 import androidx.core.net.toUri
+import androidx.viewpager2.widget.ViewPager2
 import com.MikeKrysan.myapplication.R
 import com.MikeKrysan.myapplication.adapters.ImageAdapter
 import com.MikeKrysan.myapplication.databinding.ActivityDescriptionBinding
@@ -43,6 +44,7 @@ class DescriptionActivity : AppCompatActivity() {
         }
 //        adapter.update()    //Мы не можем сделать update() потому что у нас нет этого списка. Мы передали на Firebase поток из битов bitmap. Нам будет нужна функция, которая получается от ссылок от Firebase bitmap-ы. А это мы будем делать с помощью библиотеки Picasso
         getIntenttFromMainAct() //получаем intent
+        imageChangeCounter()
     }
 
     //функция, которая будет получать ссылки и класс Ad *
@@ -53,7 +55,7 @@ class DescriptionActivity : AppCompatActivity() {
 
     //Создаем функцию для обновления юзер-интерфейса:
     private fun updateUI(ad: Ad) {
-        fillImageArray(ad)  //С принятого класса я хочу получить ссылки. Для этого создадим функцию fillImageArray()
+        ImageManager.fillImageArray(ad, adapter)  //С принятого класса я хочу получить ссылки. Для этого создадим функцию fillImageArray()
         fillTextViews(ad)
     }
 
@@ -79,16 +81,6 @@ class DescriptionActivity : AppCompatActivity() {
         }
     }
 
-    //Функция для заполнения картинок. Функция запустится на второстепенном потоке, после окончания работы на нем, должна запустится обновление нашего адаптера во ViewPager на главном потоке
-    private fun fillImageArray(ad: Ad) {
-        val listUris = listOf(ad.mainImage, ad.image2, ad.image3)   //Из объявления Ad достаем ссылки на картинки
-        //создаем корутин, указывем, на каком потоке будет работать. Указываю, что на основном. Запускаем корутину функцией launch{}:
-        CoroutineScope(Dispatchers.Main).launch {
-            val bitMapList = ImageManager.getBitmapFromUris(listUris)
-            adapter.update(bitMapList as ArrayList<Bitmap>)
-        }
-    }
-
     private fun call() {
         val callUri =  "tel:${ad?.tel}" //мы не просто звоним, а отправляем номер телефона на другое приложение с помощьью которого и будем звонить. Превращаем в URI наш номер телефона
         val iCall = Intent(Intent.ACTION_DIAL)  //Интент для звонка - для того чтобы открыть приложение для звонков
@@ -111,7 +103,17 @@ class DescriptionActivity : AppCompatActivity() {
         } catch (e: ActivityNotFoundException) {
                 Toast.makeText(this, R.string.email_apps_does_not_exist, Toast.LENGTH_LONG).show()
         }
+    }
 
+    //функция для показа на какой картинке из существующих сейчас находится просмотр
+    private fun imageChangeCounter() {
+        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){  //регистирируем специальный коллбек, который будет следить за показом актуального фото и отображением позиции. Данный колбек будет запускатся всякий раз, когда мы скролим картинки
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                val imageCounter = "${position+1}/${binding.viewPager.adapter?.itemCount}"      //Создаем переменную для заполнения
+                binding.tvImageCounter.text =  imageCounter //заполняем переменную нужными данными
+            }
+        })
     }
 
 }
