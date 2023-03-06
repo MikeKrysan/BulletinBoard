@@ -3,6 +3,8 @@ package com.MikeKrysan.myapplication.act
 import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.SyncStateContract.Helpers.update
+import com.MikeKrysan.myapplication.R
 import com.MikeKrysan.myapplication.adapters.ImageAdapter
 import com.MikeKrysan.myapplication.databinding.ActivityDescriptionBinding
 import com.MikeKrysan.myapplication.model.Ad
@@ -36,10 +38,38 @@ class DescriptionActivity : AppCompatActivity() {
     //функция, которая будет получать ссылки и класс Ad *
     private fun getIntenttFromMainAct() {
         val ad = intent.getSerializableExtra("AD") as Ad    //получаем наше объявление. Берем из intent, который к нам приходит. Передаю с помощью ключевого слова "AD". Получить как Ad класс
-        fillImageArray(ad)  //С принятого класса я хочу получить ссылки. Для этого создадим функцию fillImageArray()
+        updateUI(ad)
     }
 
-    //функция запустится на второстепенном потоке, после окончания работы на нем, должна запустится обновление нашего адаптера во ViewPager на главном потоке
+    //Создаем функцию для обновления юзер-интерфейса:
+    private fun updateUI(ad: Ad) {
+        fillImageArray(ad)  //С принятого класса я хочу получить ссылки. Для этого создадим функцию fillImageArray()
+        fillTextViews(ad)
+    }
+
+    //Функция для заполнения тектовой части
+    private fun fillTextViews(ad: Ad) = with(binding) {
+        tvTitle.text = ad.title
+        tvDescription.text = ad.description
+        tvPrice.text = ad.price
+        tvTel.text = ad.tel
+//        tvEmail.text = adEmail    //нужно добавить
+        tvCountry.text = ad.country
+        tvCity.text = ad.city
+        tvIndex.text = ad.index
+        tvWithSend.text = isWithSend(ad.withSend.toBoolean())   //На входе в функцию мы ждем boolean. Превращаем String() в Boolean()
+    }
+
+    //Функция для значка "с отправкой" : да/нет
+    private fun isWithSend(withSend: Boolean): String {
+        return if(withSend) {
+            binding.root.resources.getString(R.string.with_send_true)   //Boolean превращается в String когда записываем на базу данных
+        } else {
+            binding.root.resources.getString(R.string.with_send_false)
+        }
+    }
+
+    //Функция для заполнения картинок. Функция запустится на второстепенном потоке, после окончания работы на нем, должна запустится обновление нашего адаптера во ViewPager на главном потоке
     private fun fillImageArray(ad: Ad) {
         val listUris = listOf(ad.mainImage, ad.image2, ad.image3)   //Из объявления Ad достаем ссылки на картинки
         //создаем корутин, указывем, на каком потоке будет работать. Указываю, что на основном. Запускаем корутину функцией launch{}:

@@ -61,6 +61,8 @@
     <string name="price_desc">Цена</string>
     <!--Ad view screen-->
     <string name="just_index">Индекс</string>
+    <string name="with_send_true">Да</string>
+    <string name="with_send_false">Нет</string>
 
 
 </resources>
