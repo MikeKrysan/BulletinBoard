@@ -50,7 +50,7 @@
     <string name="title">Заголовок</string>
     <string name="title_hint">*Название объявления</string>
     <string name="select_category">*Выберите категорию</string>
-    <string name="price">Цена</string>
+    <string name="price">Цена:</string>
     <string name="price_hint">*Укажите цену</string>
     <string name="description">Описание</string>
     <string name="description_hint">*Описание</string>
@@ -58,8 +58,9 @@
     <string name="Send">Отправка</string>
     <string name="publish">Опубликовать</string>
     <!-- AdListItem -->
-    <string name="price_desc">Цена:</string>
-
+    <string name="price_desc">Цена</string>
+    <!--Ad view screen-->
+    <string name="just_index">Индекс</string>
 
 
 </resources>
