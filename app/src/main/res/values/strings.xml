@@ -63,6 +63,10 @@
     <string name="just_index">Индекс</string>
     <string name="with_send_true">Да</string>
     <string name="with_send_false">Нет</string>
+    <string name="email_extra_text">Меня интересует ваше объявление!</string>
+    <string name="email_add">Объявление</string>
+    <string name="email_apps_does_not_exist">На вашем устройстве не обнаружено какое-либо приложение, с помощью которого возможно отправить сообщение. Установите пожалуйста приложение для возможности отправлять почтой</string>
+
 
 
 </resources>

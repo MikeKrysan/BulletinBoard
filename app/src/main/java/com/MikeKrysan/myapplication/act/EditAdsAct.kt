@@ -222,6 +222,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
         }
     }
 
+    //Функция для считывания данных объявления с базы данных
     private fun fillAd() : Ad {
         val ad: Ad
         rootElement.apply {
@@ -234,6 +235,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
                     edTitle.text.toString(),
                     edPrice.text.toString(),
                     edDescription.text.toString(),
+                    editEmail.text.toString(),
                     "empty",
                     "empty",
                     "empty",
