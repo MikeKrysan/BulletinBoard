@@ -79,13 +79,26 @@ class DbManager {
         readDataFromDb(query, readDataCallback)
     }
 
-    fun getAllAds(lastTime: String, readDataCallback: ReadDataCallback?) {
-        val query = db.orderByChild(AD_FILTER_TIME).startAfter(lastTime).limitToFirst(ADS_LIMIT) //Закрытый путь проверки безопасности, мы проверяем только те объявления, которые мы создали сами. startAfter - запускаем последующие объявления, не включая последнее
+    //функция, которая будет брать первую порцию объявлений с базы данных и показывать последние объявления
+    fun getAllAdsFirstPage(readDataCallback: ReadDataCallback?) {
+        val query = db.orderByChild(AD_FILTER_TIME).limitToLast(ADS_LIMIT) //Закрытый путь проверки безопасности, мы проверяем только те объявления, которые мы создали сами - поменяли на время. startAfter - запускаем последующие объявления, не включая последнее
         readDataFromDb(query, readDataCallback)
     }
 
-    fun getAllAdsFromCat(lastCatTime: String, readDataCallback: ReadDataCallback?) {
-        val query = db.orderByChild(AD_FILTER_CAT_TIME).startAfter(lastCatTime).limitToFirst(ADS_LIMIT)
+    fun getAllAdsNextPage(time: String, readDataCallback: ReadDataCallback?) {
+        val query = db.orderByChild(AD_FILTER_TIME).endBefore(time).limitToLast(ADS_LIMIT)
+        readDataFromDb(query, readDataCallback)
+    }
+
+    //функция, в которой мы берем первую страницу в выбранной категории, и сортируем от свежего к более старому объявлению
+    fun getAllAdsFromCatFirstPage(cat: String, readDataCallback: ReadDataCallback?) {
+        val query = db.orderByChild(AD_FILTER_CAT_TIME).startAt(cat).endAt(cat + "_\uf8ff").limitToLast(ADS_LIMIT)   //uf8ff - специальный символ, который дополняет то, чего нет. Время я не знаю, отсортируется в порядке возрастания по времени (временный код)
+        readDataFromDb(query, readDataCallback)
+    }
+
+    //Функция, которая будет брать не первую страницу категории объявлений, а следующую
+    fun getAllAdsFromCatNextPage(catTime: String, readDataCallback: ReadDataCallback?) {
+        val query = db.orderByChild(AD_FILTER_CAT_TIME).endBefore(catTime).limitToLast(ADS_LIMIT)
         readDataFromDb(query, readDataCallback)
     }
 

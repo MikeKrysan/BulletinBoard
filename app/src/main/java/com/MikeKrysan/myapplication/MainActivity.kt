@@ -703,6 +703,13 @@ import com.squareup.picasso.Picasso
         -функция getAllAdsFromCat()
         -улучшаем scrollListener()
 
+    Урок78. Заканчиваем код для фильтрации объявлений по категориям и делаем, чтобы самые свежие объявления были вверху
+        -Функция getAllAdsFirstPage()
+        -Функция getAllAdsNextPage()
+        -изменяем функцию scrollListener()
+        -создаем функцию getAdsByCategory()
+        -функция getAllAdsFromCatFirstPage()
+
  */
 
 
@@ -720,6 +727,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
     private val firebaseViewModel: FirebaseViewModel by viewModels()
     private var clearUpdate: Boolean = true //Переменная когда мы хотим очистить список, и вернутся на главный экран
+    private var currentCategory: String? = null //Переменная с помощью которой мы будем определять, на какой категории мы сейчас находимся
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -799,16 +807,33 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun initViewModel() {
         firebaseViewModel.liveAdsData.observe(this, {
+            val list = getAdsByCategory(it)
             if(!clearUpdate) {
-                adapter.updateAdapter(it)
+                adapter.updateAdapter(list) //передаем список обработанный (перевернутый) c помощью функции getAdsByCategory
             } else {
-                adapter.updateAdapterWithClear(it)
+                adapter.updateAdapterWithClear(list)
             }
             binding.mainContent.tvEmpty.visibility = if(adapter.itemCount == 0) View.VISIBLE else View.GONE
         })
     }
 
+    //функция, которая будет делать реверс объявлений по времени в определенной категории (от более новых к более старым)
+    private fun getAdsByCategory(list: ArrayList<Ad>): ArrayList<Ad> {
+        val tempList = ArrayList<Ad>()  //создаем временный список
+        tempList.addAll(list)    //в этот временный список перегружаем список со всеми объявлениями
+        //Если текущая категория не равна категории "разные", то тогда нужно отфильтровать объявления с той категории на которой мы находимся
+        if(currentCategory != getString(R.string.dif)) {
+            tempList.clear()
+            list.forEach {
+                if(currentCategory == it.category) tempList.add(it)
+            }
+        }
+        tempList.reverse()  //переворачиваем объявления, чтобы самое свежее показывало первым
+        return tempList
+    }
+
     private fun init() {
+        currentCategory = getString(R.string.dif)   //по-умолчанию, мы находимся в категории "разное"
         setSupportActionBar(binding.mainContent.toolbar)   //11.9  Сначала указываем, какой тулбар используется в активити, а после уже запускаем нажатие на кнопку меню
         onActivityResult()    //Инициализируем наш launcher
         navViewSetings()
@@ -841,7 +866,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     firebaseViewModel.loadMyFavs()
                 }
                 R.id.id_home -> {
-                    firebaseViewModel.loadAllAds("0")
+                    currentCategory = getString(R.string.dif)   //кнопка home подразумевает категорию "разное"
+                    firebaseViewModel.loadAllAdsFirstPage()
                     mainContent.toolbar.title = getString(R.string.dif)
                 }
             }
@@ -899,8 +925,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun getAdsFromCat(cat: String) {
-        val catTime = "${cat}_0"
-        firebaseViewModel.loadAllAdsFromCat(catTime)
+        currentCategory = cat   //мы знаем, что за категорию мы нажали. Мы точно знаем, на какой категории мы находимся
+        firebaseViewModel.loadAllAdsFromCat(cat)
     }
 
     fun uiUpdate(user: FirebaseUser?) {  //6.3 в user содержится информация, под каким email мы зарегистрировались и оттуда мы и будем доставать email. Будем доставать email под которым зарегистировались, и передавть user-a
@@ -968,15 +994,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         })
     }
 
-    //Функция для выбора объявлений по категории
+    //Функция для выбора объявлений по категории. Запускается при скролле
     private fun getAdsFromCat(adsList: ArrayList<Ad>) {
         //Если у нас есть элементы(объявления)
-        adsList[adsList.size - 1].let {
-            if (it.category == getString(R.string.dif)) {   //и они не находятся в категории "разные"
-                firebaseViewModel.loadAllAds(it.time)   //берем время
+        adsList[0].let {
+            if (currentCategory == getString(R.string.dif)) {   //и они не находятся в категории "разные"
+                firebaseViewModel.loadAllAdsNextPage(it.time)
             } else {
                 val catTime = "${it.category}_${it.time}"   //создаем шаблон строки
-                firebaseViewModel.loadAllAdsFromCat(catTime)    //берем объявления из выбранной категории
+                firebaseViewModel.loadAllAdsFromCatNextPage(catTime)    //берем объявления из выбранной категории
             }
         }
     }
