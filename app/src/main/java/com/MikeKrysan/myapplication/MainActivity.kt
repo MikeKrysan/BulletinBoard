@@ -692,6 +692,10 @@ import com.squareup.picasso.Picasso
     Урок73. Заканчиваем NavigationView, добавляем показ аватарки в NavigationView при регистрации. Фото аккаунта в меню, меняем цвет категорий
 
     Урок74. Начинаем делать Pagination (получение объявлений из БД порциями). Делаем слушателя скролла для RecyclerView
+    Урок75. Pagination, часть 2. Делаем загрузку объявлений по порциям
+            -Добавляем время публикации в объявление
+            -Загрузка объявлений по порциям
+            -Подгрузка объявлений через scrollListener
 
  */
 
@@ -720,7 +724,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         init()
         initRecyclerView()
         initViewModel()
-        firebaseViewModel.loadAllAds()
         bottomMenuOnClick()
         scrollListener()
     }
@@ -826,7 +829,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     firebaseViewModel.loadMyFavs()
                 }
                 R.id.id_home -> {
-                    firebaseViewModel.loadAllAds()
+                    firebaseViewModel.loadAllAds("0")
                     mainContent.toolbar.title = getString(R.string.dif)
                 }
             }
@@ -937,6 +940,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 super.onScrollStateChanged(recView, newState)
                 if(!recView.canScrollVertically(SCROLL_DOWN) && newState == RecyclerView.SCROLL_STATE_IDLE) {
                     Log.d("MyLog", "Can't scroll down")
+                    val adsList = firebaseViewModel.liveAdsData.value!!
+                    if(adsList.isNotEmpty()) {
+                        adsList[adsList.size - 1].let { firebaseViewModel.loadAllAds(it.time) }
+                    }
                 }
             }
         })

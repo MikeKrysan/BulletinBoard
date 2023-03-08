@@ -32,10 +32,14 @@ class AdsRcAdapter(val act: MainActivity) : RecyclerView.Adapter<AdsRcAdapter.Ad
     }
 
     fun updateAdapter(newList : List<Ad>) {
-        val diffResult = DiffUtil.calculateDiff(DiffUtilHelper(adArray, newList))
+        val tempArray = ArrayList<Ad>()//Создаем временный список, чтобы при добавлении объявлнений пакетами(pagination) из базы данных,  старый список не стирало
+        tempArray.addAll(adArray)    //добавляем весь старый список
+        tempArray.addAll(newList)    // И добавляем еще список новый
+
+        val diffResult = DiffUtil.calculateDiff(DiffUtilHelper(adArray, tempArray))
         diffResult.dispatchUpdatesTo(this)
-        adArray.clear()
-        adArray.addAll(newList)
+        adArray.clear() //стираем старый список
+        adArray.addAll(tempArray) //записываем новый список, в котором есть старые и новые элементы
     }
 
     class AdHolder(val binding : AdListItemBinding, val act: MainActivity) : RecyclerView.ViewHolder(binding.root){
