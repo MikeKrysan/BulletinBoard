@@ -1,7 +1,5 @@
 package com.MikeKrysan.myapplication.model
 
-import android.util.Log
-import android.widget.Toast
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -17,11 +15,16 @@ class DbManager {
     val auth = Firebase.auth
 
     fun publishAd(ad: Ad, finishListener: FinishWorkListener) {
-        if(auth.uid != null)db.child(ad.key ?: "empty")
+        if (auth.uid != null) db.child(ad.key ?: "empty")
             .child(auth.uid!!).child(AD_NODE)
-            .setValue(ad).addOnCompleteListener{
+            .setValue(ad).addOnCompleteListener {
 //                if(it.isSuccessful)   //можно проверить сообщением тост, передались ли данные на базу данных
-                finishListener.onFinish()
+                val adFilter = AdFilter(ad.time, "${ad.category}_${ad.time}")// Создаем переменные для времени и категории. Создаем шаблон
+                //Как только закончили публиковать объявление, публикуем также фильтр:
+                db.child(ad.key ?: "empty").child(FILTER_NODE)
+                    .setValue(adFilter).addOnCompleteListener {
+                        finishListener.onFinish()
+                    }
             }
     }
 
@@ -77,7 +80,12 @@ class DbManager {
     }
 
     fun getAllAds(lastTime: String, readDataCallback: ReadDataCallback?) {
-        val query = db.orderByChild(auth.uid + "/ad/time").startAfter(lastTime).limitToFirst(ADS_LIMIT) //Закрытый путь проверки безопасности, мы проверяем только те объявления, которые мы создали сами. startAfter - запускаем последующие объявления, не включая последнее
+        val query = db.orderByChild(AD_FILTER_TIME).startAfter(lastTime).limitToFirst(ADS_LIMIT) //Закрытый путь проверки безопасности, мы проверяем только те объявления, которые мы создали сами. startAfter - запускаем последующие объявления, не включая последнее
+        readDataFromDb(query, readDataCallback)
+    }
+
+    fun getAllAdsFromCat(lastCatTime: String, readDataCallback: ReadDataCallback?) {
+        val query = db.orderByChild(AD_FILTER_CAT_TIME).startAfter(lastCatTime).limitToFirst(ADS_LIMIT)
         readDataFromDb(query, readDataCallback)
     }
 
@@ -130,10 +138,13 @@ class DbManager {
 
     companion object{
         const val AD_NODE = "ad"
+        const val FILTER_NODE = "adFilter"
         const val MAIN_NODE = "main"
         const val INFO_NODE = "info"
         const val FAVS_NODE = "favs"
         const val ADS_LIMIT = 2
+        const val AD_FILTER_TIME = "/adFilter/time"
+        const val AD_FILTER_CAT_TIME = "/adFilter/catTime"
 
     }
 

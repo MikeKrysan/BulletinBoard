@@ -698,6 +698,11 @@ import com.squareup.picasso.Picasso
             -Подгрузка объявлений через scrollListener
     Урок76. Pagination, часть 3. Правильное обновление адаптера
 
+    Урок77.Фильтрация по категориям, часть 1
+        -функция publishAds() с записью фильтра
+        -функция getAllAdsFromCat()
+        -улучшаем scrollListener()
+
  */
 
 
@@ -858,16 +863,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 Toast.makeText(this, "Pressed id_my_ads", Toast.LENGTH_SHORT).show()
             }
             R.id.id_car -> {
-                Toast.makeText(this, "Pressed id_car", Toast.LENGTH_SHORT).show()
+                getAdsFromCat(getString(R.string.ads_car))
             }
             R.id.id_pc -> {
-                Toast.makeText(this, "Pressed id_pc", Toast.LENGTH_SHORT).show()
+                getAdsFromCat(getString(R.string.ads_pc))
             }
             R.id.id_smart -> {
-                Toast.makeText(this, "Pressed id_smart", Toast.LENGTH_SHORT).show()
+                getAdsFromCat(getString(R.string.ads_smartphone))
             }
             R.id.id_appliance -> {
-                Toast.makeText(this, "Pressed id_appliance", Toast.LENGTH_SHORT).show()
+                getAdsFromCat(getString(R.string.ads_appliances))
             }
             R.id.id_sign_up -> {
 //                Toast.makeText(this, "Pressed id_sign_up", Toast.LENGTH_LONG).show()
@@ -891,6 +896,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        drawerLayout.closeDrawer(GravityCompat.START)   //При нажатии на одну из кнопок выполнится одно из условий и после этого запустится closeDrawer, и меню закроется
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun getAdsFromCat(cat: String) {
+        val catTime = "${cat}_0"
+        firebaseViewModel.loadAllAdsFromCat(catTime)
     }
 
     fun uiUpdate(user: FirebaseUser?) {  //6.3 в user содержится информация, под каким email мы зарегистрировались и оттуда мы и будем доставать email. Будем доставать email под которым зарегистировались, и передавть user-a
@@ -948,13 +958,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 super.onScrollStateChanged(recView, newState)
                 if(!recView.canScrollVertically(SCROLL_DOWN) && newState == RecyclerView.SCROLL_STATE_IDLE) {
                     clearUpdate = false     //При скролле мы хотим добавить новые объявления, не стирая старые
+                    //Когда мы находимся на главной странице и на категории "Разное", тогда ее нужно запускать вот так:
                     val adsList = firebaseViewModel.liveAdsData.value!!
                     if(adsList.isNotEmpty()) {
-                        adsList[adsList.size - 1].let { firebaseViewModel.loadAllAds(it.time) }
+                        getAdsFromCat(adsList)
                     }
                 }
             }
         })
+    }
+
+    //Функция для выбора объявлений по категории
+    private fun getAdsFromCat(adsList: ArrayList<Ad>) {
+        //Если у нас есть элементы(объявления)
+        adsList[adsList.size - 1].let {
+            if (it.category == getString(R.string.dif)) {   //и они не находятся в категории "разные"
+                firebaseViewModel.loadAllAds(it.time)   //берем время
+            } else {
+                val catTime = "${it.category}_${it.time}"   //создаем шаблон строки
+                firebaseViewModel.loadAllAdsFromCat(catTime)    //берем объявления из выбранной категории
+            }
+        }
     }
 
     companion object {
