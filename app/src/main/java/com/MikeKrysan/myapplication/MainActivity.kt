@@ -696,6 +696,7 @@ import com.squareup.picasso.Picasso
             -Добавляем время публикации в объявление
             -Загрузка объявлений по порциям
             -Подгрузка объявлений через scrollListener
+    Урок76. Pagination, часть 3. Правильное обновление адаптера
 
  */
 
@@ -713,6 +714,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     val adapter = AdsRcAdapter(this)
     lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
     private val firebaseViewModel: FirebaseViewModel by viewModels()
+    private var clearUpdate: Boolean = true //Переменная когда мы хотим очистить список, и вернутся на главный экран
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -792,8 +794,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun initViewModel() {
         firebaseViewModel.liveAdsData.observe(this, {
-            adapter.updateAdapter(it)
-            binding.mainContent.tvEmpty.visibility = if(it.isEmpty()) View.VISIBLE else View.GONE
+            if(!clearUpdate) {
+                adapter.updateAdapter(it)
+            } else {
+                adapter.updateAdapterWithClear(it)
+            }
+            binding.mainContent.tvEmpty.visibility = if(adapter.itemCount == 0) View.VISIBLE else View.GONE
         })
     }
 
@@ -816,6 +822,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun bottomMenuOnClick() = with(binding) {
         mainContent.bNavView.setOnNavigationItemSelectedListener {  item ->
+            clearUpdate = true  //каждый раз при нажатии на кнопки, обновляется список
             when(item.itemId) {
                 R.id.id_new_ad -> {
                     val i = Intent(this@MainActivity, EditAdsAct::class.java)
@@ -845,6 +852,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {    //2.7.2 Когда мы нажали на элемент из главного меню, мы можем проверить id этого элемента
+        clearUpdate = true  //каждый раз когда жмем на новую категорию, старый список очищается, и загружается первая страница данной категории
         when(item.itemId){
             R.id.id_my_ads -> {
                 Toast.makeText(this, "Pressed id_my_ads", Toast.LENGTH_SHORT).show()
@@ -939,7 +947,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             override fun onScrollStateChanged(recView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recView, newState)
                 if(!recView.canScrollVertically(SCROLL_DOWN) && newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    Log.d("MyLog", "Can't scroll down")
+                    clearUpdate = false     //При скролле мы хотим добавить новые объявления, не стирая старые
                     val adsList = firebaseViewModel.liveAdsData.value!!
                     if(adsList.isNotEmpty()) {
                         adsList[adsList.size - 1].let { firebaseViewModel.loadAllAds(it.time) }
