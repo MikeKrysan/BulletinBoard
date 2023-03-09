@@ -1,5 +1,6 @@
 package com.MikeKrysan.myapplication.model
 
+import com.MikeKrysan.myapplication.utils.FilterManager
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -19,7 +20,8 @@ class DbManager {
             .child(auth.uid!!).child(AD_NODE)
             .setValue(ad).addOnCompleteListener {
 //                if(it.isSuccessful)   //можно проверить сообщением тост, передались ли данные на базу данных
-                val adFilter = AdFilter(ad.time, "${ad.category}_${ad.time}")// Создаем переменные для времени и категории. Создаем шаблон
+//                val adFilter = AdFilter(ad.time, "${ad.category}_${ad.time}")// Создаем переменные для времени и категории. Создаем шаблон
+                val adFilter = FilterManager.createFilter(ad)
                 //Как только закончили публиковать объявление, публикуем также фильтр:
                 db.child(ad.key ?: "empty").child(FILTER_NODE)
                     .setValue(adFilter).addOnCompleteListener {
@@ -157,7 +159,7 @@ class DbManager {
         const val FAVS_NODE = "favs"
         const val ADS_LIMIT = 2
         const val AD_FILTER_TIME = "/adFilter/time"
-        const val AD_FILTER_CAT_TIME = "/adFilter/catTime"
+        const val AD_FILTER_CAT_TIME = "/adFilter/cat_time"
 
     }
 
