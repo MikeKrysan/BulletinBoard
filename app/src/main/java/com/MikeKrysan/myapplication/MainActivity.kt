@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Filter
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -724,6 +725,8 @@ import com.squareup.picasso.Picasso
         -слушатель нажатий onClickDone
         -функция createFilter()
         -проверка фильтра
+
+    Урок81. FilterActivity. Сегодня делаем передачу фильтра между активити
  */
 
 
@@ -742,6 +745,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val firebaseViewModel: FirebaseViewModel by viewModels()
     private var clearUpdate: Boolean = true //Переменная когда мы хотим очистить список, и вернутся на главный экран
     private var currentCategory: String? = null //Переменная с помощью которой мы будем определять, на какой категории мы сейчас находимся
+    private var filter:String = "empty"   //создаем глобальную переменную записанного массива из фильтра FilterActivity
+    lateinit var filterLauncher: ActivityResultLauncher<Intent>   //создаем ActivityResultLauncher для того чтобы запускать активити и ждать результата
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -755,6 +760,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         initViewModel()
         bottomMenuOnClick()
         scrollListener()
+        onActivityResultFilter()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -765,7 +771,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     //Слушатель нажатий на меню
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         //если фильтр - запускаем наше меню:
-        if(item.itemId == R.id.id_filter) startActivity(Intent(this@MainActivity, FilterActivity::class.java)) //пока что запускаем так, но потом будем запускать через ланчер. Фильтр выбран, мы хотим получить результат и с помощью этого результата фильтровать
+//        if(item.itemId == R.id.id_filter) startActivity(Intent(this@MainActivity, FilterActivity::class.java)) //пока что запускаем так, но потом будем запускать через ланчер. Фильтр выбран, мы хотим получить результат и с помощью этого результата фильтровать
+        //запускаем с помощью лаунчера
+        if(item.itemId == R.id.id_filter) {
+            //создаем Intent
+            val i = Intent(this@MainActivity, FilterActivity::class.java).apply{
+                putExtra(FilterActivity.FILTER_KEY, filter) //помещаем в Intent фильтр если он там был. Если его не было, то туда помещается слово empty
+            }
+            filterLauncher.launch(i)    //запускаем и ждем уже результата
+        }
         return super.onOptionsItemSelected(item)
     }
 
@@ -787,6 +801,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             } catch (e:ApiException) {
                 Log.d("MyLog", "Api error: ${e.message}")
+            }
+        }
+    }
+
+    private fun onActivityResultFilter() {
+        filterLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == RESULT_OK) {
+                filter = it.data?.getStringExtra(FilterActivity.FILTER_KEY)!!
+                Log.d("MyLog", "Filter : $filter")
             }
         }
     }
