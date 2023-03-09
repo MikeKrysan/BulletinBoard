@@ -177,7 +177,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
             }
             else {    // иначе выводим тост "выберите пожалуйста страну!"
 //                Toast.makeText(this, R.string.country_not_selected, Toast.LENGTH_LONG ).show()
-                Toast.makeText(this, "No country selected", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, R.string.country_not_selected, Toast.LENGTH_LONG).show()
             }
     }
 
