@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
@@ -22,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.MikeKrysan.myapplication.accaunthelper.AccauntHelper
 import com.MikeKrysan.myapplication.act.DescriptionActivity
 import com.MikeKrysan.myapplication.act.EditAdsAct
+import com.MikeKrysan.myapplication.act.FilterActivity
 import com.MikeKrysan.myapplication.adapters.AdsRcAdapter
 import com.MikeKrysan.myapplication.databinding.ActivityMainBinding
 import com.MikeKrysan.myapplication.dialogHelper.DialogConst
@@ -687,7 +689,7 @@ import com.squareup.picasso.Picasso
 
     Урок71. Делаем счетчик фото в EditAdsActivity
 
-    Урок72. Заменяем устаревшую функцию onActivityResult для входа по Google аккаунту - КАК И РАНЕЕ, ВХОД ПО ГУГЛ-АККАУНТУ ОТВАЛИЛСЯ И НЕ РАБОТАЕТ
+    Урок72. Заменяем устаревшую функцию onActivityResult для входа по Google аккаунту - КАК И РАНЕЕ, ВХОД ПО ГУГЛ-АККАУНТУ ОТВАЛИЛСЯ И НЕ РАБОТАЕТ (работает, нужно ключ обновлять если пользуешся VPN)
 
     Урок73. Заканчиваем NavigationView, добавляем показ аватарки в NavigationView при регистрации. Фото аккаунта в меню, меняем цвет категорий
 
@@ -710,6 +712,11 @@ import com.squareup.picasso.Picasso
         -создаем функцию getAdsByCategory()
         -функция getAllAdsFromCatFirstPage()
 
+    Урок79. Начинаем делать FilterActivity для фильтрации объявлений по городу, стране и т.д.
+        -создаем Activity и подключаем ViewBinding
+        -создание кнопки меню для открытия FiltrActivity
+        -добавляем ActionBar на FilterActivity
+        -активируем кнопку для выхода из активити
  */
 
 
@@ -741,6 +748,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         initViewModel()
         bottomMenuOnClick()
         scrollListener()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    //Слушатель нажатий на меню
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        //если фильтр - запускаем наше меню:
+        if(item.itemId == R.id.id_filter) startActivity(Intent(this@MainActivity, FilterActivity::class.java)) //пока что запускаем так, но потом будем запускать через ланчер. Фильтр выбран, мы хотим получить результат и с помощью этого результата фильтровать
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onResume() {
