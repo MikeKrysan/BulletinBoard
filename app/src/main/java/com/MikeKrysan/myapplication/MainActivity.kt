@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Filter
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -30,6 +29,7 @@ import com.MikeKrysan.myapplication.databinding.ActivityMainBinding
 import com.MikeKrysan.myapplication.dialogHelper.DialogConst
 import com.MikeKrysan.myapplication.dialogHelper.DialogHelper
 import com.MikeKrysan.myapplication.model.Ad
+import com.MikeKrysan.myapplication.utils.FilterManager
 import com.MikeKrysan.myapplication.viewModel.FirebaseViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
@@ -729,6 +729,8 @@ import com.squareup.picasso.Picasso
     Урок81. FilterActivity. Сегодня делаем передачу фильтра между активити
 
     Урок82. Делаем запись фильтров в БД для дальнейшей фильтрации объявлений по этим фильтрам
+
+    Урок83. Делаем получение пути фильтра для фильтрации. Функция getFilter
  */
 
 
@@ -812,6 +814,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if(it.resultCode == RESULT_OK) {
                 filter = it.data?.getStringExtra(FilterActivity.FILTER_KEY)!!
                 Log.d("MyLog", "Filter : $filter")
+                Log.d("MyLog", "getFilter : ${FilterManager.getFilterNode(filter)}")
+
             }
         }
     }
