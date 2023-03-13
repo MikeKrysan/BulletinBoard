@@ -736,6 +736,13 @@ import com.squareup.picasso.Picasso
         -устраняем ошибку
         -получаем название узла и фильтра
         -проверка получения фильтра
+
+    Урок85. Делаем использование фильтра в DbManager все подряд, пока не по категориям. - Не происходит фильтрация! Ошибки нет в приложении, в Run пишет:
+        W/PersistentConnection: pc_0 - Using an unspecified index. Your data will be downloaded and filtered on the client. Consider adding '".indexOn":
+        "adFilter/country_withSend_time"' at main to your security and Firebase Database rules for better performance
+        Возможно нужно добисать в базе данных правило?
+
+
  */
 
 
@@ -756,6 +763,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var currentCategory: String? = null //Переменная с помощью которой мы будем определять, на какой категории мы сейчас находимся
     private var filter:String = "empty"   //создаем глобальную переменную записанного массива из фильтра FilterActivity
     lateinit var filterLauncher: ActivityResultLauncher<Intent>   //создаем ActivityResultLauncher для того чтобы запускать активити и ждать результата
+    private var filterDb:String = ""   //переменная которая передает фильтр в формате _|_ в базу данных
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -817,10 +825,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun onActivityResultFilter() {
         filterLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if(it.resultCode == RESULT_OK) {
-                filter = it.data?.getStringExtra(FilterActivity.FILTER_KEY)!!
-                Log.d("MyLog", "Filter : $filter")
-                Log.d("MyLog", "getFilter : ${FilterManager.getFilterNode(filter)}")
-
+                filter = it.data?.getStringExtra(FilterActivity.FILTER_KEY)!!   //Переменная для сохранения состояния того, что мы выбрали в фильтре, и возвращать его назад на FilterActivity
+//                Log.d("MyLog", "Filter : $filter")
+//                Log.d("MyLog", "getFilter : ${FilterManager.getFilterNode(filter)}")
+                filterDb = FilterManager.getFilterNode(filter)
             }
         }
     }
@@ -927,7 +935,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 R.id.id_home -> {
                     currentCategory = getString(R.string.dif)   //кнопка home подразумевает категорию "разное"
-                    firebaseViewModel.loadAllAdsFirstPage()
+                    firebaseViewModel.loadAllAdsFirstPage(filterDb)
                     mainContent.toolbar.title = getString(R.string.dif)
                 }
             }

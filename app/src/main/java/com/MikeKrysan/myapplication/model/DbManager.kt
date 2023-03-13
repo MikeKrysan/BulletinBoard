@@ -82,9 +82,21 @@ class DbManager {
     }
 
     //функция, которая будет брать первую порцию объявлений с базы данных и показывать последние объявления
-    fun getAllAdsFirstPage(readDataCallback: ReadDataCallback?) {
-        val query = db.orderByChild(AD_FILTER_TIME).limitToLast(ADS_LIMIT) //Закрытый путь проверки безопасности, мы проверяем только те объявления, которые мы создали сами - поменяли на время. startAfter - запускаем последующие объявления, не включая последнее
+    fun getAllAdsFirstPage(filter: String, readDataCallback: ReadDataCallback?) {
+        val query = if(filter.isEmpty()) {
+            db.orderByChild(AD_FILTER_TIME).limitToLast(ADS_LIMIT)  //Закрытый путь проверки безопасности, мы проверяем только те объявления, которые мы создали сами - поменяли на время. startAfter - запускаем последующие объявления, не включая последнее
+        } else {
+            getAllAdsByFilterFirstPage(filter)
+        }
         readDataFromDb(query, readDataCallback)
+    }
+
+    //функция, которая будет показывать главную страницу, которая будет отфильтрована без категорий, по-умолчанию (разные)
+    fun getAllAdsByFilterFirstPage(tempFilter: String): Query {
+        val orderBy = tempFilter.split("|")[0]
+        val filter = tempFilter.split("|")[1]
+        return db.orderByChild("/adFilter/$orderBy").startAt(filter).endAt(filter + "_\uf8ff").limitToLast(ADS_LIMIT)    //\uf8ff-мы не знаем времени
+
     }
 
     fun getAllAdsNextPage(time: String, readDataCallback: ReadDataCallback?) {
