@@ -742,7 +742,7 @@ import com.squareup.picasso.Picasso
         "adFilter/country_withSend_time"' at main to your security and Firebase Database rules for better performance
         Возможно нужно добисать в базе данных правило?
 
-
+    Урок86. Делаем использование фильтра в категориях для первой страницы
  */
 
 
@@ -994,7 +994,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun getAdsFromCat(cat: String) {
         currentCategory = cat   //мы знаем, что за категорию мы нажали. Мы точно знаем, на какой категории мы находимся
-        firebaseViewModel.loadAllAdsFromCat(cat)
+        firebaseViewModel.loadAllAdsFromCat(cat, filterDb)
     }
 
     fun uiUpdate(user: FirebaseUser?) {  //6.3 в user содержится информация, под каким email мы зарегистрировались и оттуда мы и будем доставать email. Будем доставать email под которым зарегистировались, и передавть user-a

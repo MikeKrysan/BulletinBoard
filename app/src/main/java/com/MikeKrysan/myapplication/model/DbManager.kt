@@ -96,7 +96,6 @@ class DbManager {
         val orderBy = tempFilter.split("|")[0]
         val filter = tempFilter.split("|")[1]
         return db.orderByChild("/adFilter/$orderBy").startAt(filter).endAt(filter + "_\uf8ff").limitToLast(ADS_LIMIT)    //\uf8ff-мы не знаем времени
-
     }
 
     fun getAllAdsNextPage(time: String, readDataCallback: ReadDataCallback?) {
@@ -105,9 +104,19 @@ class DbManager {
     }
 
     //функция, в которой мы берем первую страницу в выбранной категории, и сортируем от свежего к более старому объявлению
-    fun getAllAdsFromCatFirstPage(cat: String, readDataCallback: ReadDataCallback?) {
-        val query = db.orderByChild(AD_FILTER_CAT_TIME).startAt(cat).endAt(cat + "_\uf8ff").limitToLast(ADS_LIMIT)   //uf8ff - специальный символ, который дополняет то, чего нет. Время я не знаю, отсортируется в порядке возрастания по времени (временный код)
+    fun getAllAdsFromCatFirstPage(cat: String, filter: String, readDataCallback: ReadDataCallback?) {
+        val query = if(filter.isEmpty()) {
+            db.orderByChild(AD_FILTER_CAT_TIME).startAt(cat).endAt(cat + "_\uf8ff").limitToLast(ADS_LIMIT)  //uf8ff - специальный символ, который дополняет то, чего нет. Время я не знаю, отсортируется в порядке возрастания по времени (временный код)
+        } else {
+            getAllAdsFromCatByFilterFirstPage(cat, filter)
+        }
         readDataFromDb(query, readDataCallback)
+    }
+
+    fun getAllAdsFromCatByFilterFirstPage(cat: String, tempFilter: String ): Query {
+        val orderBy = "cat_" + tempFilter.split("|")[0]
+        val filter = cat +"_" + tempFilter.split("|")[1]
+        return db.orderByChild("/adFilter/$orderBy").startAt(filter).endAt(filter + "_\uf8ff").limitToLast(ADS_LIMIT)    //\uf8ff-мы не знаем времени
     }
 
     //Функция, которая будет брать не первую страницу категории объявлений, а следующую
