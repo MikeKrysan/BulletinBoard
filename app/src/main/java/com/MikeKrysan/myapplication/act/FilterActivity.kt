@@ -40,8 +40,8 @@ class FilterActivity : AppCompatActivity() {
             //Если есть данный входящие, нужно их разделить на массив
             val filterArray = filter.split("_") //разделяем по нижнему подчеркиванию на отдельные элементы из массива. Превращаем в массив, все элементы находятся на своих позициях
             //но на некоторых позициях может быть слово "empty", то ничего заполнять не нужно. Если в стране и городе не значение по-умолчанию, то берем заполненные страну и город
-            if(filterArray[0] != getString(R.string.select_country)) tvCountry.text = filterArray[0]
-            if(filterArray[1] != getString(R.string.select_city)) tvCity.text = filterArray[1]
+            if(filterArray[0] != getString(R.string.select_country) && filterArray[0]!= "empty") tvCountry.text = filterArray[0]
+            if(filterArray[1] != getString(R.string.select_city) && filterArray[1] != "empty") tvCity.text = filterArray[1]
             if(filterArray[2] != "empty") edIndex.setText(filterArray[2])
             checkBoxWithSend.isChecked = filterArray[3].toBoolean()
         }

@@ -26,12 +26,23 @@ object FilterManager {
 
     //Создаем еще одну функцию которая будет определять, что есть в сформированной строке и создать String, как в базе данных(China_empty_empty_time -> country_withSend_time)
     fun getFilterNode(filter: String):String {
-        val sBuilder = StringBuilder()
+        val sBuilderNode = StringBuilder()
+        val sBuilderFilter = StringBuilder()    //84.1 Создаем StringBuilder для самих реальных названий
         val tempArray = filter.split("_")
-        if(tempArray[0] != "empty") sBuilder.append("country_")
-        if(tempArray[1] != "empty") sBuilder.append("city_")
-        if(tempArray[2] != "empty") sBuilder.append("index_")
-        sBuilder.append("withSend_time")     //время добавляем без всяких условий, потому что оно везде добавляется
-        return sBuilder.toString()
+        if(tempArray[0] != "empty") {
+            sBuilderNode.append("country_")
+            sBuilderFilter.append("${tempArray[0]}_")
+        }
+        if(tempArray[1] != "empty") {
+            sBuilderNode.append("city_")
+            sBuilderFilter.append("${tempArray[1]}_")
+        }
+        if(tempArray[2] != "empty") {
+            sBuilderNode.append("index_")
+            sBuilderFilter.append("${tempArray[2]}_")
+        }
+        sBuilderFilter.append(tempArray[3])
+        sBuilderNode.append("withSend_time")     //время добавляем без всяких условий, потому что оно везде добавляется
+        return "$sBuilderNode|$sBuilderFilter"
     }
 }
