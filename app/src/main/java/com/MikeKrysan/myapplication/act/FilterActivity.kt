@@ -19,10 +19,11 @@ class FilterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityFilterBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        actionBarSettings()
         onClickSelectCountry()
         onClickSelectCity()
         onClickDone()
+        onClickClear()
+        actionBarSettings()
         getFilter()
     }
 
@@ -84,6 +85,16 @@ class FilterActivity : AppCompatActivity() {
            setResult(RESULT_OK, i)  //возвращаем результат
            finish()
        }
+    }
+
+    private fun onClickClear() = with(binding) {
+        btClear.setOnClickListener {
+            tvCountry.text = getString(R.string.select_country)
+            tvCity.text = getString(R.string.select_city)
+            edIndex.setText("")
+            checkBoxWithSend.isChecked = false
+            setResult(RESULT_CANCELED)  //Когда мы закроем активити фильтров системной кнопкой "назад" - мы передадим в onActivityResultFilter() класса MainActivity - RESULT_CANCELED
+        }
     }
 
     //Функция, в которой будут собираться все данные вместе, для отправки на филтровку. В один специальный стринг. С помощью этого стринга мы и будем фильтровать

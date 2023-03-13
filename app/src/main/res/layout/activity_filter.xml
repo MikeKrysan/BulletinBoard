@@ -168,10 +168,19 @@
                 android:id="@+id/btDone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
                 android:backgroundTint="@color/white"
                 android:onClick="onClickPublish"
                 android:text="@string/apply_filter"
+                android:textColor="@color/green_main" />
+
+            <Button
+                android:id="@+id/btClear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:backgroundTint="@color/white"
+                android:onClick="onClickPublish"
+                android:text="@string/clean_the_filter"
                 android:textColor="@color/green_main" />
 
         </LinearLayout>

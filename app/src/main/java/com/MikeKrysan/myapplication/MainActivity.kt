@@ -743,6 +743,8 @@ import com.squareup.picasso.Picasso
         Возможно нужно добисать в базе данных правило?
 
     Урок86. Делаем использование фильтра в категориях для первой страницы
+
+    Урок87. Делаем очистку фильтра и исправляем ошибку с кнопкой для регистрации
  */
 
 
@@ -829,6 +831,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //                Log.d("MyLog", "Filter : $filter")
 //                Log.d("MyLog", "getFilter : ${FilterManager.getFilterNode(filter)}")
                 filterDb = FilterManager.getFilterNode(filter)
+            } else if(it.resultCode == RESULT_CANCELED) {
+                //полностью очищается фильтр, когда мы нажимаем на кнопку "очистить фильтр" и при возврат на MainActivity (onClickClear() на FilterActivity)
+                filterDb = ""
+                filter= "empty" //почему оставляем "empty"  - потому что в других местах мы проверяем на это значение, а не на пустоту
             }
         }
     }
