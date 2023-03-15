@@ -1,5 +1,6 @@
 package com.MikeKrysan.myapplication
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.SpannableString
@@ -31,6 +32,8 @@ import com.MikeKrysan.myapplication.dialogHelper.DialogHelper
 import com.MikeKrysan.myapplication.model.Ad
 import com.MikeKrysan.myapplication.utils.FilterManager
 import com.MikeKrysan.myapplication.viewModel.FirebaseViewModel
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.navigation.NavigationView
@@ -753,6 +756,8 @@ import com.squareup.picasso.Picasso
     Урок90. Делаем подгрузку новых объявлений на всех категориях при выбранном фильтре.
 
     Урок91. Добавляем показ времени публикации объявлений
+
+    Урок92. Добавляем рекламу на MainActivity и устраняем ошибку с избранными
  */
 
 
@@ -782,6 +787,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //не будет нулевых значений, так как у нас есть реалные ссылки на объекты, которые уже нарисованы
         val view = binding.root //4.3.3 Передаем переменную на экран. Root элемент - это элемент, который содержит в себе все view
         setContentView(view)    //4.3.4 Рисуем экран
+        initAds()
         init()
         initRecyclerView()
         initViewModel()
@@ -813,6 +819,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onResume() {
         super.onResume()
         binding.mainContent.bNavView.selectedItemId = R.id.id_home
+    }
+
+    private fun initAds() {
+        MobileAds.initialize(this)
+        val adRequest = AdRequest.Builder().build()
+        binding.mainContent.adView2.loadAd(adRequest)
+        binding.mainContent.adView2.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.mainContent.adView2.pause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.mainContent.adView2.destroy()
     }
 
     private fun onActivityResult() {
