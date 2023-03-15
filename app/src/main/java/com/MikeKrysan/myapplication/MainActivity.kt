@@ -30,6 +30,7 @@ import com.MikeKrysan.myapplication.databinding.ActivityMainBinding
 import com.MikeKrysan.myapplication.dialogHelper.DialogConst
 import com.MikeKrysan.myapplication.dialogHelper.DialogHelper
 import com.MikeKrysan.myapplication.model.Ad
+import com.MikeKrysan.myapplication.utils.AppMainState
 import com.MikeKrysan.myapplication.utils.FilterManager
 import com.MikeKrysan.myapplication.viewModel.FirebaseViewModel
 import com.google.android.gms.ads.AdRequest
@@ -758,6 +759,8 @@ import com.squareup.picasso.Picasso
     Урок91. Добавляем показ времени публикации объявлений
 
     Урок92. Добавляем рекламу на MainActivity и устраняем ошибку с избранными
+
+    Урок93. добавляем рекламу Open add ads, реклама которая показываеться при открытии приложения.
  */
 
 
@@ -787,6 +790,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //не будет нулевых значений, так как у нас есть реалные ссылки на объекты, которые уже нарисованы
         val view = binding.root //4.3.3 Передаем переменную на экран. Root элемент - это элемент, который содержит в себе все view
         setContentView(view)    //4.3.4 Рисуем экран
+        (application as AppMainState).showAdIfAvailable(this){
+
+        }
         initAds()
         init()
         initRecyclerView()
