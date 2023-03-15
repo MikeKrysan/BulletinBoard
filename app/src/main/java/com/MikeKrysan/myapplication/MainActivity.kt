@@ -745,6 +745,10 @@ import com.squareup.picasso.Picasso
     Урок86. Делаем использование фильтра в категориях для первой страницы
 
     Урок87. Делаем очистку фильтра и исправляем ошибку с кнопкой для регистрации
+
+    Урок88. Устанавливаем правила на Firebase чтобы защитить нашу базу данных
+
+    Урок89. Делаем подгрузку новых объявлений на категории "Раное" при выбранном фильтре. Часть 1
  */
 
 
@@ -1073,7 +1077,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //Если у нас есть элементы(объявления)
         adsList[0].let {
             if (currentCategory == getString(R.string.dif)) {   //и они не находятся в категории "разные"
-                firebaseViewModel.loadAllAdsNextPage(it.time)
+                firebaseViewModel.loadAllAdsNextPage(it.time, filterDb)
             } else {
                 val catTime = "${it.category}_${it.time}"   //создаем шаблон строки
                 firebaseViewModel.loadAllAdsFromCatNextPage(catTime)    //берем объявления из выбранной категории
