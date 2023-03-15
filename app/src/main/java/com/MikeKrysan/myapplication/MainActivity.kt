@@ -748,7 +748,9 @@ import com.squareup.picasso.Picasso
 
     Урок88. Устанавливаем правила на Firebase чтобы защитить нашу базу данных
 
-    Урок89. Делаем подгрузку новых объявлений на категории "Раное" при выбранном фильтре. Часть 1
+    Урок89. Делаем подгрузку новых объявлений на категории "Раное" при выбранном фильтре.
+
+    Урок90. Делаем подгрузку новых объявлений на всех категориях при выбранном фильтре.
  */
 
 
@@ -1079,8 +1081,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (currentCategory == getString(R.string.dif)) {   //и они не находятся в категории "разные"
                 firebaseViewModel.loadAllAdsNextPage(it.time, filterDb)
             } else {
-                val catTime = "${it.category}_${it.time}"   //создаем шаблон строки
-                firebaseViewModel.loadAllAdsFromCatNextPage(catTime)    //берем объявления из выбранной категории
+//                val catTime = "${it.category}_${it.time}"   //создаем шаблон строки
+
+                firebaseViewModel.loadAllAdsFromCatNextPage(it.category!!, it.time, filterDb)
             }
         }
     }
