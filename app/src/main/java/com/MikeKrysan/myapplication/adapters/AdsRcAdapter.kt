@@ -1,6 +1,7 @@
 package com.MikeKrysan.myapplication.adapters
 
 import android.content.Intent
+import android.provider.Settings.Global.getString
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,14 +14,22 @@ import com.MikeKrysan.myapplication.act.EditAdsAct
 import com.MikeKrysan.myapplication.databinding.AdListItemBinding
 import com.MikeKrysan.myapplication.model.Ad
 import com.squareup.picasso.Picasso
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class AdsRcAdapter(val act: MainActivity) : RecyclerView.Adapter<AdsRcAdapter.AdHolder>() {
 
     val adArray = ArrayList<Ad>()
+    private var timeFormatter: SimpleDateFormat? = null // создаем time-форматтор
+
+    init {
+        timeFormatter = SimpleDateFormat("dd/MM/yyyy - hh:mm", Locale.getDefault())
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdHolder {
         val binding = AdListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)    //Recycler View мы вжывляем внуть другого RecyclerView
-        return AdHolder(binding, act)
+        return AdHolder(binding, act, timeFormatter!!)
     }
 
     override fun onBindViewHolder(holder: AdHolder, position: Int) {
@@ -49,7 +58,7 @@ class AdsRcAdapter(val act: MainActivity) : RecyclerView.Adapter<AdsRcAdapter.Ad
         adArray.addAll(newList)
     }
 
-    class AdHolder(val binding : AdListItemBinding, val act: MainActivity) : RecyclerView.ViewHolder(binding.root){
+    class AdHolder(val binding : AdListItemBinding, val act: MainActivity, val formatter: SimpleDateFormat) : RecyclerView.ViewHolder(binding.root){
 
         fun setData(ad: Ad) = with(binding) {
             tvDescription.text = ad.description
@@ -57,10 +66,19 @@ class AdsRcAdapter(val act: MainActivity) : RecyclerView.Adapter<AdsRcAdapter.Ad
             tvTitle.text = ad.title
             tvViewCounter.text = ad.viewsCounter
             tvFavCounter.text = ad.favCounter
+            val publishTime = act.resources.getString(R.string.publish_time) + getTimeFromMillis(ad.time)
+            tvPublishTime.text = publishTime
             Picasso.get().load(ad.mainImage).into(mainImage)
             isFav(ad)
             showEditPanel(isOwner(ad))
             mainOnClick(ad)
+        }
+
+        //функция для перевода времени из набора чисел в понятный для человека формат:
+        private fun getTimeFromMillis(timeMillis: String): String {
+            val c = Calendar.getInstance()
+            c.timeInMillis = timeMillis.toLong()
+            return formatter.format(c.time)
         }
 
         private fun mainOnClick(ad: Ad) = with(binding){

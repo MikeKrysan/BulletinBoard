@@ -59,6 +59,8 @@
     <string name="publish">Опубликовать</string>
     <!-- AdListItem -->
     <string name="price_desc">Цена</string>
+    <string name="publish_time">Время публикации : </string>
+
     <!--Ad view screen-->
     <string name="just_index">Индекс</string>
     <string name="with_send_true">Да</string>
