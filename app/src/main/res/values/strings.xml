@@ -71,6 +71,9 @@
     <!-- Activity_filter-->
     <string name="apply_filter">Применить фильтр</string>
     <string name="clean_the_filter">Очистить фильтр</string>
+    <!--Billing process-->
+    <string name="thanks_you_for_your_purchase">Благодарим за покупку!</string>
+    <string name="failed_to_complete_the_purchase">Не удалось реализовать покупку</string>
 
 
 
