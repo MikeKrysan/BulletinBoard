@@ -10,12 +10,12 @@ import androidx.viewpager2.widget.ViewPager2
 import com.MikeKrysan.myapplication.MainActivity
 import com.MikeKrysan.myapplication.R
 import com.MikeKrysan.myapplication.adapters.ImageAdapter
-import com.MikeKrysan.myapplication.model.Ad
-import com.MikeKrysan.myapplication.model.DbManager
 import com.MikeKrysan.myapplication.databinding.ActivityEditAddsBinding
 import com.MikeKrysan.myapplication.dialogs.DialogSpinnerHelper
 import com.MikeKrysan.myapplication.frag.FragmentCloseInterface
 import com.MikeKrysan.myapplication.frag.ImageListFrag
+import com.MikeKrysan.myapplication.model.Ad
+import com.MikeKrysan.myapplication.model.DbManager
 import com.MikeKrysan.myapplication.utils.CityHelper
 import com.MikeKrysan.myapplication.utils.ImageManager
 import com.MikeKrysan.myapplication.utils.ImagePicker
@@ -207,13 +207,12 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
 
     fun onClickPublish(view: View) {
         ad = fillAd()       //здесь генерируется новый ключ, который взят из fillAd()
-        //если редактирование:
-        if(isEditState) {
-             dbManager.publishAd(ad!!, onPublishFinish()) //сохраняются и редактируются все текстовые ссылки в объявлении. Для картинок работает отдельная логика
-            //если публикация
-        } else {
-            uploadImages()  //Сначала заргужаем картинки. Текстовую часть загрузим после
-        }
+//        //если редактирование:
+//        if(isEditState) {
+//             dbManager.publishAd(ad!!, onPublishFinish()) //сохраняются и редактируются все текстовые ссылки в объявлении. Для картинок работает отдельная логика
+//            //если публикация
+//        } else {
+            uploadImages()  //Сначала заргужаем картинки. Текстовую часть загрузим после//Теперь все будет обновляться, и картинки также
 //        finish()
     }
 
@@ -222,7 +221,6 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
             override fun onFinish() {
                 finish()
             }
-
         }
     }
 
@@ -272,17 +270,43 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     //взятие картинки из приложения и загрузка в базу
     //Жмем первый раз на кнопку "Опубликовать объявление"
     private fun uploadImages() {
-        if(imageAdapter.mainArray.size == imageIndex) { //я выбрал 2 картинки, к примеру. Сейчас imageIndex = 0, потому что я первый раз нажал
+//        if(imageAdapter.mainArray.size == imageIndex) { //я выбрал 2 картинки, к примеру. Сейчас imageIndex = 0, потому что я первый раз нажал
+        if (imageIndex == 3) {
             dbManager.publishAd(ad!!, onPublishFinish())
             return
         }
-       val byteArray = prepareImageByteArray(imageAdapter.mainArray[imageIndex])    //берем картинку с позиции 0 и превращаем ее в byteArray
-        //Интерфейс можно передавать не в аргументы функции, а в фигурные скобки
-        //Загружаем эту картинку на Firebase
-        uploadImage(byteArray) {
-//            dbManager.publishAd(ad!!, onPublishFinish())
-            nextImage(it.result.toString()) //как только она загрузится, приходит ссылка этой картинки в виде it.result
+        val oldUrl = getUrlFromAd()
+        if (imageAdapter.mainArray.size > imageIndex) {
+            val byteArray = prepareImageByteArray(imageAdapter.mainArray[imageIndex])    //берем картинку с позиции 0 и превращаем ее в byteArray
+            if (oldUrl.startsWith("http")) {    //обновляем картинку, или меняем на новую
+                updateImage(byteArray, oldUrl) {
+                    nextImage(it.result.toString())
+                }
+            } else {    //если картинки не было на данной позиции - записываем новую картинку
+                //Интерфейс можно передавать не в аргументы функции, а в фигурные скобки
+                //Загружаем эту картинку на Firebase
+                uploadImage(byteArray) {
+                    nextImage(it.result.toString()) //как только она загрузится, приходит ссылка этой картинки в виде it.result
+                }
+            }
+
+        } else {    //ситуация, когда в ImageAdapter нет больше картинок, но мы не прошли все позиции. Например, у нас было три картинки, а после редактирования осталась одна. Но нам нужно проверить еще другие две позиции, ведь все еще находятся ссылка на старые картинки
+            if (oldUrl.startsWith("http")) {   //все ссылки от Firebase на наши картинки начинаются на "http". Во viewPager отредактированное объявление пользователем больше нет картинок, но старые картинки есть. Их нужно удалить, иначе они будут накапливаться в базе данных
+                //происходит удаление старой картинки на firebase по обновлению картинок пользователем на смартфоне
+                deleteImageByUrl(oldUrl) {
+                    nextImage("empty")
+                }
+            } else {
+                nextImage("empty")
+            }
         }
+    }
+
+    //функция для удаления старых картинок, которые убрал пользователь при редактировании объявлений
+    private fun deleteImageByUrl(oldUrl: String, listener: OnCompleteListener<Void>) {
+        dbManager.dbStorage.storage
+            .getReferenceFromUrl(oldUrl)
+            .delete().addOnCompleteListener(listener)
     }
 
     private fun nextImage(uri: String) {
@@ -298,6 +322,11 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
             1 -> ad = ad?.copy(image2 = uri)
             2 -> ad = ad?.copy(image3 = uri)
         }
+    }
+
+    //Функция-счетчик для того чтобы брать ссылки для картинки, соответсвующие счетчику. Это необходимо при редактировании картинок в объявлении. Будут перезаписываться все позиции картинок объявления
+    private fun getUrlFromAd(): String {
+        return listOf(ad?.mainImage!!, ad?.image2!!, ad?.image3!!)[imageIndex]
     }
 
     //подготвка картинки к загрузке в базу
@@ -316,6 +345,14 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
         upTask.continueWithTask{    //узнаю, когда завершилась загрузка
             task -> imStorageRef.downloadUrl    //мы получаем нашу ссылку
         }.addOnCompleteListener(listener)   //проверяем, получили картинку или нет. Но я не хочу, чтобы эта проверка запускалась в этой функции, я хочу передать интерфейс, и запустить там, где я буду запускать функцию uploadImages()
+    }
+
+    private fun updateImage(byteArray: ByteArray, url:String, listener: OnCompleteListener<Uri>) {
+        val imStorageRef = dbManager.dbStorage.storage.getReferenceFromUrl(url)
+        val upTask = imStorageRef.putBytes(byteArray)
+        upTask.continueWithTask{
+                task -> imStorageRef.downloadUrl
+        }.addOnCompleteListener(listener)
     }
 
     private fun imageChangeCounter() {
@@ -338,3 +375,17 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
 //1) Загружаем картинку на Firebase Storage.
 //2) Нам выдает ссылку, и ссылку(текстовую часть) загружаем уже в realtime Database
 //Но мы не сразу публикуем объявление, пока все картинки не загрузятся, пока все ссылки не получим, мы не опубликуем наше объявление. Пока что все записывается в класс Ad
+
+/*
+Редактирование картинок происходит следующим образом:
+    Когда мы открываем экран для редактирования- открывается EditAdsAct и сюда мы передаем объект ad класса Ad и в нем есть информация, картинки, которые там есть, все текстовые описания
+    Он изначально null, но если мы заходим для редактирования, то мы получаем intent из MainActivity, класс Ad уже не null, он заполнен. Но мы не знаем сколько картинок приходит. Вот этим
+    и отличается создание нового объявления от редактирования. При создании ad = null, а когда мы редактируем, мы открыли экран для редактиования, передали всю информацию. По картинкам и нужно
+    решать что с ними делать: если мы вернулись на экран после выбора картинок где предположим было три ссылки на картинки а по возвращению осталась только одна, - мы жмем опубликовать, нужно
+    две ссылки удалить а одну оставить. А если выбрали другие картинки, их нужно перезаписать. Все это нужно сделать основываясь на классе Ad
+    В функции onclickPublish() вызывалась функция uploadImages(). До 100 урока редактировля текст в объявлении. Теперь нужно сделать редактирование картинок
+    Функция upLoadImages() запускается столько раз, сколько есть картинок в ImageAdapter. Нужно учитывать что там было до редактирования
+    Меняем условие if(imageIndex == 3) - теперь функция будет запускаться столько раз, сколько может быть картинок в объявлении
+    Мы будем брать старую ссылку от старой картинки и перезаписывать старую картинку
+    Необходимо создать функцию getUrlFromAd, которая будет по-очереди брать картинки. Тогда есть imageIndex - cчетчик, который запускается каждый раз и также с помощью этого счетчика мы будем брать ссылки
+ */
