@@ -206,10 +206,10 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     }
 
     fun onClickPublish(view: View) {
-        ad = fillAd()
+        ad = fillAd()       //здесь генерируется новый ключ, который взят из fillAd()
         //если редактирование:
         if(isEditState) {
-            ad?.copy(key = ad?.key)?.let { dbManager.publishAd(it, onPublishFinish()) }
+             dbManager.publishAd(ad!!, onPublishFinish()) //сохраняются и редактируются все текстовые ссылки в объявлении. Для картинок работает отдельная логика
             //если публикация
         } else {
             uploadImages()  //Сначала заргужаем картинки. Текстовую часть загрузим после
@@ -228,9 +228,9 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
 
     //Функция для считывания данных объявления с базы данных
     private fun fillAd() : Ad {
-        val ad: Ad
+        val adTemp: Ad
         binding.apply {
-            ad = Ad(tvCountry.text.toString(),
+            adTemp = Ad(tvCountry.text.toString(),
                     tvCity.text.toString(),
                     editTel.text.toString(),
                     edIndex.text.toString(),
@@ -240,15 +240,16 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
                     edPrice.text.toString(),
                     edDescription.text.toString(),
                     editEmail.text.toString(),
-                    "empty",
-                    "empty",
-                    "empty",
-                    dbManager.db.push().key,
+                    ad?.mainImage?: "empty",
+                    ad?.image2 ?: "empty",
+                    ad?.image3 ?:"empty",
+                    ad?.key ?: dbManager.db.push().key,
                     "0",
                     dbManager.auth.uid,
-                    System.currentTimeMillis().toString())  //Берем системное время, считается с 1970 года
+//                    System.currentTimeMillis().toString())  //Берем системное время, считается с 1970 года //При редактировании объявления время меняется, и оно поднимается вверх по списку в приложении
+                    ad?.time ?: System.currentTimeMillis().toString())
         }
-        return ad
+        return adTemp
     }
 
 //    override fun onFragClose(list : ArrayList<SelectImageItem>) {    //20.10.4

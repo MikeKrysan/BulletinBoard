@@ -769,6 +769,10 @@ import com.squareup.picasso.Picasso
     Урок96. Встроенные покупки. Часть 3
     Урок97. Встроенные покупки. Часть 4 - убираем стартовую рекламу, рекламу-баннер и рекламу перехода между экранами для премиум-пользователя (который купил что то на сайте)
     Урок98. Встроенные покупки. Часть 5 - диалог для того чтобы купить удаление рекламы
+
+    Урок99. Публикация приложения как внутренний тест
+
+    Урок100. Исправляем ошибку с редактированием объявления
  */
 
 
@@ -803,7 +807,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(view)    //4.3.4 Рисуем экран
         pref = getSharedPreferences(BillingManager.MAIN_PREF, MODE_PRIVATE) //Если покупка не была реализована, здесь будет записано false
         isPremiumUser = pref?.getBoolean(BillingManager.REMOVE_ADS_PREF, false)!!
-        isPremiumUser = true
         if(!isPremiumUser) {                                                //если не премиум-юзер - показываем стартовую рекламу
             (application as AppMainState).showAdIfAvailable(this){
 
