@@ -2,6 +2,7 @@ package com.MikeKrysan.myapplication
 
 import android.app.Activity
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -31,6 +32,7 @@ import com.MikeKrysan.myapplication.dialogHelper.DialogConst
 import com.MikeKrysan.myapplication.dialogHelper.DialogHelper
 import com.MikeKrysan.myapplication.model.Ad
 import com.MikeKrysan.myapplication.utils.AppMainState
+import com.MikeKrysan.myapplication.utils.BillingManager
 import com.MikeKrysan.myapplication.utils.FilterManager
 import com.MikeKrysan.myapplication.viewModel.FirebaseViewModel
 import com.google.android.gms.ads.AdRequest
@@ -765,6 +767,8 @@ import com.squareup.picasso.Picasso
     Урок94. Встроенные покупки. Часть 1
     Урок95. Встроенные покупки. Часть 2
     Урок96. Встроенные покупки. Часть 3
+    Урок97. Встроенные покупки. Часть 4 - убираем стартовую рекламу, рекламу-баннер и рекламу перехода между экранами для премиум-пользователя (который купил что то на сайте)
+    Урок98. Встроенные покупки. Часть 5 - диалог для того чтобы купить удаление рекламы
  */
 
 
@@ -786,6 +790,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var filter:String = "empty"   //создаем глобальную переменную записанного массива из фильтра FilterActivity
     lateinit var filterLauncher: ActivityResultLauncher<Intent>   //создаем ActivityResultLauncher для того чтобы запускать активити и ждать результата
     private var filterDb:String = ""   //переменная которая передает фильтр в формате _|_ в базу данных
+    private var pref: SharedPreferences? = null //переменная определяющая vip-пользователя (который совершил покупку) - для него отключена реклама
+    private var isPremiumUser = false
+    private var bManager: BillingManager? = null//переменная для покупки за удаление рекламы
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -794,10 +801,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //не будет нулевых значений, так как у нас есть реалные ссылки на объекты, которые уже нарисованы
         val view = binding.root //4.3.3 Передаем переменную на экран. Root элемент - это элемент, который содержит в себе все view
         setContentView(view)    //4.3.4 Рисуем экран
-        (application as AppMainState).showAdIfAvailable(this){
+        pref = getSharedPreferences(BillingManager.MAIN_PREF, MODE_PRIVATE) //Если покупка не была реализована, здесь будет записано false
+        isPremiumUser = pref?.getBoolean(BillingManager.REMOVE_ADS_PREF, false)!!
+        isPremiumUser = true
+        if(!isPremiumUser) {                                                //если не премиум-юзер - показываем стартовую рекламу
+            (application as AppMainState).showAdIfAvailable(this){
 
+            }
+            initAds()
+        } else {
+            binding.mainContent.adView2.visibility = View.GONE
         }
-        initAds()
+
         init()
         initRecyclerView()
         initViewModel()
@@ -846,6 +861,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onDestroy() {
         super.onDestroy()
         binding.mainContent.adView2.destroy()
+        bManager?.closeConnection()
     }
 
     private fun onActivityResult() {
@@ -1014,6 +1030,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.id_appliance -> {
                 getAdsFromCat(getString(R.string.ads_appliances))
+            }
+            R.id.id_remove_ads -> {
+                bManager = BillingManager(this)
+                bManager?.startConnection()
             }
             R.id.id_sign_up -> {
 //                Toast.makeText(this, "Pressed id_sign_up", Toast.LENGTH_LONG).show()

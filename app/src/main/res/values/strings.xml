@@ -12,6 +12,7 @@
     <string name="ads_smartphone">Смартфоны</string>
     <string name="ads_appliances">Бытовая техника</string>
     <string name="ads_cat2">Аккаунт</string>
+    <string name="remove_ads">Удалить рекламу</string>
     <string name="ac_sign_up">Регистрация</string>
     <string name="ac_sign_in">Вход</string>
     <string name="ac_sign_out">Выход</string>

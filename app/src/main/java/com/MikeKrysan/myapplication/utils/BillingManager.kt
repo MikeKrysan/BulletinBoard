@@ -92,6 +92,10 @@ class BillingManager(val act:AppCompatActivity) {
         }
     }
 
+    fun closeConnection() {
+        billingClient?.endConnection()
+    }
+
     companion object {
         const val REMOVE_ADS = "remove_ads"
         const val MAIN_PREF = "main_pref"   //название таблици, которую мы сохраняем
