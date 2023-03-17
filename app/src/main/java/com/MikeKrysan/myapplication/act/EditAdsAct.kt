@@ -76,6 +76,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
         edTitle.setText(ad.title)
         edPrice.setText(ad.price)
         edDescription.setText(ad.description)
+        updateImageCounter(0)
         ImageManager.fillImageArray(ad, imageAdapter)
     }
 
@@ -255,6 +256,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
         binding.scrollViewMain.visibility = View.VISIBLE  //17.7.1Интерфейс нужно передать через фрагмент в контсруктор. Когда создаестя фрагмент, внутрь его передадим этот интерфейс, поэтому если там мы запускаем наш интерфейс, то он и здесь запуститься
         imageAdapter.update(list)   //20.11
         chooseImageFrag = null  //21.11
+        updateImageCounter(binding.vpImages.currentItem)
     }
 
 
@@ -359,10 +361,18 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
         binding.vpImages.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){  //регистирируем специальный коллбек, который будет следить за показом актуального фото и отображением позиции. Данный колбек будет запускатся всякий раз, когда мы скролим картинки
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                val imageCounter = "${position+1}/${binding.vpImages.adapter?.itemCount}"      //Создаем переменную для заполнения
-                binding.tvImageCounter.text =  imageCounter //заполняем переменную нужными данными
+                updateImageCounter(position)
             }
         })
+    }
+
+    //функция для обновления счетчика фото
+    private fun updateImageCounter(counter: Int) {
+        var index = 1
+        val itemCount = binding.vpImages.adapter?.itemCount
+        if(itemCount == 0) index = 0
+        val imageCounter = "${counter+index}/$itemCount"      //Создаем переменную для заполнения
+        binding.tvImageCounter.text =  imageCounter //заполняем переменную нужными данными
     }
 
 }
