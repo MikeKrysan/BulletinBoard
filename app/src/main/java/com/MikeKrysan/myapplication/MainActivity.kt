@@ -26,6 +26,7 @@ import com.MikeKrysan.myapplication.accaunthelper.AccauntHelper
 import com.MikeKrysan.myapplication.act.DescriptionActivity
 import com.MikeKrysan.myapplication.act.EditAdsAct
 import com.MikeKrysan.myapplication.act.FilterActivity
+import com.MikeKrysan.myapplication.act.showToast
 import com.MikeKrysan.myapplication.adapters.AdsRcAdapter
 import com.MikeKrysan.myapplication.databinding.ActivityMainBinding
 import com.MikeKrysan.myapplication.dialogHelper.DialogConst
@@ -784,6 +785,11 @@ import com.squareup.picasso.Picasso
 
     Урок105. Проверяем, все ли поля заполнены для публикации объявлений
 
+    Урок106. Исправляем ошибку с удалением объявления. Делаем так, чтобы все части объявления удалялись. У нас есть ошибка: не удаляются узлы favs, adFilter, info
+        Также необходимо ограничить гостю возможность создания обьявления
+
+    Урок107. На этом уроке делаем удаление фото объявления при удалении объявления
+
 
  */
 
@@ -953,15 +959,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //    }
 
     private fun initViewModel() {
-        firebaseViewModel.liveAdsData.observe(this, {
+        firebaseViewModel.liveAdsData.observe(this) {
             val list = getAdsByCategory(it)
-            if(!clearUpdate) {
+            if (!clearUpdate) {
                 adapter.updateAdapter(list) //передаем список обработанный (перевернутый) c помощью функции getAdsByCategory
             } else {
                 adapter.updateAdapterWithClear(list)
             }
-            binding.mainContent.tvEmpty.visibility = if(adapter.itemCount == 0) View.VISIBLE else View.GONE
-        })
+            binding.mainContent.tvEmpty.visibility =
+                if (adapter.itemCount == 0) View.VISIBLE else View.GONE
+        }
     }
 
     //функция, которая будет делать реверс объявлений по времени в определенной категории (от более новых к более старым)
@@ -998,12 +1005,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun bottomMenuOnClick() = with(binding) {
-        mainContent.bNavView.setOnNavigationItemSelectedListener {  item ->
+        mainContent.bNavView.setOnItemSelectedListener {  item ->
             clearUpdate = true  //каждый раз при нажатии на кнопки, обновляется список
             when(item.itemId) {
                 R.id.id_new_ad -> {
-                    val i = Intent(this@MainActivity, EditAdsAct::class.java)
-                    startActivity(i)
+                    //Чтобы открыть новое активити создания объявления сначала необходимо проверить, что наш пользователь - это не гость незарегистрированный (не anonimous)
+                    if(myAuth.currentUser != null) {
+                        if (!myAuth.currentUser?.isAnonymous!!) {
+                            val i = Intent(this@MainActivity, EditAdsAct::class.java)
+                            startActivity(i)
+                        } else {
+                            showToast(resources.getString(R.string.guest_cannot_post_ads))
+                        }
+                    } else {
+                        showToast(resources.getString(R.string.registration_error))
+                    }
                 }
                 R.id.id_my_ads -> {
                     firebaseViewModel.loadMyAds()

@@ -59,6 +59,8 @@
     <string name="Send">Отправка</string>
     <string name="publish">Опубликовать</string>
     <string name="attention_all_fields_must_be_filled">"Внимание! Все поля со зведочкой - * должны быть заполнены"</string>
+    <string name="registration_error">"Ошибка регистрации"</string>
+    <string name="guest_cannot_post_ads">"Гость не может публиковать объявлений. Пожалуйста зарегистрируйтесь!"</string>
 
     <!-- AdListItem -->
     <string name="price_desc">Цена</string>

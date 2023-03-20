@@ -152,9 +152,45 @@ class DbManager {
 
     fun deleteAd(ad: Ad, listener: FinishWorkListener) {
         if(ad.key == null || ad.uid == null) return
-        db.child(ad.key).child(ad.uid).removeValue().addOnCompleteListener{
-            if(it.isSuccessful) listener.onFinish(true)
+        //Для того, чтобы не прописывать удаление для каждого узла, мы создадим отдельный map и когда будет пользователь удалять обьявление, в узлы базы данных будет записываться null. Т.е будет обновлятся запись и мы обновим столько узлов, сколько нужно
+        val map = mapOf(
+            "/adFilter" to null,
+            "/info" to null,
+            "/favs" to null,
+            "/${ad.uid}" to null,
+
+        )
+        db.child(ad.key).updateChildren(map).addOnCompleteListener{
+            if(it.isSuccessful) deleteImagesFromStorage(ad, 0, listener)
 //            else Toast.makeText(this, "Не удалось удалить объявление", ...)
+
+        }
+    }
+
+    //функция, которая будет удалять поштучно фото из Firebase
+    private fun deleteImagesFromStorage(ad: Ad, index: Int, listener: FinishWorkListener) {
+        val imageList = listOf(ad.mainImage, ad.image2, ad.image3)
+        //Если пользователь опубликовал объявление без картинок, то делаем проверку:
+        if(ad.mainImage == "empty") {
+            listener.onFinish(true)
+            return
+        }
+        //берем путь из storage у которого есть разные функции для работы по ссылке с этими элементами, которые находятся по этой ссылке
+        dbStorage.storage.getReferenceFromUrl(imageList[index]).delete().addOnCompleteListener {
+            if(it.isSuccessful) {
+                //если на следующей позиции у меня есть индекс (картинка), значит еще раз запускаю функцию и индекс увеличиваю на один. Если на следующей позиции пусто, то завершаю операцию - все картинки удалиили
+                if(imageList.size > index + 1) {
+                    if(imageList[index + 1] != "empty") {
+                        //функция запускает сама себя
+                        deleteImagesFromStorage(ad, index + 1, listener)
+                        //если у нас следующая картинка пустая, больше не нужно запускать deleteImagesFromStorage. Мы удалили первую картинку, вторая пустая (к примеру). Ничего не делаем, просто закрываем. Но если у нас все три картинки, то доходим до конца, то наш индекс равен размеру массива - значит все картинки удалили
+                    } else {
+                        listener.onFinish(true)
+                    }
+                } else {
+                    listener.onFinish(true)
+                }
+            }
         }
     }
 
