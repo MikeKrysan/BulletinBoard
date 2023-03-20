@@ -207,6 +207,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     }
 
     fun onClickPublish(view: View) {
+        binding.progressLayout.visibility = View.VISIBLE    //прогресс-бар при публикации становится виден
         ad = fillAd()       //здесь генерируется новый ключ, который взят из fillAd()
 //        //если редактирование:
 //        if(isEditState) {
@@ -219,8 +220,9 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
 
     private fun onPublishFinish():DbManager.FinishWorkListener {
         return object: DbManager.FinishWorkListener {
-            override fun onFinish() {
-                finish()
+            override fun onFinish(isDone: Boolean) {
+                binding.progressLayout.visibility = View.GONE   //прогресс-бар при окончании публикации исчезает
+                if(isDone)  finish()
             }
         }
     }

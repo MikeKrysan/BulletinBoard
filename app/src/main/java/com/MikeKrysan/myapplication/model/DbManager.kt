@@ -26,7 +26,7 @@ class DbManager {
                 //Как только закончили публиковать объявление, публикуем также фильтр:
                 db.child(ad.key ?: "empty").child(FILTER_NODE)
                     .setValue(adFilter).addOnCompleteListener {
-                        finishListener.onFinish()
+                        finishListener.onFinish(it.isSuccessful)
                     }
             }
     }
@@ -53,7 +53,7 @@ class DbManager {
                 .child(FAVS_NODE)
                 .child(uid)
                 .setValue(uid).addOnCompleteListener {
-                        if(it.isSuccessful) listener.onFinish()
+                        if(it.isSuccessful) listener.onFinish(true)
                     }
             }
         }
@@ -66,7 +66,7 @@ class DbManager {
                 .child(FAVS_NODE)
                 .child(uid)
                 .removeValue().addOnCompleteListener {
-                    if(it.isSuccessful) listener.onFinish()
+                    if(it.isSuccessful) listener.onFinish(true)
                 }
             }
         }
@@ -153,7 +153,7 @@ class DbManager {
     fun deleteAd(ad: Ad, listener: FinishWorkListener) {
         if(ad.key == null || ad.uid == null) return
         db.child(ad.key).child(ad.uid).removeValue().addOnCompleteListener{
-            if(it.isSuccessful) listener.onFinish()
+            if(it.isSuccessful) listener.onFinish(true)
 //            else Toast.makeText(this, "Не удалось удалить объявление", ...)
         }
     }
@@ -230,7 +230,7 @@ class DbManager {
     }
 
     interface FinishWorkListener {
-        fun onFinish()
+        fun onFinish(isDone: Boolean)
     }
 
     companion object{

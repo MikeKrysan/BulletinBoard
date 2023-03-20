@@ -44,7 +44,7 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface): Bas
 //    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = ListImageFragBinding.inflate(layoutInflater)
+        binding = ListImageFragBinding.inflate(layoutInflater, container, false)
         adView = binding.adView
         return binding.root
     }

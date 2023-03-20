@@ -777,6 +777,10 @@ import com.squareup.picasso.Picasso
     Урок101. Делаем редактирование фото объявления
 
     Урок102. Устраняем ошибку со счетчиком фото и проверяем встроенные покупки
+
+    Урок103. Устраняем ошибку входа по Google SignIn
+
+    Урок104. Добавляем ProgressBar при публикации объявлений
  */
 
 
@@ -884,6 +888,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             } catch (e:ApiException) {
                 Log.d("MyLog", "Api error: ${e.message}")
+                Toast.makeText(this, "Api error: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }

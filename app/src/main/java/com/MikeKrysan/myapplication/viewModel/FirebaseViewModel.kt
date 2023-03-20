@@ -43,7 +43,7 @@ class FirebaseViewModel: ViewModel() {
 
     fun onFavClick(ad: Ad) {
         dbManager.onFavClick(ad, object: DbManager.FinishWorkListener {
-            override fun onFinish() {
+            override fun onFinish(isDone: Boolean) {
                 val updatedList = liveAdsData.value
                 val pos = updatedList?.indexOf(ad)
                 if(pos != -1) {
@@ -54,6 +54,8 @@ class FirebaseViewModel: ViewModel() {
                 }
                 liveAdsData.postValue(updatedList)
             }
+
+
         })
     }
 
@@ -80,11 +82,13 @@ class FirebaseViewModel: ViewModel() {
 
     fun deleteItem(ad : Ad) {
         dbManager.deleteAd(ad, object: DbManager.FinishWorkListener {
-            override fun onFinish() {
+            override fun onFinish(isDone: Boolean) {
                 val updatedList = liveAdsData.value
                 updatedList?.remove(ad)
                 liveAdsData.postValue(updatedList)
             }
+
+
         })
     }
 }

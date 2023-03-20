@@ -203,12 +203,13 @@ class AccauntHelper(act: MainActivity) {     //5.12.2 Cоздаем констр
         val credential = GoogleAuthProvider.getCredential(token, null) //даем полномочия Firebase регистрировать акаунт гугл для нашего приложения
         act.myAuth.currentUser?.delete()?.addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                act.myAuth.signInWithCredential(credential).addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
+                act.myAuth.signInWithCredential(credential).addOnCompleteListener { task2 ->
+                    if (task2.isSuccessful) {
                         Toast.makeText(act, "Sign in done", Toast.LENGTH_LONG).show()
-                        act.uiUpdate(task.result?.user)  //8.14
+                        act.uiUpdate(task2.result?.user)  //8.14
                     } else {
-                        Log.d("MyLog", "Google Sign In Exception: ${task.exception}")   //9.1.4 Отлавливаем возможные ошибки регистрации через гугл аккаунт(сбой сети например)
+                        Log.d("MyLog", "Google Sign In Exception: ${task2.exception}")   //9.1.4 Отлавливаем возможные ошибки регистрации через гугл аккаунт(сбой сети например)
+                        Toast.makeText(act, "Google Sign In Exception: ${task2.exception}", Toast.LENGTH_LONG).show()
                     }
                 }
             }
