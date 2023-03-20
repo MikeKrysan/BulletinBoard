@@ -58,6 +58,8 @@
     <string name="with_send">С отправкой</string>
     <string name="Send">Отправка</string>
     <string name="publish">Опубликовать</string>
+    <string name="attention_all_fields_must_be_filled">"Внимание! Все поля со зведочкой - * должны быть заполнены"</string>
+
     <!-- AdListItem -->
     <string name="price_desc">Цена</string>
     <string name="publish_time">Время публикации : </string>

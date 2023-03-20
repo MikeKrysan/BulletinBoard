@@ -207,6 +207,10 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     }
 
     fun onClickPublish(view: View) {
+        if(isFieldsEmpty()) {
+            showToast(resources.getString(R.string.attention_all_fields_must_be_filled))
+            return
+        }
         binding.progressLayout.visibility = View.VISIBLE    //прогресс-бар при публикации становится виден
         ad = fillAd()       //здесь генерируется новый ключ, который взят из fillAd()
 //        //если редактирование:
@@ -217,6 +221,20 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
             uploadImages()  //Сначала заргужаем картинки. Текстовую часть загрузим после//Теперь все будет обновляться, и картинки также
 //        finish()
     }
+
+    //функция, которая проверяет все ли обязательные поля заполнены при создании объявления (поля помеченные звездочкой)
+    private fun isFieldsEmpty(): Boolean = with(binding) {
+        return tvCountry.text.toString() == getString(R.string.select_country)
+                || tvCity.text.toString() == getString(R.string.select_city)
+                || tvCat.text.toString() == getString(R.string.select_category)
+                || edTitle.text.isEmpty()
+                || edPrice.text.isEmpty()
+                || edIndex.text.isEmpty()
+                || edDescription.text.isEmpty()
+                || editTel.text.isEmpty()
+//                || imageAdapter.mainArray.size == 0 //Если мы хотим, чтобы пользователь вставлял в объявление хотя-бы одну картинку
+    }
+
 
     private fun onPublishFinish():DbManager.FinishWorkListener {
         return object: DbManager.FinishWorkListener {
